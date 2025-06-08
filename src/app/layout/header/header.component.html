@@ -1,1 +1,16 @@
-<p>header works!</p>
+<header>
+  <span class="titulo-header">Soy tu agente</span>
+  <button class="menu-btn" (click)="toggleMenu()">☰</button>
+  <nav *ngIf="menuOpen">
+    <ul>
+      <li><a routerLink="/">Inicio</a></li>
+      <li><button (click)="openLoginModal()">Acceder o Registrarse</button></li>
+      <!-- Otros elementos -->
+    </ul>
+  </nav>
+  <app-login-modal
+    *ngIf="showLoginModal"
+    (close)="closeLoginModal()"
+  ></app-login-modal>
+</header>
+

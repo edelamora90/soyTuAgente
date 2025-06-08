@@ -1,0 +1,68 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  position: relative;
+  font-size: 1.1rem;
+}
+
+.titulo-header {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  font-weight: bold;
+  font-style: italic;
+  margin-right: auto;
+  letter-spacing: 0px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  color: #003d4f;
+  font-size: 2rem;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+
+nav {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  color: #003d4f;
+  border-radius: 0 0 14px 14px;
+  min-width: 180px;
+  z-index: 20;
+  box-shadow: 0 2px 10px rgba(32, 40, 111, 0.15);
+  text-align: right;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  padding: 1rem 2rem 1rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+nav li:last-child {
+  border-bottom: none;
+}
+
+/* Estilos para escritorio, si en el futuro lo deseas */
+@media (min-width: 700px) {
+  header {
+    justify-content: flex-start;
+  }
+  .titulo-header {
+    font-size: 1.5rem;
+  }
+  .menu-btn {
+    font-size: 2.2rem;
+  }
+}
