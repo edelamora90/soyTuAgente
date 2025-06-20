@@ -1,1 +1,144 @@
-<p>home works!</p>
+<div class="seccion-1">
+    <div class="home-card">
+    <div class="corner-decoration"></div>
+    <div class="home-titles">
+        <h1>
+        El agente<br>
+        de seguros<br>
+        <span class="perfecto">perfecto para ti</span>
+        </h1>
+        <p>
+        Más de 100 <span class="bold-green">agentes expertos</span><br>
+        están aquí para <span class="bold-green">ayudarte</span>
+        </p>
+    </div>
+    <div class="mockup-phone">
+        <div class="phone-screen">
+        <img src="assets/movil.gif" alt="Simulación de app" />
+        </div>
+    </div>
+    </div>
+</div>
+
+<section class="home-section tipos-seguro">
+  <h2>
+    ¿Qué <span class="verde">tipo de seguro</span><br>
+    buscas hoy?
+  </h2>
+  <p class="descripcion">
+    Selecciona uno o más tipos de seguro para encontrar al <b>agente ideal.</b>
+  </p>
+
+  <div class="seguro-lista">
+    <a class="seguro-card" routerLink="/seguros/vehiculos">
+      <img src="assets/vehiculos.png" alt="Vehículos" class="card-bg" />
+      <span class="seguro-titulo">Vehículos</span>
+      <img src="assets/flecha.png" alt="Ver más" class="card-arrow" />
+    </a>
+    <a class="seguro-card" routerLink="/seguros/hogar">
+      <img src="assets/hogar.png" alt="Hogar y Negocio" class="card-bg" />
+      <span class="seguro-titulo">Hogar y Negocio</span>
+      <img src="assets/flecha.png" alt="Ver más" class="card-arrow" />
+    </a>
+    <a class="seguro-card" routerLink="/seguros/salud">
+      <img src="assets/salud.png" alt="Salud y Asistencia" class="card-bg" />
+      <span class="seguro-titulo">Salud y Asistencia</span>
+      <img src="assets/flecha.png" alt="Ver más" class="card-arrow" />
+    </a>
+  </div>
+</section>
+
+<section class="home-section beneficios">
+  <h2>
+    ¿Por qué buscar<br>
+    en <span class="verde">SoyTuAgente</span>?
+  </h2>
+  <p class="benef-desc">
+    Descubre la plataforma que <span class="verde-text">conecta personas con agentes profesionales</span>, capacitados y certificados disponibles en tu ciudad.
+  </p>
+
+  <div class="benef-image-card">
+    <img src="assets/sec-3-persona.png" alt="Agente profesional" class="persona-img" />
+    <img src="assets/sec-3-persona-adorno.png" alt="" class="adorno-img" />
+  </div>
+
+  <ul class="benef-lista">
+    <li><span class="check">✔</span>Agentes verificados</li>
+    <li><span class="check">✔</span>Capacitación continua</li>
+    <li><span class="check">✔</span>Multimarca</li>
+    <li><span class="check">✔</span>Acceso rápido y sencillo</li>
+    <li><span class="check">✔</span>Experiencia personalizada</li>
+  </ul>
+</section>
+
+<section class="home-section seccion-agentes">
+  <h2>
+    Conviértete en un<br>
+    <span class="verde">agente de seguros</span>
+  </h2>
+  <p class="agentes-desc">
+    Forma parte de nuestra red de agentes y<br>
+    accede a <span class="verde-text">recursos exclusivos.</span>
+  </p>
+
+  <div class="agentes-image-card">
+    <img src="assets/sec-4persona-adorno.png" alt="" class="adorno-img" />
+    <img src="assets/sec-4-persona.png" alt="Agente" class="persona-img" />
+  </div>
+
+  <p class="agentes-info">
+    Únete a nuestra plataforma y accede a formación, herramientas digitales y la comunidad más grande de agentes en crecimiento.
+  </p>
+
+ <!--seccion 4 slider-->
+ <div class="slider-imgs">
+  <div class="slider-img-container">
+    <img
+      *ngFor="let img of sliderImgs; let i = index"
+      [src]="img"
+      alt="Slide"
+      class="slider-img"
+      [class.active]="i === sliderImgIndex"
+      [class.prev]="i === prevSliderIndex && justSlid"
+      [style.zIndex]="i === sliderImgIndex ? 2 : 1"
+    />
+  </div>
+  <div class="slider-puntos">
+    <span
+      *ngFor="let img of sliderImgs; let i = index"
+      class="punto"
+      [class.activo]="i === sliderImgIndex"></span>
+  </div>
+  <button class="btn-ser-agente">
+  Quiero ser un Agente
+</button>
+</div>
+
+<!--Seccion 5-->
+<section class="home-section testimonios">
+  <h2>
+    Lo que dicen<br>
+    <span class="verde">nuestros clientes</span>
+  </h2>
+
+  <div class="testimonio-slider">
+    <div class="testimonio-card"
+      *ngFor="let testimonio of testimonios; let i = index"
+      [class.activo]="i === testimonioIndex"
+      [class.prev]="i === ((testimonioIndex-1+testimonios.length)%testimonios.length)">
+      <img [src]="testimonio.foto" class="testimonio-foto" alt="{{testimonio.nombre}}">
+      <div class="testimonio-content">
+        <div class="testimonio-titulo">{{testimonio.titulo}}</div>
+        <div class="testimonio-texto"><i>{{testimonio.texto}}</i></div>
+        <div class="testimonio-nombre">{{testimonio.nombre}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="slider-puntos">
+    <span
+      *ngFor="let t of testimonios; let i = index"
+      class="punto"
+      [class.activo]="i === testimonioIndex"></span>
+  </div>
+</section>
+
