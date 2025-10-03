@@ -1,0 +1,94 @@
+/* ====== Variables y base: igual a Admin ====== */
+* { box-sizing: border-box; }
+:root {
+  --brand: #0fb366;
+  --brand-dark: #0a7c4b;
+  --ink: #1d2939;
+  --muted: #667085;
+  --border: #e5e7eb;
+  --radius: 14px;
+  --shadow: 0 8px 20px rgba(16, 24, 40, .08);
+}
+
+/* Layout contenedor para el público con el mismo ancho del Admin */
+.wrap.admin .container { max-width: 980px; margin: 0 auto; padding: 24px 12px; }
+h1 { font-size: 28px; margin-bottom: 20px; }
+
+/* Grid 1-col */
+.grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+
+/* Form groups */
+.form-group { display: grid; gap: 8px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group > span { color: var(--ink); font-weight: 600; }
+.req { color: #e11d48; }
+
+/* Inputs */
+.input, input[type="text"], select, textarea {
+  width: 100%; border: 1px solid var(--border); border-radius: 999px;
+  min-height: 44px; padding: 10px 14px; outline: none; background: #fff;
+}
+textarea { border-radius: 12px; min-height: 96px; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(15,179,102,.15);
+}
+
+/* Chips */
+.chip-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+.chip input { accent-color: var(--brand); }
+
+/* Check row */
+.row.chk { display: inline-flex; align-items: center; gap: 10px; }
+.row.chk input { accent-color: var(--brand); }
+
+/* Dropzone */
+.dz {
+  position: relative; border: 2px dashed var(--border); border-radius: var(--radius);
+  display: grid; place-items: center; min-height: 180px; background: #fff;
+}
+.dz--big { min-height: 220px; }
+.dz.dragover { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(15,179,102,.15); }
+.dz input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.dz img { width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 4px); }
+
+.placeholder { text-align: center; color: var(--muted); }
+.dz-title { font-weight: 700; color: var(--ink); }
+.dz-sub { font-size: 14px; }
+.dz-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+.previews { display: flex; gap: 12px; flex-wrap: wrap; }
+.preview { position: relative; width: 140px; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.preview img { width: 100%; height: 100%; object-fit: cover; }
+.remove-btn {
+  position: absolute; top: 6px; right: 6px; border: 0; border-radius: 999px; width: 26px; height: 26px;
+  display: grid; place-items: center; background: #fff; color: #111; cursor: pointer; box-shadow: var(--shadow);
+}
+
+/* Socials */
+.field-title { font-weight: 700; color: var(--ink); }
+.socials { display: grid; gap: 12px; }
+.social { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; }
+.social img { width: 20px; height: 20px; }
+.social-input { display: flex; align-items: center; gap: 8px; }
+.social-input .base { color: var(--muted); white-space: nowrap; }
+.social-input input { flex: 1; }
+
+/* Footer (igual Admin + .ok para mensaje verde) */
+.form-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);
+}
+.error { color: #b91c1c; }
+.ok { color: #10b981; }
+.btn-primary, .btn-ghost, .btn-plus {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; font-weight: 700;
+}
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-dark); }
+.btn-ghost { background: #fff; border-color: var(--border); color: var(--ink); }
+.btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+.btn-plus { width: 40px; padding: 0; font-size: 20px; background: #fff; border: 1px solid var(--border); }
+.btn-plus:hover { border-color: var(--brand); color: var(--brand); }

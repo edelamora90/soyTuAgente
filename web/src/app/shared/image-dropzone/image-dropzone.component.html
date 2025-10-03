@@ -1,0 +1,59 @@
+<!-- web/src/app/shared/image-dropzone/image-dropzone.component.html -->
+<div
+  class="dz"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <div class="dz__content">
+    <!-- Botón accesible para abrir el diálogo -->
+    <button
+      type="button"
+      class="dz__button"
+      (click)="triggerFileDialog()"
+      (keydown)="onKeyOpen($event)"
+    >
+      {{ multiple ? 'Subir imágenes' : 'Subir imagen' }}
+    </button>
+
+    <!-- Progreso (opcional) -->
+    <div class="dz__progress" *ngIf="progress > 0 && progress < 100">
+      {{ progress }}%
+    </div>
+
+    <!-- SINGLE -->
+    <ng-container *ngIf="!multiple; else multiTpl">
+      <ng-container *ngIf="singleUrl as url; else hintTpl">
+        <img [src]="url" alt="preview" class="dz__preview" />
+        <button type="button" class="dz__remove" (click)="removeSingle($event)">Quitar</button>
+      </ng-container>
+    </ng-container>
+
+    <!-- MULTIPLE -->
+    <ng-template #multiTpl>
+      <div class="dz__grid" *ngIf="multiUrls.length; else hintTpl">
+        <div class="dz__item" *ngFor="let url of multiUrls; let i = index">
+          <img [src]="url" alt="preview {{ i + 1 }}" class="dz__preview" />
+          <button type="button" class="dz__remove--item" (click)="removeAt(i, $event)">×</button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- HINT -->
+    <ng-template #hintTpl>
+      <div class="dz__text">
+        Arrastra {{ multiple ? 'imágenes' : 'una imagen' }} o haz click
+      </div>
+    </ng-template>
+
+    <!-- input file oculto -->
+    <input
+      #fileInput
+      type="file"
+      class="dz__file"
+      [accept]="accept"
+      [multiple]="multiple"
+      (change)="onFileInput($event)"
+    />
+  </div>
+</div>

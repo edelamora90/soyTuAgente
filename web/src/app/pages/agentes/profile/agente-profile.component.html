@@ -1,0 +1,33 @@
+<!-- web/src/app/pages/agentes/profile/agente-profile.component.html -->
+<div class="page-wrap">
+  <div class="page-container">
+    <div class="card card--profile">
+      <ng-container *ngIf="!loading; else skeleton">
+        <ng-container *ngIf="!notFound && vm as data; else notFoundTpl">
+          <app-agent-profile-presenter
+            [agent]="data"
+            [loading]="false">
+          </app-agent-profile-presenter>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<ng-template #skeleton>
+  <div class="card card--profile">
+    <div class="container profile skeleton">
+      <div class="shimmer head"></div>
+      <div class="shimmer row"></div>
+      <div class="shimmer row"></div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #notFoundTpl>
+  <div class="card card--profile">
+    <div class="container profile">
+      <p>No encontramos este agente.</p>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,234 @@
+// web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.scss
+/* ===== Wrapper gris + tarjeta blanca ===== */
+.wrap {
+  background: #f5f7f6;
+  min-height: 100dvh;
+  padding: 24px;
+}
+.ap.container.profile {
+  background: #fff;
+  border: 1px solid #e9efec;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, .08);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 28px);
+}
+
+/* ===== Grid de cabecera: avatar|info  y  social|cta ===== */
+.ap-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-areas:
+    "avatar info"
+    "social cta";
+  column-gap: clamp(18px, 3.2vw, 28px);
+  row-gap: 16px;
+}
+
+/* Avatar */
+.ap-avatar { grid-area: avatar; display: grid; place-items: center; }
+.ap-avatar img {
+  width: 220px; height: 220px; object-fit: cover; border-radius: 50%;
+  border: 6px solid #fff; box-shadow: 0 6px 16px rgba(16,24,40,.12);
+}
+
+/* Info */
+.ap-info { grid-area: info; }
+.ap-name {
+  margin: 0 0 6px; font-weight: 900; color: #0b2f34;
+  font-size: clamp(22px, 2.6vw, 36px); letter-spacing: -0.01em;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.ap-verified {
+  display: inline-grid; place-items: center; width: 28px; height: 28px;
+  border-radius: 999px; background: #1fd074; color: #fff; font-size: 16px;
+  box-shadow: 0 4px 10px rgba(31, 208, 116, .35);
+}
+.ap-id { color: #6a7f79; font-weight: 600; margin-bottom: 12px; }
+.ap-meta .loc { color: #0b2f34; font-weight: 500; margin-bottom: 20px; }
+
+/* Especialidades con icono */
+.ap-spec .label { color: #0b2f34; font-weight: 800; margin-bottom: 6px; }
+.ap-spec .cols {
+  list-style: none; padding: 0; margin: 0 0 14px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 14px;
+}
+.ap-spec .cols li { display: flex; align-items: center; gap: 10px; color: #0b2f34; }
+.ap-spec .cols .spec-ico { width: 18px; height: 18px; object-fit: contain; display: inline-block; }
+
+/* Redes (fila 2, col 1) */
+.ap-social { grid-area: social; display: flex; gap: 12px; align-items: center; justify-content: center; }
+.ap-social a {
+  width: 40px; height: 40px; display: inline-grid; place-items: center; background: #fff;
+  border: 1px solid #e9efec; border-radius: 10px; transition: transform .15s ease, background .2s ease;
+}
+.ap-social img { width: 22px; height: 22px; display: block; object-fit: contain; }
+.ap-social a:hover { transform: translateY(-1px); background: #eaf6f2; }
+
+/* CTAs (fila 2, col 2) */
+.ap-cta {
+  grid-area: cta; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-start;
+}
+.ap-btn {
+  display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px;
+  border-radius: 999px; font-weight: 800; text-decoration: none; border: 2px solid transparent; cursor: pointer;
+  white-space: nowrap;
+}
+.ap-btn.is-disabled { pointer-events: none; opacity: .5; }
+
+/* Llamar */
+.ap-btn--call {
+  color: #162530; background: #fff; border-color: #5f706c; box-shadow: 0 2px 0 rgba(0,0,0,.06);
+}
+.ap-btn--call:hover { background: #f8fbfa; transform: translateY(-1px); }
+
+/* WhatsApp */
+.ap-btn--wa {
+  background: #22c55e; border-color: #16a34a; color: #fff; box-shadow: 0 10px 24px rgba(34,197,94,.25);
+}
+.ap-btn--wa:hover { filter: brightness(.96); transform: translateY(-1px); }
+.ap-btn--wa .ico { width: 20px; height: 20px; display: inline-block; object-fit: contain; }
+
+/* Galería */
+.ap-block { margin-top: 36px; }
+.ap-block h2 { font-weight: 800; font-size: clamp(18px, 2vw, 20px); margin: 0 0 12px; color: #0b2f34; }
+
+.ap-media { display: grid; gap: 10px; max-width: 1100px; width: 100%; margin: 0 auto; }
+.ap-media .thumbs { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); justify-items: center; }
+.ap-media .thumb { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 2px 6px rgba(16,24,40,.06); width: 100%; max-width: 260px; }
+.ap-media .thumb img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+
+/* Lightbox */
+.ap-lightbox { position: fixed; inset: 0; background: rgba(6,19,18,.82); display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 24px; }
+.ap-lightbox__content { position: relative; }
+.lightbox-img { max-width: min(92vw, 1100px); max-height: 86vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.35); display: block; }
+.ap-lightbox .nav { position: fixed; top: 50%; transform: translateY(-50%); height: 44px; width: 44px; border-radius: 999px; border: 0; background: rgba(255,255,255,.9);
+  font-size: 22px; font-weight: 900; cursor: pointer; }
+.ap-lightbox .nav.prev { left: 16px; }
+.ap-lightbox .nav.next { right: 16px; }
+.ap-lightbox .close { position: absolute; top: -50px; right: 0; height: 40px; width: 40px; border-radius: 999px; border: 0; background: rgba(255,255,255,.9);
+  font-size: 18px; font-weight: 900; cursor: pointer; }
+
+@media (max-width: 860px) {
+  .ap-card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "avatar"
+      "info"
+      "social"
+      "cta";
+  }
+  .ap-avatar img { width: 180px; height: 180px; }
+  .ap-spec .cols { grid-template-columns: 1fr; }
+  .ap-social { justify-content: center; }
+  .ap-cta { justify-content: center; }
+}
+
+@media (max-width: 720px) {
+  .ap-media .thumbs { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Skeleton */
+.skeleton .shimmer {
+  height: 120px; margin-top: 16px; border-radius: 12px;
+  background: linear-gradient(90deg,#f3f6f5,#eef4f2,#f3f6f5);
+  background-size: 200% 100%; animation: shimmer 1.2s infinite;
+}
+.skeleton .head { height: 160px; }
+@keyframes shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+
+.ap.container.profile{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+.checks{
+  list-style: none !important;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.checks li{
+  list-style: none !important;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.checks li::marker{ content: ''} /* por si algún reset mete marcador */
+.checks .check{
+  color: #12c27a;      /* verde palomita */
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+
+/* Mis servicios: bullets lindos y alineados con el resto */
+.ap-block .list{
+  list-style: none;
+  margin: 0;           /* quita margen por defecto */
+  padding: 0;          /* quita padding por defecto (que la pegaba a la izquierda) */
+  display: grid;
+  gap: 8px;
+}
+
+.ap-block .list li{
+  position: relative;
+  padding-left: 18px;  /* gutter para el “bullet” */
+  color: #0b2f34;
+}
+
+/* bullet personalizado */
+.ap-block .list li::before{
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  line-height: 1;
+  font-size: 16px;
+  color: #0b2f34;
+  transform: translateY(2px);
+}
+
+/* Aseguradoras: fila, altura controlada */
+.brands{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+.brands img{
+  height: 44px;         /* ajusta si quieres más chico/grande */
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(1);
+  opacity: .85;
+}
+
+/* ===== CTA Footer centrado ===== */
+.ap-cta--footer{
+  justify-content: center;   /* centrado horizontal */
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid #e9efec;
+  gap: 12px;                 /* separación entre botones */
+}
+
+.ap-cta--footer .ap-btn{
+  height: 50px;              /* un pelín más altos si quieres */
+  padding: 0 20px;
+}
+/* ===== Separador entre cabecera (redes + CTAs) y el contenido ===== */
+.ap-separator{
+  height: 1px;
+  background: #e9efec;
+  margin: 18px 0 4px;  /* espacio suficiente tras redes/CTAs */
+}

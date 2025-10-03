@@ -1,0 +1,51 @@
+<section class="admin">
+  <div class="container">
+    <h1>Importar agentes (CSV)</h1>
+
+    <div class="card">
+      <div class="pick">
+        <input type="file" accept=".csv,text/csv" (change)="onFile($event)" hidden #fileInput>
+        <button class="btn-primary" type="button" (click)="onPickFile(fileInput)">Seleccionar CSV</button>
+        <span class="muted" *ngIf="fileName()">Archivo: <b>{{ fileName() }}</b></span>
+      </div>
+
+      <p class="hint">
+        Encabezados esperados:
+        <code>{{ expectedHeaders.join(', ') }}</code>
+      </p>
+      <p class="hint">Arrays: {{ help.arrays }}</p>
+      <p class="hint">Redes: {{ help.redes }}</p>
+
+      <div class="errors" *ngIf="errors().length">
+        <p *ngFor="let e of errors()">⚠️ {{ e }}</p>
+      </div>
+
+      <div *ngIf="parsed().length">
+        <h3>Vista previa ({{ parsed().length }} filas válidas)</h3>
+        <div class="table">
+          <div class="th">
+            <span>slug</span>
+            <span>nombre</span>
+            <span>ubicación</span>
+            <span>verificado</span>
+            <span>especialidades</span>
+          </div>
+          <div class="tr" *ngFor="let r of parsed() | slice:0:10">
+            <span>{{ r.slug }}</span>
+            <span>{{ r.nombre }}</span>
+            <span>{{ r.ubicacion }}</span>
+            <span>{{ r.verificado ? '✔︎' : '—' }}</span>
+            <span>{{ (r.especialidades || []).join(' | ') }}</span>
+          </div>
+          <div class="more" *ngIf="parsed().length > 10">… y {{ parsed().length - 10 }} más</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" type="button" (click)="send()" [disabled]="uploading()">
+            {{ uploading() ? 'Enviando…' : 'Enviar al servidor' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

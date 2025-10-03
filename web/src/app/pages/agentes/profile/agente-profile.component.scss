@@ -1,0 +1,71 @@
+// web/src/app/pages/agentes/profile/agente-profile.component.scss
+:host {
+  display: block;
+}
+
+/* Fondo gris claro a pantalla completa (solo en esta página) */
+.page-wrap {
+  background: #f4f6f5; /* gris muy suave */
+  /* Que el área gris cubra al menos el alto de la ventana */
+  min-height: 100dvh; /* usa dvh para móviles modernos; si prefieres, 100vh */
+}
+
+/* Contenedor centrado y con respiro lateral */
+.page-container {
+  max-width: 1120px;            /* ancho máximo de la “página” */
+  margin: 0 auto;
+  padding: clamp(16px, 2.2vw, 28px) clamp(12px, 2vw, 20px);
+  box-sizing: border-box;
+}
+
+/* Tarjeta blanca que envuelve TODO el contenido del perfil */
+.card {
+  background: #fff;
+  border: 1px solid #e9efec;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+}
+
+.card--profile {
+  /* Espaciado interior de la tarjeta */
+  padding: clamp(16px, 2.5vw, 28px);
+}
+
+/* Opcional: ajusta el margen vertical de la tarjeta respecto al wrap */
+@media (min-width: 768px) {
+  .card--profile {
+    margin: 12px auto;
+  }
+}
+
+/* ===== Espaciado más alto entre secciones del perfil (sin tocar el presenter) ===== */
+:host ::ng-deep .ap-block,
+:host ::ng-deep .block {
+  /* antes era ~28px; subimos con clamp para responsive */
+  margin-top: clamp(32px, 6vw, 64px) !important;
+}
+
+/* Un poco más de respiro entre el header de la tarjeta y la primera sección */
+.card--profile > .container.profile,
+.card--profile > app-agent-profile-presenter {
+  display: block;
+}
+
+/* Títulos de sección con respiro adicional */
+:host ::ng-deep .ap-block h2,
+:host ::ng-deep .block h2 {
+  margin-bottom: clamp(14px, 2vw, 20px) !important;
+}
+
+/* (Opcional) línea sutil entre secciones para reforzar la separación visual */
+:host ::ng-deep .ap-block + .ap-block,
+:host ::ng-deep .block + .block {
+  border-top: 1px solid #eef3f1;
+  padding-top: clamp(20px, 3vw, 28px);
+}
+
+/* (Opcional) más aire abajo de toda la tarjeta */
+.page-container {
+  padding-bottom: clamp(24px, 4vw, 56px);
+}
+

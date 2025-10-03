@@ -1,0 +1,12 @@
+{
+  "name": "web",
+  "targets": {
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "buildTarget": "web:build",
+        "proxyConfig": "apps/web/proxy.conf.json"
+      }
+    }
+  }
+}

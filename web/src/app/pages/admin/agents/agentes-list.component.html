@@ -1,0 +1,76 @@
+<!-- web/src/app/pages/admin/agents/agentes-list.component.html -->
+<section class="wrap">
+  <header class="head">
+    <h1>Editar agentes</h1>
+  </header>
+
+  <div class="toolbar">
+    <input
+      #qBox
+      type="search"
+      placeholder="Buscar por nombre o slug..."
+      [value]="q()"
+      (input)="q.set(qBox.value)"
+    />
+  </div>
+
+  <div class="msg error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+  <div *ngIf="loading()" class="loading">Cargando...</div>
+
+  <table class="table" *ngIf="!loading() && filtered().length">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Slug</th>
+        <th>Ubicación</th>
+        <th>WhatsApp</th>
+        <th>Especialidades</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of filtered(); trackBy: trackBySlug">
+        <td>{{ r.nombre }}</td>
+        <td><code>{{ r.slug }}</code></td>
+        <td>{{ r.ubicacion || '—' }}</td>
+        <td>{{ r.whatsapp || '—' }}</td>
+        <td>{{ r.especialidades?.join(', ') || '—' }}</td>
+        <td class="actions">
+  <td class="actions">
+  <button class="btn btn-ghost"
+          (click)="open(r, dlg); $event.stopPropagation()">Ver</button>
+
+  <button class="btn btn-primary" [routerLink]="[r.slug, 'edit']">Editar</button>
+  <button
+  type="button"
+  class="btn-danger"
+  [disabled]="busySlug() === r.slug"
+  (click)="remove(r)">
+  <span *ngIf="busySlug() !== r.slug">Eliminar</span>
+  <span *ngIf="busySlug() === r.slug">Eliminando…</span>
+</button>
+
+
+
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!loading() && !filtered().length" class="empty">No hay resultados.</p>
+
+  <!-- Modal Detalle (reutiliza presenter del perfil) -->
+  <dialog #dlg>
+  <article>
+    <header class="modal-head">
+      <h2>Perfil del agente</h2>
+      <button class="close" (click)="close(dlg)">✕</button>
+    </header>
+
+    <app-agent-profile-presenter
+      *ngIf="selectedVm() as vm"
+      [agent]="vm">
+    </app-agent-profile-presenter>
+  </article>
+</dialog>
+</section>

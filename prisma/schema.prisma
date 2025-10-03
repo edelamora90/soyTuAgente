@@ -1,0 +1,90 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  username     String?   @unique
+  passwordHash String
+  roles        String[]  @default(["admin"]) // roles como array de strings
+  isActive     Boolean   @default(true)
+  tokenVersion Int       @default(0) // para invalidar refresh tokens
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Agent {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  nombre     String
+  cedula     String
+  verificado Boolean @default(false)
+  avatar     String?
+  ubicacion  String
+  whatsapp   String? // opcional
+
+  // listas (PostgreSQL soporta arrays nativos)
+  especialidades  String[]
+  experiencia     String[]
+  servicios       String[]
+  certificaciones String[]
+  aseguradoras    String[]
+  mediaThumbs     String[]
+
+  mediaHero String
+
+  // redes sociales como JSON
+  redes Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AgentSubmission {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Estado del flujo
+  status     SubmissionStatus @default(PENDING)
+  reviewedAt DateTime?
+
+  // Revisor
+  reviewedById String? // opcional: id de usuario admin si manejas auth
+  reviewNotes  String?
+
+  // Datos del “formulario” (espejo de CreateAgentDto)
+  slug           String   @unique
+  nombre         String
+  cedula         String?
+  verificado     Boolean? @default(false)
+  foto           String? // avatar
+  ubicacion      String? // "Municipio, Estado"
+  whatsapp       String?
+  especialidades String[] @default([])
+  experiencia    String?
+  servicios      String[] @default([])
+  aseguradoras   String? // o String[] si ya lo tienes así en Agent
+  logroDestacado String?
+  logosAseg      String[] @default([]) // si en Agent usas array
+  fotosMini      String[] @default([])
+  fotoHero       String?
+  facebook       String?
+  instagram      String?
+  linkedin       String?
+  tiktok         String?
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

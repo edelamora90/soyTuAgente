@@ -1,0 +1,121 @@
+<section class="admin">
+  <div class="container">
+    <h1>{{ isEdit() ? 'Editar agente' : 'Nuevo agente' }}</h1>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="grid">
+        <label>
+          <span>Slug*</span>
+          <input formControlName="slug" required />
+        </label>
+
+        <label>
+          <span>Nombre*</span>
+          <input formControlName="nombre" required />
+        </label>
+
+        <label>
+          <span>Ubicación</span>
+          <input formControlName="ubicacion" />
+        </label>
+
+        <label>
+          <span>Avatar (URL)</span>
+          <input formControlName="avatar" />
+        </label>
+
+        <label>
+          <span>Cédula</span>
+          <input formControlName="cedula" />
+        </label>
+
+        <label class="row">
+          <input type="checkbox" formControlName="verificado" />
+          <span>Verificado</span>
+        </label>
+
+        <!-- Arrays por coma -->
+        <label>
+          <span>Especialidades (coma)</span>
+          <input
+            [value]="especialidadesText"
+            (input)="onEspecialidadesChange($any($event.target).value)"
+          />
+        </label>
+
+        <label>
+          <span>Aseguradoras (URLs separadas por coma)</span>
+          <input
+            [value]="aseguradorasText"
+            (input)="onAseguradorasChange($any($event.target).value)"
+          />
+        </label>
+
+        <label>
+          <span>Media Thumbs (URLs separadas por coma)</span>
+          <input
+            [value]="mediaThumbsText"
+            (input)="onMediaThumbsChange($any($event.target).value)"
+          />
+        </label>
+
+        <!-- Arrays por línea -->
+        <label>
+          <span>Experiencia (una por línea)</span>
+          <textarea
+            [value]="experienciaText"
+            (input)="onExperienciaChange($any($event.target).value)"
+            rows="4"
+          ></textarea>
+        </label>
+
+        <label>
+          <span>Servicios (una por línea)</span>
+          <textarea
+            [value]="serviciosText"
+            (input)="onServiciosChange($any($event.target).value)"
+            rows="4"
+          ></textarea>
+        </label>
+
+        <label>
+          <span>Certificaciones (una por línea)</span>
+          <textarea
+            [value]="certificacionesText"
+            (input)="onCertificacionesChange($any($event.target).value)"
+            rows="4"
+          ></textarea>
+        </label>
+
+        <!-- Otros -->
+        <label>
+          <span>WhatsApp (E.164, ej: 5213121234567)</span>
+          <input formControlName="whatsapp" />
+        </label>
+
+        <label>
+          <span>Media Hero (URL)</span>
+          <input formControlName="mediaHero" />
+        </label>
+
+        <!-- Redes JSON por línea -->
+        <label>
+          <span>
+            Redes (JSON <code>{{ '{' }}"icon":"","url":""{{ '}' }}</code> por línea)
+          </span>
+          <textarea
+            [value]="redesText"
+            (input)="onRedesChange($any($event.target).value)"
+            rows="4"
+          ></textarea>
+        </label>
+      </div> 
+
+      <div class="actions">
+        <button class="btn" type="submit" [disabled]="form.invalid || loading()">
+          {{ loading() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

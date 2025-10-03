@@ -1,0 +1,13 @@
+.admin .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:16px; }
+.pick { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+.muted { color:#667085; }
+.hint { color:#6b7280; font-size:.9rem; }
+.errors { background:#fff1f2; color:#9f1239; border:1px solid #fecdd3; padding:8px 12px; border-radius:8px; margin:8px 0; }
+.table { border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin-top:10px; }
+.th, .tr { display:grid; grid-template-columns: 2fr 2fr 2fr 1fr 3fr; gap:8px; padding:8px 12px; }
+.th { background:#f9fafb; font-weight:700; }
+.tr { border-top:1px solid #f1f5f9; }
+.more { padding:8px 12px; color:#64748b; }
+.actions { margin-top:12px; text-align:right; }
+.btn-primary { background:#06c167; color:#fff; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; }
+.btn-primary:disabled{ opacity:.6; cursor:not-allowed; }

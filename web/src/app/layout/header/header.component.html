@@ -1,0 +1,87 @@
+<!-- web/src/app/layout/header/header.component.html -->
+<header class="site-header" [class.is-open]="open">
+  <div class="container">
+    <!-- Marca -->
+    <a class="brand" routerLink="/" aria-label="Soy tu Agente">
+      <img src="assets/logo.svg" alt="Soy tu Agente" />
+    </a>
+
+    <!-- Navegación desktop -->
+    <nav class="primary-nav" aria-label="Navegación principal">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+      <a routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
+      <a routerLink="/certificaciones" routerLinkActive="active">Certificaciones</a>
+      <a routerLink="/agentes" routerLinkActive="active">Buscar Agente</a>
+    </nav>
+
+    <!-- Acciones (CTA / Usuario + Hamburguesa) -->
+    <div class="actions">
+      <!-- Si NO hay sesión: CTA -->
+      <ng-container *ngIf="!isLoggedIn(); else loggedActions">
+        <a class="btn-cta" routerLink="/unirme">Unirme a Soy tu Agente</a>
+      </ng-container>
+
+      <!-- Si SÍ hay sesión: menú de usuario (desktop) -->
+      <ng-template #loggedActions>
+        <div class="user-menu" [class.open]="userOpen">
+          <button
+            type="button"
+            class="user-btn"
+            (click)="userOpen = !userOpen"
+            [attr.aria-expanded]="userOpen"
+            aria-haspopup="menu">
+            <span class="avatar">{{ initials() }}</span>
+            <span class="name">{{ shortName() }}</span>
+            <span class="chev">▾</span>
+          </button>
+
+          <div class="menu" role="menu" *ngIf="userOpen">
+            <!-- (Opcional) Dashboard también en desktop -->
+            <a role="menuitem" routerLink="/admin" (click)="closeMenu()">Dashboard</a>
+            <a role="menuitem" routerLink="/admin/cuenta" (click)="closeMenu()">Editar</a>
+            <button role="menuitem" type="button" (click)="closeMenu(); logout()">Salir</button>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Hamburguesa -->
+      <button
+        class="hamb"
+        type="button"
+        (click)="open = !open"
+        aria-label="Abrir menú"
+        [attr.aria-expanded]="open">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <nav class="mobile-menu" *ngIf="open" aria-label="Menú móvil">
+    <a (click)="closeMenu()" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+    <a (click)="closeMenu()" routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
+    <a (click)="closeMenu()" routerLink="/certificaciones" routerLinkActive="active">Certificaciones</a>
+    <a (click)="closeMenu()" routerLink="/agentes" routerLinkActive="active">Buscar Agente</a>
+
+    <!-- CTA o acciones de usuario en móvil -->
+    <ng-container *ngIf="!isLoggedIn(); else mobileLogged">
+      <a (click)="closeMenu()" routerLink="/unirme" class="btn-cta">Unirme a Soy tu Agente</a>
+    </ng-container>
+
+    <ng-template #mobileLogged>
+      <div class="mobile-user">
+        <div class="mu-head">
+          <span class="avatar">{{ initials() }}</span>
+          <div class="col">
+            <div class="name">{{ shortName() }}</div>
+          </div>
+        </div>
+
+        <!-- ← Dashboard en móvil -->
+        <a routerLink="/admin" (click)="closeMenu()">Dashboard</a>
+        <a routerLink="/admin/cuenta" (click)="closeMenu()">Editar</a>
+        <button type="button" (click)="closeMenu(); logout()">Salir</button>
+      </div>
+    </ng-template>
+  </nav>
+</header>

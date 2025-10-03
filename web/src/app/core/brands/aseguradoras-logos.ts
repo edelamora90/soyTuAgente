@@ -1,0 +1,15 @@
+export const ASEG_LOGOS: Record<string, string> = {
+  Qualitas: 'assets/aseguradoras/Qualitas.png',
+  Allianz: 'assets/aseguradoras/Allianz.png',
+  AXA: 'assets/aseguradoras/Axa.png',
+  GNP: 'assets/aseguradoras/Gnp.png',
+  HDI: 'assets/aseguradoras/Hdi.png',
+  INBURSA: 'assets/aseguradoras/Inbursa.png',
+  MAPFRE: 'assets/aseguradoras/Mapfre.png',
+  MetLife: 'assets/aseguradoras/Metlife.png',
+  Primero: 'assets/aseguradoras/Primeroseguros.png',
+  'Seguros Atlas': 'assets/aseguradoras/Segurosatlas.png',
+  'Seguros Monterrey': 'assets/aseguradoras/Segurosmonterrey.png',
+  Sura: 'assets/aseguradoras/Sura.png',
+  Zurich: 'assets/aseguradoras/Zurich.png',
+};
