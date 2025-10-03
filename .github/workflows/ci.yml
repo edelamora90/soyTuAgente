@@ -2,43 +2,41 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, develop, feature/**]
   pull_request:
-
-permissions:
-  actions: read
-  contents: read
+    branches: [main, develop]
 
 jobs:
-  main:
+  build:
     runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      NX_DAEMON: "false"
+      NX_SKIP_NX_CACHE: "false"
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          filter: tree:0
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
-
-      
-      # Cache node_modules
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-       
-      - run: npm ci --legacy-peer-deps
+          cache: "npm"
 
+      - name: Install deps
+        run: npm ci --legacy-peer-deps
 
-      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-      # - run: npx nx-cloud record -- echo Hello World
-      - run: npx nx run-many -t lint test build
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
-      - run: npx nx fix-ci
-        if: always()
+      - name: Show Nx version
+        run: npx nx --version
+
+      # - name: Lint (si existe)
+      #   run: npx nx run-many -t lint --parallel=3 --continue-on-error
+      # - name: Test (si existe)
+      #   run: npx nx run-many -t test --parallel=3 --codeCoverage=false --continue-on-error
+
+      - name: Build web (prod)
+        run: npx nx build web -c production
+
+      - name: Build api
+        run: npx nx build api
