@@ -1,42 +1,29 @@
+# .github/workflows/ci.yml
 name: CI
 
 on:
   push:
-    branches: [main, develop, feature/**]
+    branches: [ main ]
   pull_request:
-    branches: [main, develop]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      CI: "true"
-      NX_DAEMON: "false"
-      NX_SKIP_NX_CACHE: "false"
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-
+          cache: 'npm'
       - name: Install deps
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
-      - name: Show Nx version
+      - name: Nx version
         run: npx nx --version
 
-      # - name: Lint (si existe)
-      #   run: npx nx run-many -t lint --parallel=3 --continue-on-error
-      # - name: Test (si existe)
-      #   run: npx nx run-many -t test --parallel=3 --codeCoverage=false --continue-on-error
-
-      - name: Build web (prod)
-        run: npx nx build web -c production
+      # Ajusta los targets que quieras ejecutar
+      - name: Build web
+        run: npx nx build web --configuration=production
 
       - name: Build api
-        run: npx nx build api
+        run: npx nx build api --configuration=production
