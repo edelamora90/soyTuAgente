@@ -7,15 +7,23 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(cfg: ConfigService) {
+    const secret = cfg.get<string>('JWT_ACCESS_SECRET');
+    if (!secret) {
+      throw new Error('JWT_ACCESS_SECRET no está definido');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: cfg.get('JWT_ACCESS_SECRET'),
+      secretOrKey: secret,
       ignoreExpiration: false,
-      audience: 'admin',
-      issuer: 'soy-tu-agente',
+      audience: cfg.get<string>('JWT_AUDIENCE') ?? 'stagent',
+      issuer: cfg.get<string>('JWT_ISSUER') ?? 'stagent-api',
+      passReqToCallback: false,
     });
   }
-  async validate(payload: any) {
-    return payload; // {sub, username, roles, type:'access'}
+
+  // Ajusta el tipo del payload si lo tipaste
+  validate(payload: any) {
+    return payload;
   }
 }
