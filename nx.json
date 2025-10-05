@@ -13,7 +13,6 @@
       "!{projectRoot}/test-setup.[jt]s"
     ]
   },
-  "nxCloudId": "689ae7dc42f0437e19ac10e7",
   "targetDefaults": {
     "@angular/build:application": {
       "cache": true,
