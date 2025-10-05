@@ -1,1 +1,0 @@
-import{a as o}from"./chunk-MUZ76X6A.js";import{d as r}from"./chunk-6A4NGTZS.js";import{U as t,c as e}from"./chunk-A5EMK4AJ.js";var A=n=>e(null,null,function*(){let a=t(o),s=t(r),c=n.paramMap.get("slug");try{return yield a.get(c)}catch{return s.navigateByUrl("/404",{replaceUrl:!0}),Promise.reject()}});export{A as agentResolver};

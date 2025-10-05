@@ -5791,9 +5791,54 @@
       "type": "npm",
       "name": "npm:@prisma/client",
       "data": {
-        "version": "6.16.3",
+        "version": "5.22.0",
         "packageName": "@prisma/client",
-        "hash": "sha512-JfNfAtXG+/lIopsvoZlZiH2k5yNx87mcTS4t9/S5oufM1nKdXYxOvpDC1XoTCFBa5cQh7uXnbMPsmZrwZY80xw=="
+        "hash": "sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA=="
+      }
+    },
+    "npm:@prisma/debug": {
+      "type": "npm",
+      "name": "npm:@prisma/debug",
+      "data": {
+        "version": "5.22.0",
+        "packageName": "@prisma/debug",
+        "hash": "sha512-AUt44v3YJeggO2ZU5BkXI7M4hu9BF2zzH2iF2V5pyXT/lRTyWiElZ7It+bRH1EshoMRxHgpYg4VB6rCM+mG5jQ=="
+      }
+    },
+    "npm:@prisma/engines": {
+      "type": "npm",
+      "name": "npm:@prisma/engines",
+      "data": {
+        "version": "5.22.0",
+        "packageName": "@prisma/engines",
+        "hash": "sha512-UNjfslWhAt06kVL3CjkuYpHAWSO6L4kDCVPegV6itt7nD1kSJavd3vhgAEhjglLJJKEdJ7oIqDJ+yHk6qO8gPA=="
+      }
+    },
+    "npm:@prisma/engines-version": {
+      "type": "npm",
+      "name": "npm:@prisma/engines-version",
+      "data": {
+        "version": "5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2",
+        "packageName": "@prisma/engines-version",
+        "hash": "sha512-2PTmxFR2yHW/eB3uqWtcgRcgAbG1rwG9ZriSvQw+nnb7c4uCr3RAcGMb6/zfE88SKlC1Nj2ziUvc96Z379mHgQ=="
+      }
+    },
+    "npm:@prisma/fetch-engine": {
+      "type": "npm",
+      "name": "npm:@prisma/fetch-engine",
+      "data": {
+        "version": "5.22.0",
+        "packageName": "@prisma/fetch-engine",
+        "hash": "sha512-bkrD/Mc2fSvkQBV5EpoFcZ87AvOgDxbG99488a5cexp5Ccny+UM6MAe/UFkUC0wLYD9+9befNOqGiIJhhq+HbA=="
+      }
+    },
+    "npm:@prisma/get-platform": {
+      "type": "npm",
+      "name": "npm:@prisma/get-platform",
+      "data": {
+        "version": "5.22.0",
+        "packageName": "@prisma/get-platform",
+        "hash": "sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q=="
       }
     },
     "npm:@rolldown/binding-android-arm64": {
@@ -12967,6 +13012,15 @@
         "version": "30.2.0",
         "packageName": "pretty-format",
         "hash": "sha512-9uBdv/B4EefsuAL+pWqueZyZS2Ba+LxfFeQ9DN14HU4bN8bhaxKdkpjpB6fs9+pSjIBu+FXQHImEg8j/Lw0+vA=="
+      }
+    },
+    "npm:prisma": {
+      "type": "npm",
+      "name": "npm:prisma",
+      "data": {
+        "version": "5.22.0",
+        "packageName": "prisma",
+        "hash": "sha512-vtpjW3XuYCSnMsNVBjLMNkTj6OZbudcPPTPYHqX0CJfpcdWciI1dM8uHETwmDxxiqEwCIE6WvXucWUetJgfu/A=="
       }
     },
     "npm:process-nextick-args": {
@@ -23195,7 +23249,47 @@
     },
     {
       "source": "npm:@prisma/client",
-      "target": "npm:typescript",
+      "target": "npm:prisma",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/engines",
+      "target": "npm:@prisma/debug",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/engines",
+      "target": "npm:@prisma/engines-version",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/engines",
+      "target": "npm:@prisma/fetch-engine",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/engines",
+      "target": "npm:@prisma/get-platform",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/fetch-engine",
+      "target": "npm:@prisma/debug",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/fetch-engine",
+      "target": "npm:@prisma/engines-version",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/fetch-engine",
+      "target": "npm:@prisma/get-platform",
+      "type": "static"
+    },
+    {
+      "source": "npm:@prisma/get-platform",
+      "target": "npm:@prisma/debug",
       "type": "static"
     },
     {
@@ -32801,6 +32895,16 @@
     {
       "source": "npm:pretty-format",
       "target": "npm:react-is",
+      "type": "static"
+    },
+    {
+      "source": "npm:prisma",
+      "target": "npm:@prisma/engines",
+      "type": "static"
+    },
+    {
+      "source": "npm:prisma",
+      "target": "npm:fsevents",
       "type": "static"
     },
     {

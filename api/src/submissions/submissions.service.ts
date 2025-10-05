@@ -19,21 +19,23 @@ export class SubmissionsService {
     const exists = await this.prisma.agentSubmission.findUnique({
       where: { slug: dto.slug },
     });
-    if (exists) throw new BadRequestException('El slug ya existe en solicitudes.');
+    if (exists) {
+      throw new BadRequestException('El slug ya existe en solicitudes.');
+    }
 
     // Normaliza tipos a lo que espera el modelo AgentSubmission
     const experienciaTexto =
       dto.experiencia == null
         ? null
         : Array.isArray(dto.experiencia)
-        ? dto.experiencia.join('\n')      // String?
+        ? dto.experiencia.join('\n')
         : dto.experiencia;
 
     const aseguradorasTexto =
       dto.aseguradoras == null
         ? null
         : Array.isArray(dto.aseguradoras)
-        ? dto.aseguradoras.join(',')      // String?
+        ? dto.aseguradoras.join(',')
         : dto.aseguradoras;
 
     const data: Prisma.AgentSubmissionCreateInput = {
@@ -68,21 +70,23 @@ export class SubmissionsService {
     try {
       return await this.prisma.agentSubmission.create({ data });
     } catch (e: any) {
-      // Deja este log temporal para ver el código Prisma si algo falla
+      // Log útil de diagnóstico
       console.error('[create submission] prisma error:', e?.code, e?.message, e?.meta);
       if (e?.code === 'P2002') {
         throw new BadRequestException('El slug ya existe en solicitudes.');
       }
       if (e?.code === 'P2021') {
-        throw new InternalServerErrorException('Tabla AgentSubmission no existe. Ejecuta prisma db push.');
+        throw new InternalServerErrorException(
+          'Tabla AgentSubmission no existe. Ejecuta prisma db push.',
+        );
       }
       throw new InternalServerErrorException('No se pudo crear la solicitud.');
     }
   }
 
   // ====== Listar/Detalle (admin) ======
-  async findAll(status?: 'PENDING' | 'APPROVED' | 'REJECTED') {
-    const where = status ? { status: status as SubmissionStatus } : undefined;
+  async findAll(status?: SubmissionStatus) {
+    const where = status ? { status } : undefined;
     return this.prisma.agentSubmission.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -100,6 +104,7 @@ export class SubmissionsService {
     return this.prisma.$transaction(async (tx) => {
       const sub = await tx.agentSubmission.findUnique({ where: { id } });
       if (!sub) throw new NotFoundException('Solicitud no encontrada');
+
       if (sub.status !== SubmissionStatus.PENDING) {
         throw new BadRequestException('La solicitud no está en estado PENDING.');
       }
@@ -116,12 +121,18 @@ export class SubmissionsService {
       // Transformaciones para Agent (arrays)
       const experienciaArray =
         typeof sub.experiencia === 'string' && sub.experiencia.trim()
-          ? sub.experiencia.split('\n').map((s) => s.trim()).filter(Boolean)
+          ? sub.experiencia
+              .split('\n')
+              .map((s) => s.trim())
+              .filter(Boolean)
           : [];
 
       const aseguradorasArray =
         typeof sub.aseguradoras === 'string' && sub.aseguradoras.trim()
-          ? sub.aseguradoras.split(',').map((s) => s.trim()).filter(Boolean)
+          ? sub.aseguradoras
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean)
           : [];
 
       await tx.agent.create({
@@ -140,7 +151,7 @@ export class SubmissionsService {
           aseguradoras: aseguradorasArray,
           mediaThumbs: sub.fotosMini ?? [],
           mediaHero: sub.fotoHero!, // requerido en Agent
-          redes: undefined,
+          // redes: ... (si tu modelo lo tiene, adáptalo aquí)
         },
       });
 

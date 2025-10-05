@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -9,7 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      # Forzamos Nx sin daemon ni cloud para evitar grafos/estado viejos en el runner
       NX_DAEMON: 'false'
       NX_NO_CLOUD: 'true'
     steps:
@@ -22,41 +22,36 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
 
       - name: Install deps
         run: npm ci
-        working-directory: ${{ github.workspace }}
 
-      # --- Debug útil para este caso ---
+      # Opcional pero útil para depurar
       - name: Where am I?
         run: |
           pwd
           ls -la
-          echo "---- web/ ----"
-          ls -la web || true
-          echo "---- web/project.json ----"
-          sed -n '1,200p' web/project.json || true
           echo "---- nx.json ----"
           sed -n '1,200p' nx.json || true
-        working-directory: ${{ github.workspace }}
+          echo "---- web/project.json ----"
+          sed -n '1,200p' web/project.json || true
 
       - name: Nx version
         run: npx nx --version
-        working-directory: ${{ github.workspace }}
 
       - name: Nx reset (clean cache)
         run: npx nx reset
-        working-directory: ${{ github.workspace }}
 
       - name: List projects (debug)
         run: npx nx show projects
-        working-directory: ${{ github.workspace }}
 
       - name: Build web (prod)
-        run: npx nx build web --configuration=production --skip-nx-cache --verbose
-        working-directory: ${{ github.workspace }}
+        run: npx nx build web --configuration=production --no-cloud --skip-nx-cache --verbose
+
+      # 🔹 Necesario para que el build de api compile los types de Prisma
+      - name: Prisma generate
+        run: npx prisma generate --schema=prisma/schema.prisma
 
       - name: Build api (prod)
-        run: npx nx build api --configuration=production --skip-nx-cache --verbose
-        working-directory: ${{ github.workspace }}
+        run: npx nx build api --configuration=production --no-cloud --skip-nx-cache --verbose

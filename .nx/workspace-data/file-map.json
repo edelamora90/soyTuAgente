@@ -80,11 +80,10 @@
         },
         {
           "file": "api/src/agents/agents.service.ts",
-          "hash": "857131673676398432",
+          "hash": "15741011992946089819",
           "deps": [
             "npm:@nestjs/common",
-            "npm:@prisma/client",
-            "npm:express"
+            "npm:@prisma/client"
           ]
         },
         {
@@ -286,7 +285,7 @@
         },
         {
           "file": "api/src/submissions/submissions.service.ts",
-          "hash": "9406226856699872133",
+          "hash": "16904280138297993659",
           "deps": [
             "npm:@nestjs/common",
             "npm:@prisma/client"
@@ -468,7 +467,7 @@
         },
         {
           "file": ".github/workflows/ci.yml",
-          "hash": "17876933526868185286"
+          "hash": "18154046421719259495"
         },
         {
           "file": ".gitignore",
@@ -541,11 +540,11 @@
         },
         {
           "file": "package-lock.json",
-          "hash": "1769292335330658042"
+          "hash": "9386442170505165809"
         },
         {
           "file": "package.json",
-          "hash": "9815917091755736656",
+          "hash": "7930627101803660697",
           "deps": [
             "npm:@angular/build",
             "npm:@angular/cli",
@@ -585,6 +584,7 @@
             "npm:karma-jasmine-html-reporter",
             "npm:nodemon",
             "npm:nx",
+            "npm:prisma",
             "npm:ts-loader",
             "npm:ts-node",
             "npm:typescript",
@@ -1973,5 +1973,5 @@
       ]
     }
   },
-  "externalNodesHash": "18225008213450912194"
+  "externalNodesHash": "9832231005842301217"
 }
