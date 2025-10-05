@@ -9,21 +9,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NX_NON_INTERACTIVE: true
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
+
       - name: Install deps
         run: npm ci
 
       - name: Nx version
         run: npx nx --version
 
-      # Ajusta los targets que quieras ejecutar
       - name: Build web
-        run: npx nx build web --configuration=production
+        run: npx nx build web --configuration=production --no-cloud
 
       - name: Build api
-        run: npx nx build api --configuration=production
+        run: npx nx build api --configuration=production --no-cloud
