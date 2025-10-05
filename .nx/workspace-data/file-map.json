@@ -1,0 +1,1977 @@
+{
+  "version": "6.0",
+  "nxVersion": "21.6.3",
+  "pathMappings": {},
+  "nxJsonPlugins": [
+    {
+      "name": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    },
+    {
+      "name": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "name": "@nx/angular/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "testTargetName": "test",
+        "lintTargetName": "lint",
+        "extractI18nTargetName": "extract-i18n"
+      }
+    },
+    {
+      "name": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    }
+  ],
+  "fileMap": {
+    "nonProjectFiles": [],
+    "projectFileMap": {
+      "api": [
+        {
+          "file": "api/eslint.config.mjs",
+          "hash": "9036454466467975933"
+        },
+        {
+          "file": "api/jest.config.ts",
+          "hash": "13439602202980032437"
+        },
+        {
+          "file": "api/project.json",
+          "hash": "9887980878694260442"
+        },
+        {
+          "file": "api/scripts/seed-admin.ts",
+          "hash": "13160825802611928635",
+          "deps": [
+            "npm:dotenv",
+            "npm:@prisma/client",
+            "npm:bcryptjs"
+          ]
+        },
+        {
+          "file": "api/src/agents/agents.controller.ts",
+          "hash": "3320814522513246222",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/platform-express",
+            "npm:express",
+            "npm:multer"
+          ]
+        },
+        {
+          "file": "api/src/agents/agents.module.ts",
+          "hash": "5819532539173135831",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/agents/agents.service.ts",
+          "hash": "857131673676398432",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@prisma/client",
+            "npm:express"
+          ]
+        },
+        {
+          "file": "api/src/agents/dto/create-agent.dto.ts",
+          "hash": "6268414530073930634",
+          "deps": [
+            "npm:class-validator",
+            "npm:class-transformer"
+          ]
+        },
+        {
+          "file": "api/src/agents/dto/update-agent.dto.ts",
+          "hash": "2123177661781369574",
+          "deps": [
+            "npm:@nestjs/mapped-types"
+          ]
+        },
+        {
+          "file": "api/src/app/app.controller.spec.ts",
+          "hash": "7647647754668916054"
+        },
+        {
+          "file": "api/src/app/app.controller.ts",
+          "hash": "15276891910009544695",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/app/app.module.ts",
+          "hash": "11536388568352279315",
+          "deps": [
+            "npm:@nestjs/config",
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/app/app.service.spec.ts",
+          "hash": "13111976464657524091"
+        },
+        {
+          "file": "api/src/app/app.service.ts",
+          "hash": "9967902337593410053",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "api/src/auth/auth.controller.ts",
+          "hash": "230628638785232985",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:express"
+          ]
+        },
+        {
+          "file": "api/src/auth/auth.module.ts",
+          "hash": "6393850244231901484",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/passport",
+            "npm:@nestjs/jwt"
+          ]
+        },
+        {
+          "file": "api/src/auth/auth.service.ts",
+          "hash": "14549712966873212788",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/config",
+            "npm:@nestjs/jwt",
+            "npm:bcryptjs"
+          ]
+        },
+        {
+          "file": "api/src/auth/dto/change-password.dto.ts",
+          "hash": "1263695065498465566",
+          "deps": [
+            "npm:class-validator"
+          ]
+        },
+        {
+          "file": "api/src/auth/dto/login.dto.ts",
+          "hash": "12306929982258384842",
+          "deps": [
+            "npm:class-validator"
+          ]
+        },
+        {
+          "file": "api/src/auth/guards/jwt-auth.guard.ts",
+          "hash": "3603361702551262876",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/passport"
+          ]
+        },
+        {
+          "file": "api/src/auth/guards/jwt-refresh.guard.ts",
+          "hash": "11879341960670345744",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/passport"
+          ]
+        },
+        {
+          "file": "api/src/auth/roles.decorator.ts",
+          "hash": "11745620449776234641",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/auth/roles.guard.ts",
+          "hash": "10774119420588759824",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/core"
+          ]
+        },
+        {
+          "file": "api/src/auth/strategies/jwt-refresh.strategy.ts",
+          "hash": "4247051915540202934",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/config",
+            "npm:@nestjs/passport",
+            "npm:passport-jwt"
+          ]
+        },
+        {
+          "file": "api/src/auth/strategies/jwt.strategy.ts",
+          "hash": "17440291540086442107",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/config",
+            "npm:@nestjs/passport",
+            "npm:passport-jwt"
+          ]
+        },
+        {
+          "file": "api/src/common/guards/admin-key.guard.ts",
+          "hash": "14250386435637974166",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/config"
+          ]
+        },
+        {
+          "file": "api/src/main.ts",
+          "hash": "8565235269731194897",
+          "deps": [
+            "npm:reflect-metadata",
+            "npm:dotenv",
+            "npm:@nestjs/core",
+            "npm:@nestjs/common",
+            "npm:express"
+          ]
+        },
+        {
+          "file": "api/src/prisma/prisma.module.ts",
+          "hash": "8957293299801199507",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/prisma/prisma.service.ts",
+          "hash": "12957876162950176575",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@prisma/client"
+          ]
+        },
+        {
+          "file": "api/src/submissions/dto/create-submission.dto.ts",
+          "hash": "6552188997190512764",
+          "deps": [
+            "npm:class-validator",
+            "npm:class-transformer"
+          ]
+        },
+        {
+          "file": "api/src/submissions/submissions.controller.ts",
+          "hash": "11184400694228916033",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/submissions/submissions.module.ts",
+          "hash": "8395286249505150641",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/submissions/submissions.service.ts",
+          "hash": "9406226856699872133",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@prisma/client"
+          ]
+        },
+        {
+          "file": "api/src/uploads/uploads.controller.ts",
+          "hash": "10118275458961393611",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@nestjs/platform-express",
+            "npm:multer"
+          ]
+        },
+        {
+          "file": "api/src/uploads/uploads.module.ts",
+          "hash": "11739221000418778857",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/users/users.module.ts",
+          "hash": "17317415705182143427",
+          "deps": [
+            "npm:@nestjs/common"
+          ]
+        },
+        {
+          "file": "api/src/users/users.service.ts",
+          "hash": "7857204450811069298",
+          "deps": [
+            "npm:@nestjs/common",
+            "npm:@prisma/client"
+          ]
+        },
+        {
+          "file": "api/src/validators/url-or-asset.validator.ts",
+          "hash": "9767760580775385206",
+          "deps": [
+            "npm:class-validator"
+          ]
+        },
+        {
+          "file": "api/tsconfig.app.json",
+          "hash": "6909094410214539885"
+        },
+        {
+          "file": "api/tsconfig.json",
+          "hash": "4696992371828161618"
+        },
+        {
+          "file": "api/tsconfig.spec.json",
+          "hash": "5394994266788668641"
+        },
+        {
+          "file": "api/uploads/agents/1759512387920-screenshot111.png",
+          "hash": "12062239009011256928"
+        },
+        {
+          "file": "api/uploads/agents/1759514181397-screenshot111.png",
+          "hash": "12062239009011256928"
+        },
+        {
+          "file": "api/uploads/agents/1759514493166-screenshot111.png",
+          "hash": "12062239009011256928"
+        }
+      ],
+      "prisma-client-a6220ecf0dcf57c243c75a3825f4e76e1fddde8eeb0f47d767374b06ccb6db4a": [
+        {
+          "file": "generated/prisma/client.d.ts",
+          "hash": "6801102947810818358"
+        },
+        {
+          "file": "generated/prisma/client.js",
+          "hash": "10400671776495891936"
+        },
+        {
+          "file": "generated/prisma/default.d.ts",
+          "hash": "6801102947810818358"
+        },
+        {
+          "file": "generated/prisma/default.js",
+          "hash": "10400671776495891936"
+        },
+        {
+          "file": "generated/prisma/edge.d.ts",
+          "hash": "11303388507078878756"
+        },
+        {
+          "file": "generated/prisma/edge.js",
+          "hash": "13435806509474606595"
+        },
+        {
+          "file": "generated/prisma/index-browser.js",
+          "hash": "17824902586786579656"
+        },
+        {
+          "file": "generated/prisma/index.d.ts",
+          "hash": "426086636944548999"
+        },
+        {
+          "file": "generated/prisma/index.js",
+          "hash": "2262250329762487890"
+        },
+        {
+          "file": "generated/prisma/libquery_engine-darwin-arm64.dylib.node",
+          "hash": "14015772841794528969"
+        },
+        {
+          "file": "generated/prisma/package.json",
+          "hash": "9391938217542923404"
+        },
+        {
+          "file": "generated/prisma/runtime/edge-esm.js",
+          "hash": "9284434844863417630"
+        },
+        {
+          "file": "generated/prisma/runtime/edge.js",
+          "hash": "4888249083090984484"
+        },
+        {
+          "file": "generated/prisma/runtime/index-browser.d.ts",
+          "hash": "4654535025334731519"
+        },
+        {
+          "file": "generated/prisma/runtime/index-browser.js",
+          "hash": "17568067715518458519"
+        },
+        {
+          "file": "generated/prisma/runtime/library.d.ts",
+          "hash": "14116985065570983434"
+        },
+        {
+          "file": "generated/prisma/runtime/library.js",
+          "hash": "9635079632643924356"
+        },
+        {
+          "file": "generated/prisma/runtime/react-native.js",
+          "hash": "12062351958702827583"
+        },
+        {
+          "file": "generated/prisma/runtime/wasm-compiler-edge.js",
+          "hash": "6016558641150888104"
+        },
+        {
+          "file": "generated/prisma/runtime/wasm-engine-edge.js",
+          "hash": "10067534941256457742"
+        },
+        {
+          "file": "generated/prisma/schema.prisma",
+          "hash": "1758658788483894514"
+        },
+        {
+          "file": "generated/prisma/wasm.d.ts",
+          "hash": "6801102947810818358"
+        },
+        {
+          "file": "generated/prisma/wasm.js",
+          "hash": "17824902586786579656"
+        }
+      ],
+      "agente": [
+        {
+          "file": ".editorconfig",
+          "hash": "4165385352547808172"
+        },
+        {
+          "file": ".env",
+          "hash": "18298739517728911811"
+        },
+        {
+          "file": ".gitattributes",
+          "hash": "1789271961712368814"
+        },
+        {
+          "file": ".github/instructions/nx.instructions.md",
+          "hash": "306806088303241915"
+        },
+        {
+          "file": ".github/workflows/ci.yml",
+          "hash": "17876933526868185286"
+        },
+        {
+          "file": ".gitignore",
+          "hash": "17096714542757180370"
+        },
+        {
+          "file": ".prettierignore",
+          "hash": "5407418692668764289"
+        },
+        {
+          "file": ".prettierrc",
+          "hash": "16267754514737964994"
+        },
+        {
+          "file": ".vscode/extensions.json",
+          "hash": "5331566439708925252"
+        },
+        {
+          "file": ".vscode/launch.json",
+          "hash": "17038929134016848735"
+        },
+        {
+          "file": ".vscode/settings.json",
+          "hash": "95285166216195769"
+        },
+        {
+          "file": ".vscode/tasks.json",
+          "hash": "5336636969995539451"
+        },
+        {
+          "file": "Archive.zip",
+          "hash": "5891976219034942263"
+        },
+        {
+          "file": "README.md",
+          "hash": "7537640987391770449"
+        },
+        {
+          "file": "angular.json",
+          "hash": "15257395198766145323"
+        },
+        {
+          "file": "docker-compose.yml",
+          "hash": "5268437982698124901"
+        },
+        {
+          "file": "eslint.config.mjs",
+          "hash": "10770449096712831357",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "jest.config.ts",
+          "hash": "6870352021923392442",
+          "deps": [
+            "npm:@nx/jest"
+          ]
+        },
+        {
+          "file": "jest.preset.js",
+          "hash": "9430166341120122740",
+          "deps": [
+            "npm:@nx/jest"
+          ]
+        },
+        {
+          "file": "nx.json",
+          "hash": "5818129539238993785"
+        },
+        {
+          "file": "package-lock.json",
+          "hash": "1769292335330658042"
+        },
+        {
+          "file": "package.json",
+          "hash": "9815917091755736656",
+          "deps": [
+            "npm:@angular/build",
+            "npm:@angular/cli",
+            "npm:@angular/common",
+            "npm:@angular/compiler",
+            "npm:@angular/compiler-cli",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "npm:@nx/angular",
+            "npm:@nx/esbuild",
+            "npm:@nx/eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:@nx/jest",
+            "npm:@nx/js",
+            "npm:@nx/nest",
+            "npm:@nx/node",
+            "npm:@nx/playwright",
+            "npm:@nx/webpack",
+            "npm:@playwright/test",
+            "npm:@types/bcryptjs",
+            "npm:@types/express",
+            "npm:@types/jasmine",
+            "npm:@types/multer",
+            "npm:@types/node",
+            "npm:@types/papaparse",
+            "npm:@types/passport-jwt",
+            "npm:@typescript-eslint/eslint-plugin",
+            "npm:@typescript-eslint/parser",
+            "npm:esbuild",
+            "npm:jasmine-core",
+            "npm:karma",
+            "npm:karma-chrome-launcher",
+            "npm:karma-coverage",
+            "npm:karma-jasmine",
+            "npm:karma-jasmine-html-reporter",
+            "npm:nodemon",
+            "npm:nx",
+            "npm:ts-loader",
+            "npm:ts-node",
+            "npm:typescript",
+            "npm:typescript-eslint",
+            "npm:webpack",
+            "npm:webpack-cli",
+            "npm:@nestjs/common",
+            "npm:@nestjs/config",
+            "npm:@nestjs/core",
+            "npm:@nestjs/jwt",
+            "npm:@nestjs/mapped-types",
+            "npm:@nestjs/passport",
+            "npm:@nestjs/platform-express",
+            "npm:@prisma/client",
+            "npm:bcryptjs",
+            "npm:class-transformer",
+            "npm:class-validator",
+            "npm:multer",
+            "npm:papaparse",
+            "npm:passport",
+            "npm:passport-jwt",
+            "npm:reflect-metadata",
+            "npm:rxjs",
+            "npm:tslib",
+            "npm:zone.js"
+          ]
+        },
+        {
+          "file": "prisma/migrations/20250918152343_init/migration.sql",
+          "hash": "2990318009371654776"
+        },
+        {
+          "file": "prisma/migrations/migration_lock.toml",
+          "hash": "872437952673290735"
+        },
+        {
+          "file": "prisma/schema.prisma",
+          "hash": "16638965530021151265"
+        },
+        {
+          "file": "prisma/seed.ts",
+          "hash": "12412188845444837825",
+          "deps": [
+            "npm:@prisma/client"
+          ]
+        },
+        {
+          "file": "prisma/tsconfig.json",
+          "hash": "16535634511027572541"
+        },
+        {
+          "file": "prisma/tsconfig.seed.json",
+          "hash": "13829091466510975682"
+        },
+        {
+          "file": "proyecto.zip",
+          "hash": "17870862876114651882"
+        },
+        {
+          "file": "public/favicon.ico",
+          "hash": "3988961587069885523"
+        },
+        {
+          "file": "src/app/app.component.html",
+          "hash": "17816966185630879015"
+        },
+        {
+          "file": "src/app/app.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/app.component.ts",
+          "hash": "6127049022997348965",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "src/app/app.config.ts",
+          "hash": "16577217916543110499",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "src/app/app.routes.ts",
+          "hash": "11926427982552575683",
+          "deps": [
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "src/app/app.spec.ts",
+          "hash": "8822187906651162150",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/layout/footer/footer.component.html",
+          "hash": "4870840326542635113"
+        },
+        {
+          "file": "src/app/layout/footer/footer.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/layout/footer/footer.component.ts",
+          "hash": "1716782528592414823",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/layout/footer/footer.spec.ts",
+          "hash": "3892343415006028633",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/layout/footer/footer.ts",
+          "hash": "1716782528592414823",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/layout/header/header.component.html",
+          "hash": "8161683544048698371"
+        },
+        {
+          "file": "src/app/layout/header/header.component.scss",
+          "hash": "11826929151824070200"
+        },
+        {
+          "file": "src/app/layout/header/header.component.ts",
+          "hash": "4860382767589302182",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "src/app/layout/header/header.spec.ts",
+          "hash": "16032541923921628030",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/layout/layout.component.html",
+          "hash": "11480500281756295324"
+        },
+        {
+          "file": "src/app/layout/layout.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/layout/layout.component.ts",
+          "hash": "17134072378281610337",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "src/app/layout/layout.spec.ts",
+          "hash": "6245111748030022197",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/pages/home/home.component.html",
+          "hash": "8980251380215388944"
+        },
+        {
+          "file": "src/app/pages/home/home.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/pages/home/home.component.ts",
+          "hash": "13512043484782910640",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/pages/home/home.spec.ts",
+          "hash": "15916373779840153226",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/app/shared/login-modal/login-modal.component.html",
+          "hash": "14799785121855457372"
+        },
+        {
+          "file": "src/app/shared/login-modal/login-modal.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/shared/login-modal/login-modal.component.ts",
+          "hash": "3021640913117421814",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "src/app/shared/login-modal/login-modal.spec.ts",
+          "hash": "17200335276714459747",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "src/index.html",
+          "hash": "6733603291598047072"
+        },
+        {
+          "file": "src/main.ts",
+          "hash": "2403027399030173460",
+          "deps": [
+            "npm:@angular/platform-browser"
+          ]
+        },
+        {
+          "file": "src/styles.scss",
+          "hash": "5195668842064076916"
+        },
+        {
+          "file": "ts-node",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "tsconfig.app.json",
+          "hash": "8369321240499881643"
+        },
+        {
+          "file": "tsconfig.base.json",
+          "hash": "16936441711144470533"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "16977045106029113580"
+        },
+        {
+          "file": "tsconfig.spec.json",
+          "hash": "647795770471502525"
+        }
+      ],
+      "web": [
+        {
+          "file": "web/eslint.config.mjs",
+          "hash": "15052851186193004871",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "web/jest.config.ts",
+          "hash": "2509319025784947309"
+        },
+        {
+          "file": "web/project.json",
+          "hash": "18338699697353952985"
+        },
+        {
+          "file": "web/proxy.conf.json",
+          "hash": "8969033427001456045"
+        },
+        {
+          "file": "web/proxy.conf.json.old",
+          "hash": "12079079618874910492"
+        },
+        {
+          "file": "web/public/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "web/src/app/app.component.html",
+          "hash": "2118219659926350055"
+        },
+        {
+          "file": "web/src/app/app.config.ts",
+          "hash": "2145012363066379510",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/app.routes.ts",
+          "hash": "5574617351795306399",
+          "deps": [
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/app.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "web/src/app/app.spec.ts",
+          "hash": "13301273489476411121",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "web/src/app/app.ts",
+          "hash": "14654101263570794014",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/core/agents-admin.ts",
+          "hash": "2244631133814171360",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "web/src/app/core/agents.service.ts",
+          "hash": "15599581624179585668",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/agents/agents.api-data.ts",
+          "hash": "12706410619718120457",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/agents/agents.api.ts",
+          "hash": "14174414540336658790",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/agents/agents.data.ts",
+          "hash": "14110580640856723651",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "web/src/app/core/agents/agents.mock.ts",
+          "hash": "4763017694693459014",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "web/src/app/core/auth/admin.guard.ts",
+          "hash": "8230987851338799593",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/core/auth/auth.interceptor.ts",
+          "hash": "5374777782938512968",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/auth/auth.service.ts",
+          "hash": "4928161257960992735",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/brands/aseguradoras-logos.ts",
+          "hash": "5343399718143672460"
+        },
+        {
+          "file": "web/src/app/core/http/auth.interceptor.ts",
+          "hash": "12198255131988138086",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/location/locations.service.ts",
+          "hash": "14514022230126867365",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/submissions/submissions.api.ts",
+          "hash": "640078069237064914",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/core/submissions/submissions.model.ts",
+          "hash": "6797412910684705166"
+        },
+        {
+          "file": "web/src/app/core/submissions/submissions.types.ts",
+          "hash": "11046645325295050903"
+        },
+        {
+          "file": "web/src/app/core/uploads/uploads.api.ts",
+          "hash": "1241747721479906217",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/layout/footer/footer.component.html",
+          "hash": "10159246840438794077"
+        },
+        {
+          "file": "web/src/app/layout/footer/footer.component.scss",
+          "hash": "16712849030596343091"
+        },
+        {
+          "file": "web/src/app/layout/footer/footer.component.ts",
+          "hash": "8147397663839100656",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/layout/header/header.component.html",
+          "hash": "14717835605513446263"
+        },
+        {
+          "file": "web/src/app/layout/header/header.component.scss",
+          "hash": "10633895762649324987"
+        },
+        {
+          "file": "web/src/app/layout/header/header.component.ts",
+          "hash": "2457042671560987063",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/nx-welcome.ts",
+          "hash": "2300433542910067699",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/agents-import/agents-import.page.html",
+          "hash": "11328913915172902194"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents-import/agents-import.page.scss",
+          "hash": "5423136375511581568"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents-import/agents-import.page.ts",
+          "hash": "8776317772342987268",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router",
+            "npm:papaparse"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/admin-agents.page.html",
+          "hash": "5323871223336601495"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/admin-agents.page.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/admin-agents.page.ts",
+          "hash": "4548622115928299563",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agent-form.page.html",
+          "hash": "12973308444199467069"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agent-form.page.scss",
+          "hash": "13868740823957089448"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agent-form.page.ts",
+          "hash": "3081289605697463344",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agent-new.page.html",
+          "hash": "7028886290853688193"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agent-new.page.scss",
+          "hash": "17850014730823376440"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agent-new.page.ts",
+          "hash": "14015314105833397782",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agentes-list.component.html",
+          "hash": "4509158511146360233"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agentes-list.component.scss",
+          "hash": "9932506296754550574"
+        },
+        {
+          "file": "web/src/app/pages/admin/agents/agentes-list.component.ts",
+          "hash": "10028297017608887367",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/dashboard/admin-dashboard.component.ts",
+          "hash": "12736810985582601416",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/login/login.component.ts",
+          "hash": "9031710694260102538",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/solicitudes/solicitudes-list.component.html",
+          "hash": "14878244815544031193"
+        },
+        {
+          "file": "web/src/app/pages/admin/solicitudes/solicitudes-list.component.scss",
+          "hash": "10913545090063008969"
+        },
+        {
+          "file": "web/src/app/pages/admin/solicitudes/solicitudes-list.component.ts",
+          "hash": "13108109080625885942",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/submissions/submission-detail.page.ts",
+          "hash": "10392328449305375208",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/admin/submissions/submission.map.ts",
+          "hash": "17251231418426326520"
+        },
+        {
+          "file": "web/src/app/pages/agentes/list/list.component.html",
+          "hash": "6462761323231719306"
+        },
+        {
+          "file": "web/src/app/pages/agentes/list/list.component.scss",
+          "hash": "2918519555532386964"
+        },
+        {
+          "file": "web/src/app/pages/agentes/list/list.component.ts",
+          "hash": "3839356416040079622",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/agentes/profile/agent-profile.vm.ts",
+          "hash": "8161195427230279454"
+        },
+        {
+          "file": "web/src/app/pages/agentes/profile/agent.resolver.ts",
+          "hash": "6030364769097481399",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/agentes/profile/agente-profile.component.html",
+          "hash": "3105817030591053541"
+        },
+        {
+          "file": "web/src/app/pages/agentes/profile/agente-profile.component.scss",
+          "hash": "10042457801037146359"
+        },
+        {
+          "file": "web/src/app/pages/agentes/profile/agente-profile.component.ts",
+          "hash": "13454711926317897790",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/agentes/profile/agente-profile.page.ts",
+          "hash": "9071849265886456773",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/cuenta/cuenta.component.ts",
+          "hash": "12294919594468255242",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/home/home.component.html",
+          "hash": "12417428889228428694"
+        },
+        {
+          "file": "web/src/app/pages/home/home.component.scss",
+          "hash": "13032015005825344565"
+        },
+        {
+          "file": "web/src/app/pages/home/home.component.ts",
+          "hash": "12820648581143778236",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/nosotros/nosotros.page.html",
+          "hash": "9866123793856735965"
+        },
+        {
+          "file": "web/src/app/pages/nosotros/nosotros.page.scss",
+          "hash": "8893557672346373593"
+        },
+        {
+          "file": "web/src/app/pages/nosotros/nosotros.page.ts",
+          "hash": "8282513794702808124",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/not-found/not-found.component.ts",
+          "hash": "6250833322590806874",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "web/src/app/pages/solicitar-agente/solicitar-agente.component.html",
+          "hash": "12924763228360326145"
+        },
+        {
+          "file": "web/src/app/pages/solicitar-agente/solicitar-agente.component.scss",
+          "hash": "17960307179583473304"
+        },
+        {
+          "file": "web/src/app/pages/solicitar-agente/solicitar-agente.component.ts",
+          "hash": "9169686918369934612",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.html",
+          "hash": "9895141811915407141"
+        },
+        {
+          "file": "web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.scss",
+          "hash": "12067583530493587322"
+        },
+        {
+          "file": "web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.ts",
+          "hash": "1525185693173533037",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "web/src/app/shared/image-dropzone/image-dropzone.component.html",
+          "hash": "2163674357885912766"
+        },
+        {
+          "file": "web/src/app/shared/image-dropzone/image-dropzone.component.scss",
+          "hash": "1717151439257323803"
+        },
+        {
+          "file": "web/src/app/shared/image-dropzone/image-dropzone.component.ts",
+          "hash": "9467227538441601098",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "web/src/app/shared/multi-check/multi-check.component.ts",
+          "hash": "13464723048399945104",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "web/src/app/shared/profile/agent-profile.mapper.ts",
+          "hash": "6509213427563384427"
+        },
+        {
+          "file": "web/src/app/shared/ui/scroll-top/scroll-top.component.html",
+          "hash": "15989413447593044165"
+        },
+        {
+          "file": "web/src/app/shared/ui/scroll-top/scroll-top.component.scss",
+          "hash": "15302015827770067613"
+        },
+        {
+          "file": "web/src/app/shared/ui/scroll-top/scroll-top.component.ts",
+          "hash": "13527934213741357117",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "web/src/assets/PaginaInicio.jpeg",
+          "hash": "2945318700909009489"
+        },
+        {
+          "file": "web/src/assets/agents/alondra.jpg",
+          "hash": "16244195794550331687"
+        },
+        {
+          "file": "web/src/assets/agents/jaime.jpg",
+          "hash": "9402865085467108855"
+        },
+        {
+          "file": "web/src/assets/agents/juan.jpg",
+          "hash": "3793096106590996265"
+        },
+        {
+          "file": "web/src/assets/agents/maria.jpg",
+          "hash": "6109681336327234596"
+        },
+        {
+          "file": "web/src/assets/agents/martin.jpg",
+          "hash": "182621866668531853"
+        },
+        {
+          "file": "web/src/assets/agents/profile-hero.jpg",
+          "hash": "698168069618501457"
+        },
+        {
+          "file": "web/src/assets/alquiler-de-coches-y-concepto-de-seguro-el-vendedor-joven-que-da-el-coche-es-clave-para-el-cliente-despues-de-firmar-un-contrato-de-acuerdo-con-la-aprobacion-para-el-alquiler-o-la-compra.jpg",
+          "hash": "8704715046939842008"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Afirme.png",
+          "hash": "12645910216002934911"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Allianz.png",
+          "hash": "3433009563596802663"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Axa.png",
+          "hash": "16939698884955385394"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Bbva.png",
+          "hash": "12889728946028572610"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Citibanamex.png",
+          "hash": "9695055043828530470"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Gnp.png",
+          "hash": "2209284888414833971"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Hdi.png",
+          "hash": "8733451117130542313"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Inbursa.png",
+          "hash": "11141597029044353550"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Mapfre.png",
+          "hash": "15983355410095039472"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Metlife.png",
+          "hash": "8472963354704401893"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Primeroseguros.png",
+          "hash": "14793113960646691051"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Qualitas.png",
+          "hash": "16916311859639503368"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Sanatander.png",
+          "hash": "12561887455481933762"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Segurosatlas.png",
+          "hash": "5585317350407690704"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Segurosmonterrey.png",
+          "hash": "8632545345809864780"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Sura.png",
+          "hash": "4441195473018419125"
+        },
+        {
+          "file": "web/src/assets/aseguradoras/Zurich.png",
+          "hash": "5773802972896736074"
+        },
+        {
+          "file": "web/src/assets/avatar.png",
+          "hash": "6158865545635287500"
+        },
+        {
+          "file": "web/src/assets/avatar.svg",
+          "hash": "7027324300326534922"
+        },
+        {
+          "file": "web/src/assets/boton-de-play.png",
+          "hash": "15827817653761354487"
+        },
+        {
+          "file": "web/src/assets/elegante-mujer-inteligente-en-el-gabinete.jpg",
+          "hash": "4300200071593891295"
+        },
+        {
+          "file": "web/src/assets/events/ev-01.jpg",
+          "hash": "16509079829728678981"
+        },
+        {
+          "file": "web/src/assets/events/invite-person.png",
+          "hash": "13988783251918398268"
+        },
+        {
+          "file": "web/src/assets/familia-con-nina-bbay-eligiendo-un-coche-en-una-berlina.jpg",
+          "hash": "13026829333529610842"
+        },
+        {
+          "file": "web/src/assets/flecha (2).png",
+          "hash": "8996845787183478676"
+        },
+        {
+          "file": "web/src/assets/flecha.svg",
+          "hash": "15970783557172923122"
+        },
+        {
+          "file": "web/src/assets/fonts/DMSerifText-Italic.ttf",
+          "hash": "9143913707397861917"
+        },
+        {
+          "file": "web/src/assets/fonts/DMSerifText-Regular.ttf",
+          "hash": "16814592687311371626"
+        },
+        {
+          "file": "web/src/assets/fonts/Figtree-Italic-VariableFont_wght.ttf",
+          "hash": "17790010735899056452"
+        },
+        {
+          "file": "web/src/assets/fonts/Figtree-VariableFont_wght.ttf",
+          "hash": "3668388943954498150"
+        },
+        {
+          "file": "web/src/assets/fonts/whatsapp emoticons.ttf",
+          "hash": "6318303521836505082"
+        },
+        {
+          "file": "web/src/assets/gerente-sentado-en-su-lugar-de-trabajo.jpg",
+          "hash": "9420449462830696357"
+        },
+        {
+          "file": "web/src/assets/hombre-que-sostiene-un-escudo-de-proteccion-con-una-marca-de-verificacion.jpg",
+          "hash": "17860048423141682149"
+        },
+        {
+          "file": "web/src/assets/home/cat-hogar.jpg",
+          "hash": "4692428539965828922"
+        },
+        {
+          "file": "web/src/assets/home/cat-salud.jpg",
+          "hash": "7787214789389692427"
+        },
+        {
+          "file": "web/src/assets/home/cat-vehiculos.jpg",
+          "hash": "17692032164911785785"
+        },
+        {
+          "file": "web/src/assets/home/cta-agente.jpg",
+          "hash": "3420847399128475133"
+        },
+        {
+          "file": "web/src/assets/home/hero-2-hombre.webp",
+          "hash": "13258928181995958543"
+        },
+        {
+          "file": "web/src/assets/home/hero-3-familia.webp",
+          "hash": "15824322387907195476"
+        },
+        {
+          "file": "web/src/assets/home/hero.jpg",
+          "hash": "10180229149014191083"
+        },
+        {
+          "file": "web/src/assets/home/testimonio-video.jpg",
+          "hash": "5401442881622377533"
+        },
+        {
+          "file": "web/src/assets/icono.svg",
+          "hash": "7908169599994903096"
+        },
+        {
+          "file": "web/src/assets/icons/calendario.svg",
+          "hash": "9896521211792231717"
+        },
+        {
+          "file": "web/src/assets/icons/contrasena-de-ojo.png",
+          "hash": "2670404465153319217"
+        },
+        {
+          "file": "web/src/assets/icons/corazon.svg",
+          "hash": "15219597376609002827"
+        },
+        {
+          "file": "web/src/assets/icons/enviar.svg",
+          "hash": "9756934805402545110"
+        },
+        {
+          "file": "web/src/assets/icons/facebook.svg",
+          "hash": "14626392007302490296"
+        },
+        {
+          "file": "web/src/assets/icons/instagram.svg",
+          "hash": "673653498947957098"
+        },
+        {
+          "file": "web/src/assets/icons/linkedin.svg",
+          "hash": "15577864484987321965"
+        },
+        {
+          "file": "web/src/assets/icons/obtener-dinero.svg",
+          "hash": "10656516686590580029"
+        },
+        {
+          "file": "web/src/assets/icons/phone.png",
+          "hash": "4639181761976946570"
+        },
+        {
+          "file": "web/src/assets/icons/rep-auto.svg",
+          "hash": "7619217955344654257"
+        },
+        {
+          "file": "web/src/assets/icons/seguro-de-hogar.svg",
+          "hash": "212997911897727869"
+        },
+        {
+          "file": "web/src/assets/icons/seguro-hogar.svg",
+          "hash": "10620515630105083679"
+        },
+        {
+          "file": "web/src/assets/icons/tiktok.svg",
+          "hash": "494205175468352274"
+        },
+        {
+          "file": "web/src/assets/icons/whatsapp.svg",
+          "hash": "3570533560989584515"
+        },
+        {
+          "file": "web/src/assets/locations/generar_municipios.mjs",
+          "hash": "6222463408649642497"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/aguascalientes.json",
+          "hash": "6742164531507285870"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/baja-california-sur.json",
+          "hash": "851220423980884889"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/baja-california.json",
+          "hash": "5984386092154106054"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/campeche.json",
+          "hash": "15464407043908563318"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/chiapas.json",
+          "hash": "2213751383457142873"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/chihuahua.json",
+          "hash": "283098279068973173"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/ciudad-de-mexico.json",
+          "hash": "2073598073033793455"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/coahuila.json",
+          "hash": "14785409775220156829"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/colima.json",
+          "hash": "17650695351663637842"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/durango.json",
+          "hash": "5429638604425090091"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/estado-de-mexico.json",
+          "hash": "12659828769672285868"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/guanajuato.json",
+          "hash": "17052945188876963971"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/guerrero.json",
+          "hash": "12470744674465491135"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/hidalgo.json",
+          "hash": "10117769714265643379"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/jalisco.json",
+          "hash": "6830844831177768105"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/michoacan.json",
+          "hash": "13334971291513373712"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/morelos.json",
+          "hash": "14715690074170143111"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/nayarit.json",
+          "hash": "12126490277756043292"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/nuevo-leon.json",
+          "hash": "3036249166083791082"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/oaxaca.json",
+          "hash": "17292118801659905023"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/puebla.json",
+          "hash": "12868540102651940277"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/queretaro.json",
+          "hash": "3733661273219915588"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/quintana-roo.json",
+          "hash": "5609127629602379573"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/san-luis-potosi.json",
+          "hash": "8679152367670759034"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/sinaloa.json",
+          "hash": "16853323602303392862"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/sonora.json",
+          "hash": "1042313358798657814"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/tabasco.json",
+          "hash": "16708163276038490623"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/tamaulipas.json",
+          "hash": "14105248201766483225"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/tlaxcala.json",
+          "hash": "16164084870993479810"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/veracruz.json",
+          "hash": "12700290554341616659"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/yucatan.json",
+          "hash": "14928599438754705961"
+        },
+        {
+          "file": "web/src/assets/locations/municipios/zacatecas.json",
+          "hash": "5345360281132295822"
+        },
+        {
+          "file": "web/src/assets/logo-light.svg",
+          "hash": "2556036660117868259"
+        },
+        {
+          "file": "web/src/assets/logo.svg",
+          "hash": "513443551897976621"
+        },
+        {
+          "file": "web/src/assets/mujer-joven-alegre-carpeta-boligrafo.png",
+          "hash": "11421525874434070546"
+        },
+        {
+          "file": "web/src/assets/news/agentes-frontera.jpg",
+          "hash": "517643588222358267"
+        },
+        {
+          "file": "web/src/assets/news/norm-aplazada.jpg",
+          "hash": "14465082384782318120"
+        },
+        {
+          "file": "web/src/assets/news/qualitas-bbva.jpg",
+          "hash": "11584384094451610822"
+        },
+        {
+          "file": "web/src/assets/nosotros/3 agentes.jpg",
+          "hash": "8540093066791715805"
+        },
+        {
+          "file": "web/src/assets/nosotros/agentesaprendiendo.png",
+          "hash": "9574987059945125297"
+        },
+        {
+          "file": "web/src/assets/nosotros/avatars.png",
+          "hash": "13315902064245370912"
+        },
+        {
+          "file": "web/src/assets/nosotros/card-actualizaciones.jpg",
+          "hash": "6718649807146865602"
+        },
+        {
+          "file": "web/src/assets/nosotros/card-formacion.jpg",
+          "hash": "15248579005145741425"
+        },
+        {
+          "file": "web/src/assets/nosotros/cheque.svg",
+          "hash": "17651513763435734681"
+        },
+        {
+          "file": "web/src/assets/nosotros/flecha-hacia-abajo-para-navegar.svg",
+          "hash": "13211605180786786353"
+        },
+        {
+          "file": "web/src/assets/nosotros/hero.jpg",
+          "hash": "17954251652672291902"
+        },
+        {
+          "file": "web/src/assets/people/marisela.jpg",
+          "hash": "8880935947655673190"
+        },
+        {
+          "file": "web/src/assets/people/paulo.jpg",
+          "hash": "3793096106590996265"
+        },
+        {
+          "file": "web/src/assets/people/ricardo.jpg",
+          "hash": "13818761486034603162"
+        },
+        {
+          "file": "web/src/assets/people/victor.jpg",
+          "hash": "9970887601754879535"
+        },
+        {
+          "file": "web/src/assets/profile/mini1.jpg",
+          "hash": "12685879880020503362"
+        },
+        {
+          "file": "web/src/assets/profile/mini2.jpg",
+          "hash": "9149813847125191032"
+        },
+        {
+          "file": "web/src/assets/profile/mini3.jpg",
+          "hash": "10519929039824076606"
+        },
+        {
+          "file": "web/src/assets/retrato-de-joven-empresario-barbudo-con-gafas-y-ropa-casual-de-pie-en-la-brillante-oficina-de-coworking.jpg",
+          "hash": "4227522251435374173"
+        },
+        {
+          "file": "web/src/assets/una-pareja-feliz-sentada-con-un-representante-de-ventas-de-automoviles-discutiendo-la-compra-de-un-vehiculo-en-una-sala-de-exposicion-de-un-concesionario-brillante.jpg",
+          "hash": "4060784994390621071"
+        },
+        {
+          "file": "web/src/enviroments/enviroment.prod.ts",
+          "hash": "14805488603049657558"
+        },
+        {
+          "file": "web/src/enviroments/enviroment.ts",
+          "hash": "15141429101167802573"
+        },
+        {
+          "file": "web/src/index.html",
+          "hash": "12555397178383808647"
+        },
+        {
+          "file": "web/src/main.ts",
+          "hash": "616590021060717554",
+          "deps": [
+            "npm:@angular/platform-browser",
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "web/src/styles.scss",
+          "hash": "4005267732821187308"
+        },
+        {
+          "file": "web/src/test-setup.ts",
+          "hash": "1917999429567095215"
+        },
+        {
+          "file": "web/tsconfig.app.json",
+          "hash": "6579527183474108355"
+        },
+        {
+          "file": "web/tsconfig.json",
+          "hash": "6343381516642186316"
+        },
+        {
+          "file": "web/tsconfig.spec.json",
+          "hash": "1029128818174064697"
+        }
+      ],
+      "api-e2e": [
+        {
+          "file": "api-e2e/eslint.config.mjs",
+          "hash": "9036454466467975933"
+        },
+        {
+          "file": "api-e2e/jest.config.ts",
+          "hash": "10367738628900882749"
+        },
+        {
+          "file": "api-e2e/project.json",
+          "hash": "16343812178902023029"
+        },
+        {
+          "file": "api-e2e/src/api/api.spec.ts",
+          "hash": "110394728024017389",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "api-e2e/src/support/global-setup.ts",
+          "hash": "10817858795115919263",
+          "deps": [
+            "npm:@nx/node"
+          ]
+        },
+        {
+          "file": "api-e2e/src/support/global-teardown.ts",
+          "hash": "14210317125869451873",
+          "deps": [
+            "npm:@nx/node"
+          ]
+        },
+        {
+          "file": "api-e2e/src/support/test-setup.ts",
+          "hash": "15521797170623961900",
+          "deps": [
+            "npm:axios"
+          ]
+        },
+        {
+          "file": "api-e2e/tsconfig.json",
+          "hash": "2346920493880922870"
+        },
+        {
+          "file": "api-e2e/tsconfig.spec.json",
+          "hash": "14226830188665428950"
+        }
+      ]
+    }
+  },
+  "externalNodesHash": "18225008213450912194"
+}

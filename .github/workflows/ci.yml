@@ -8,28 +8,55 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Forzamos Nx sin daemon ni cloud para evitar grafos/estado viejos en el runner
+      NX_DAEMON: 'false'
+      NX_NO_CLOUD: 'true'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: 'npm'
 
       - name: Install deps
         run: npm ci
+        working-directory: ${{ github.workspace }}
+
+      # --- Debug útil para este caso ---
+      - name: Where am I?
+        run: |
+          pwd
+          ls -la
+          echo "---- web/ ----"
+          ls -la web || true
+          echo "---- web/project.json ----"
+          sed -n '1,200p' web/project.json || true
+          echo "---- nx.json ----"
+          sed -n '1,200p' nx.json || true
+        working-directory: ${{ github.workspace }}
 
       - name: Nx version
         run: npx nx --version
+        working-directory: ${{ github.workspace }}
 
       - name: Nx reset (clean cache)
         run: npx nx reset
+        working-directory: ${{ github.workspace }}
 
-      - name: Nx projects (debug)
+      - name: List projects (debug)
         run: npx nx show projects
+        working-directory: ${{ github.workspace }}
 
       - name: Build web (prod)
-        run: npx nx build web --configuration=production --no-cloud --verbose
+        run: npx nx build web --configuration=production --skip-nx-cache --verbose
+        working-directory: ${{ github.workspace }}
 
       - name: Build api (prod)
-        run: npx nx build api --configuration=production --no-cloud --verbose
+        run: npx nx build api --configuration=production --skip-nx-cache --verbose
+        working-directory: ${{ github.workspace }}

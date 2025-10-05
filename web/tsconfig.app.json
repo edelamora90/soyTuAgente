@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../dist/out-tsc",
+    "noImplicitAny": false,
     "types": []
   },
   "include": ["src/**/*.ts", "src/app/pages/agentes/profile/agent-profile.presenter.component.ts"],
