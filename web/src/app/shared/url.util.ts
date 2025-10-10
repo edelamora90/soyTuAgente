@@ -1,5 +1,5 @@
 // web/src/app/shared/url.util.ts
-import { environment } from '../../enviroments/enviroment';
+import { environment } from '../../environments/environment';
 
 type MutableAgentFields = {
   avatar?: string | null;

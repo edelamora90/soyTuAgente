@@ -6,7 +6,8 @@ import { ApplicationConfig } from '@angular/core';
 import { AppComponent } from './app/app';     
 import { appConfig } from './app/app.config';
 
-import { environment } from './enviroments/enviroment';
+import { environment } from './environments/environment';
+
 
 import { AGENTS_DATA } from './app/core/agents/agents.data';
 import { AgentsApi } from './app/core/agents/agents.api';

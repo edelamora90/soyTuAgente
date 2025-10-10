@@ -2,7 +2,7 @@
 import type { Agent } from '../../core/agents/agents.data';
 import type { AgentSubmission } from '../../core/submissions/submissions.types';
 import { AgentProfileVM, AVATAR_FALLBACK } from '../../pages/agentes/profile/agent-profile.vm';
-import { environment } from '../../../enviroments/enviroment';
+import { environment } from '../../../environments/environment';
 
 // ==== Base pública para /public/... (dev: http://localhost:3000, prod: origen del API) ====
 const PUBLIC_BASE =

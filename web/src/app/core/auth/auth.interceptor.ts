@@ -9,7 +9,7 @@ import {
 } from '@angular/common/http';
 import { Observable, from, switchMap, throwError, catchError } from 'rxjs';
 import { AuthService } from './auth.service';
-import { environment } from '../../../enviroments/enviroment';
+import { environment } from '../../../environments/environment';
 
 function shouldAttach(url: string): boolean {
   // Adjunta a rutas relativas /api/... o a environment.apiUrl

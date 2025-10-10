@@ -2,7 +2,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, firstValueFrom } from 'rxjs';
-import { environment } from '../../../enviroments/enviroment';
+import { environment } from '../../../environments/environment';
 
 const API = `${environment.apiUrl}/auth`;
 
