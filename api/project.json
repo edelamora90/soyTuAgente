@@ -1,51 +1,33 @@
 {
   "name": "api",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "api/src",
   "projectType": "application",
+  "sourceRoot": "api/src",
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "platform": "node",
-        "bundle": true,
-        "tsConfig": "api/tsconfig.app.json",
-        "main": "api/src/main.ts",
+        "target": "node",
         "outputPath": "dist/api",
-        "external": ["@prisma/client", "prisma"],
-        "assets": [
-          "api/package.json",
-          { "glob": "**/*", "input": "api/public", "output": "public" },
-          { "glob": "**/*", "input": "api/src/assets", "output": "assets" },
-          { "glob": "**/*", "input": "api/src/views", "output": "views" },
-          { "glob": "**/*", "input": "prisma", "output": "prisma" }
-        ],
-        "generatePackageJson": true
+        "main": "api/src/main.ts",
+        "tsConfig": "api/tsconfig.app.json",
+        "compiler": "tsc",
+        "webpackConfig": "api/webpack.config.js",
+        "assets": []
       },
       "configurations": {
-        "development": { "minify": false, "sourcemap": true },
-        "production": { "minify": true, "sourcemap": false }
-      }
+        "development": { "mode": "development" },
+        "production": { "mode": "production" }
+      },
+      "defaultConfiguration": "development"
     },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api:build",
-        "watch": true
-      },
-      "configurations": {
-        "development": { "buildTarget": "api:build:development" },
-        "production": { "buildTarget": "api:build:production" }
+        "watch": true,
+        "inspect": true
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": { "lintFilePatterns": ["api/**/*.ts"] }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "options": { "jestConfig": "api/jest.config.ts", "passWithNoTests": true }
     }
   },
   "tags": []

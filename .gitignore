@@ -1,46 +1,30 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# caches/builds
+.nx/
+tmp/
+generated/
+dist/
+api/dist/
+web/dist/
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+# uploads de usuarios
+api/uploads/
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+# secretos
+.env
+*.key
+*private_key*.key
+_.consultoriacareve.com_private_key.key
 
-# IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# Visual Studio Code
+# node/IDE
+node_modules/
+.angular/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-
-# System files
+# macOS / logs
 .DS_Store
-Thumbs.db
-
-# logs
 *.log
 error.log

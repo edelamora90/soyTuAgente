@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsUrlOrAssetPath } from '../../validators/url-or-asset.validator';
+import { Transform } from 'class-transformer';
 
 export class CreateAgentDto {
   @IsString()
@@ -30,6 +31,11 @@ export class CreateAgentDto {
   @IsUrlOrAssetPath({ message: 'avatar must be an http(s) URL or assets/* path' })
   avatar?: string | null;
 
+  @Transform(({ value }) =>
+    Array.isArray(value)
+      ? value.filter(Boolean).join(', ')
+      : (value ?? '').toString()
+  )
   @IsString()
   ubicacion!: string;
 

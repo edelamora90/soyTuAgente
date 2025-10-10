@@ -1,3 +1,4 @@
+//web/src/app/core/auth/auth.interceptor.ts
 import { Injectable, inject } from '@angular/core';
 import {
   HttpErrorResponse,
@@ -48,9 +49,9 @@ export class AuthInterceptor implements HttpInterceptor {
                   return next.handle(retried);
                 }),
                 catchError(e2 => {
-                  this.auth.logout();
+                  this.auth.forceLogout();
                   return throwError(() => e2);
-                })
+               })
               );
             }
             return throwError(() => err);

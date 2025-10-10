@@ -1,6 +1,7 @@
 // web/src/environments/environment.prod.ts (prod)
 export const environment = {
   production: true,
+  useMock: false,
   apiUrl: '/api',
-  useMock: false,           // ← cuando tengas Nest listo
+  publicBaseUrl: '',                               // ⬅️ en prod, relativo al mismo host
 };

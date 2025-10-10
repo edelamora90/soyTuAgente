@@ -2,5 +2,6 @@
 export const environment = {
   production: false,
   useMock: false,
-  apiUrl: 'http://localhost:3000/api',   // ABSOLUTA
+  apiUrl: 'http://localhost:3000/api',
+  publicBaseUrl: 'http://localhost:3000',         // ⬅️ NUEVO
 };

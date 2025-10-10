@@ -1,4 +1,3 @@
-// api/src/auth/auth.controller.ts
 import {
   BadRequestException,
   Body,
@@ -27,7 +26,6 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   refresh(@Req() req: Request & { user?: any }) {
-    // payload ya validado por la strategy 'jwt-refresh'
     return this.auth.refresh(req.user!);
   }
 

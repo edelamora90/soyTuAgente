@@ -4,17 +4,70 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Express } from 'express';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
+
+// ===== Helpers para URLs públicas (solo backend) =====
+const PUBLIC = (process.env.PUBLIC_BASE_URL || 'http://localhost:3000').replace(
+  /\/+$/,
+  '',
+);
+
+function toPublicUrl(p?: string | null): string {
+  if (!p) return '';
+  // Absolutas o assets del front → se regresan igual
+  if (/^https?:\/\//i.test(p) || p.startsWith('assets/')) return p;
+
+  // Normaliza y arma /public/...
+  const clean = p.replace(/^\/+/, '');
+  return clean.startsWith('public/')
+    ? `${PUBLIC}/${clean}`
+    : `${PUBLIC}/public/${clean}`;
+}
+
+// Campos que vamos a tocar al normalizar URLs
+type AgentLike = {
+  avatar?: string | null;
+  mediaHero?: string | null;
+  mediaThumbs?: Array<string | null | undefined>;
+  aseguradoras?: Array<string | null | undefined>;
+} & Record<string, unknown>;
+
+function mapAgentUrls<T extends AgentLike>(a: T): T {
+  if (!a) return a;
+  const out: T = { ...a };
+
+  out.avatar = toPublicUrl(out.avatar ?? '');
+  out.mediaHero = toPublicUrl(out.mediaHero ?? '');
+
+  if (Array.isArray(out.mediaThumbs)) {
+    out.mediaThumbs = out.mediaThumbs.map((v) => toPublicUrl(v ?? '')) as T['mediaThumbs'];
+  }
+
+  if (Array.isArray(out.aseguradoras)) {
+    out.aseguradoras = out.aseguradoras.map((x) => {
+      const s = String(x ?? '');
+      return /^https?:\/\//i.test(s) || s.startsWith('assets/')
+        ? s
+        : toPublicUrl(s);
+    }) as T['aseguradoras'];
+  }
+
+  return out;
+}
 
 @Injectable()
 export class AgentsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    return this.prisma.agent.findMany({ orderBy: { createdAt: 'desc' } });
+    const list = await this.prisma.agent.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return list.map(mapAgentUrls);
   }
 
   async findOne(slug: string) {
@@ -22,12 +75,13 @@ export class AgentsService {
     if (!agent) {
       throw new NotFoundException(`Agente con slug "${slug}" no encontrado`);
     }
-    return agent;
+    return mapAgentUrls(agent);
   }
 
   async create(dto: CreateAgentDto) {
     try {
-      return await this.prisma.agent.create({ data: dto as any });
+      const saved = await this.prisma.agent.create({ data: dto as any });
+      return mapAgentUrls(saved);
     } catch (e) {
       this.handlePrismaError(e);
     }
@@ -36,10 +90,11 @@ export class AgentsService {
   async update(slug: string, dto: UpdateAgentDto) {
     await this.findOne(slug);
     try {
-      return await this.prisma.agent.update({
+      const saved = await this.prisma.agent.update({
         where: { slug },
-        data: dto as any, // 👈 si dto incluye slug NUEVO, Prisma lo actualizará
+        data: dto as any, // si dto incluye slug NUEVO, Prisma lo actualizará
       });
+      return mapAgentUrls(saved);
     } catch (e) {
       this.handlePrismaError(e);
     }
@@ -49,32 +104,45 @@ export class AgentsService {
     await this.findOne(slug);
     return this.prisma.agent.delete({ where: { slug } });
   }
+
   // ==== Normalización de especialidades a slugs ====
   private static normalizeKey(s: string) {
     return String(s || '')
       .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, ''); // sin espacios/guiones
   }
 
-  private static ESPECIALIDAD_ALIASES: Record<string, 'vehiculos'|'hogar-negocio'|'salud-asistencia'> = {
+  private static ESPECIALIDAD_ALIASES: Record<
+    string,
+    'vehiculos' | 'hogar-negocio' | 'salud-asistencia'
+  > = {
     // vehículos
-    'vehiculos': 'vehiculos', 'vehiculo': 'vehiculos',
-    'auto': 'vehiculos', 'autos': 'vehiculos', 'carro': 'vehiculos', 'carros': 'vehiculos',
+    vehiculos: 'vehiculos',
+    vehiculo: 'vehiculos',
+    auto: 'vehiculos',
+    autos: 'vehiculos',
+    carro: 'vehiculos',
+    carros: 'vehiculos',
 
     // hogar-negocio
-    'hogarnegocio': 'hogar-negocio', 'hogarynegocio': 'hogar-negocio',
-    'hogar': 'hogar-negocio', 'negocio': 'hogar-negocio',
-    'hogar-negocio': 'hogar-negocio', // por si ya viene en slug
+    hogarnegocio: 'hogar-negocio',
+    hogarynegocio: 'hogar-negocio',
+    hogar: 'hogar-negocio',
+    negocio: 'hogar-negocio',
+    'hogar-negocio': 'hogar-negocio',
 
     // salud-asistencia
-    'saludasistencia': 'salud-asistencia', 'salud': 'salud-asistencia',
-    'asistencia': 'salud-asistencia', 'salud-asistencia': 'salud-asistencia',
+    saludasistencia: 'salud-asistencia',
+    salud: 'salud-asistencia',
+    asistencia: 'salud-asistencia',
+    'salud-asistencia': 'salud-asistencia',
   };
 
   private static toEspecialidadSlug(
     v: string,
-  ): 'vehiculos'|'hogar-negocio'|'salud-asistencia'|null {
+  ): 'vehiculos' | 'hogar-negocio' | 'salud-asistencia' | null {
     const k = AgentsService.normalizeKey(v);
     return AgentsService.ESPECIALIDAD_ALIASES[k] ?? null;
   }
@@ -122,11 +190,6 @@ export class AgentsService {
   }
 
   // ==================== Bulk desde JSON ====================
-
-  /**
-   * Crea/actualiza (upsert) muchos agentes a partir de un arreglo JSON.
-   * Cada objeto debe traer al menos { nombre } o { slug }.
-   */
   async bulkCreate(items: any[]) {
     if (!Array.isArray(items) || items.length === 0) {
       throw new BadRequestException('Debes enviar un arreglo de agentes.');
@@ -149,7 +212,6 @@ export class AgentsService {
 
     for (const raw of items) {
       try {
-        // slug/nombre mínimos
         const nombre = String(raw?.nombre ?? '').trim();
         let slug = String(raw?.slug ?? '').trim();
         if (!slug && nombre) slug = this.slugify(nombre);
@@ -157,11 +219,10 @@ export class AgentsService {
           throw new BadRequestException('Faltan "nombre" o "slug".');
         }
 
-        // Normalización coherente con CSV
         const espBulk = toArray(raw?.especialidades)
           .map(AgentsService.toEspecialidadSlug)
           .filter(
-            (x): x is 'vehiculos'|'hogar-negocio'|'salud-asistencia' => !!x,
+            (x): x is 'vehiculos' | 'hogar-negocio' | 'salud-asistencia' => !!x,
           );
         const especialidades = Array.from(new Set(espBulk));
 
@@ -173,32 +234,24 @@ export class AgentsService {
           avatar: raw?.avatar ?? null,
           ubicacion: String(raw?.ubicacion ?? '').trim(),
           whatsapp: raw?.whatsapp ?? null,
-
           especialidades,
           experiencia: Array.isArray(raw?.experiencia)
             ? raw.experiencia
             : toArray(raw?.experiencia),
           servicios: toArray(raw?.servicios),
           certificaciones: toArray(raw?.certificaciones),
-
-          // mapeo nombre → logo
           aseguradoras: toArray(raw?.aseguradoras).map(
             AgentsService.carrierToLogo,
           ),
-
           mediaThumbs: toArray(raw?.mediaThumbs),
           mediaHero: String(raw?.mediaHero ?? '').trim(),
-
-          // espera [{icon,url}] o null
           redes: Array.isArray(raw?.redes) ? raw.redes : null,
         };
 
-        // Fallback: si no hay mediaHero, usa el primero de mediaThumbs
         if (!data.mediaHero && data.mediaThumbs.length > 0) {
           data.mediaHero = data.mediaThumbs[0];
         }
 
-        // saber si existía (para métricas created/updated)
         const existed = await this.prisma.agent.findUnique({
           where: { slug },
           select: { slug: true },
@@ -210,11 +263,8 @@ export class AgentsService {
           update: data,
         });
 
-        if (existed) {
-          updated.push(slug);
-        } else {
-          created.push(slug);
-        }
+        if (existed) updated.push(slug);
+        else created.push(slug);
       } catch (e: any) {
         failed.push({
           slug: raw?.slug,
@@ -234,7 +284,6 @@ export class AgentsService {
   }
 
   // ============ Importación CSV (upsert por slug) ============
-
   async importCsvAndUpsert(file: Express.Multer.File) {
     if (!file?.buffer?.length) {
       throw new BadRequestException('Archivo CSV vacío o no enviado.');
@@ -242,10 +291,7 @@ export class AgentsService {
 
     const text = file.buffer.toString('utf8');
     const rows = this.parseCsv(text);
-
-    if (!rows.length) {
-      throw new BadRequestException('El CSV no contiene filas.');
-    }
+    if (!rows.length) throw new BadRequestException('El CSV no contiene filas.');
 
     const created: string[] = [];
     const updated: string[] = [];
@@ -255,7 +301,6 @@ export class AgentsService {
       try {
         const data = this.normalizeCsvRow(raw);
 
-        // comprobar existencia real en BD antes del upsert
         const existed = await this.prisma.agent.findUnique({
           where: { slug: data.slug },
           select: { slug: true },
@@ -267,17 +312,17 @@ export class AgentsService {
           update: data as any,
         });
 
-        if (existed) {
-          updated.push(saved.slug);
-        } else {
-          created.push(saved.slug);
-        }
+        if (existed) updated.push(saved.slug);
+        else created.push(saved.slug);
       } catch (e: any) {
         if (e?.code === 'P2002') {
           failed.push({ slug: raw?.slug, error: 'Duplicado de clave única' });
           continue;
         }
-        failed.push({ slug: raw?.slug, error: e?.message ?? 'Error desconocido' });
+        failed.push({
+          slug: raw?.slug,
+          error: e?.message ?? 'Error desconocido',
+        });
       }
     }
 
@@ -292,7 +337,6 @@ export class AgentsService {
   }
 
   // ========================= Helpers =========================
-
   private handlePrismaError(e: unknown): never {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === 'P2002') {
@@ -306,17 +350,11 @@ export class AgentsService {
 
   /** Parser CSV simple (comillas dobles soportadas) */
   private parseCsv(text: string): any[] {
-    const lines = text
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter(Boolean);
-
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     if (!lines.length) return [];
 
     const headers = this.splitCsvLine(lines[0]).map((h) => h.trim());
     const data: any[] = [];
-
-    // marca interna opcional por slug duplicado dentro del propio archivo
     const seen = new Set<string>();
 
     for (let i = 1; i < lines.length; i++) {
@@ -329,7 +367,6 @@ export class AgentsService {
       }
       data.push(row);
     }
-
     return data;
   }
 
@@ -340,7 +377,6 @@ export class AgentsService {
 
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
-
       if (ch === '"') {
         if (inQuotes && line[i + 1] === '"') {
           cur += '"';
@@ -350,16 +386,13 @@ export class AgentsService {
         }
         continue;
       }
-
       if (ch === ',' && !inQuotes) {
         out.push(cur);
         cur = '';
         continue;
       }
-
       cur += ch;
     }
-
     out.push(cur);
     return out;
   }
@@ -370,14 +403,12 @@ export class AgentsService {
       String(v ?? '')
         .trim()
         .toLowerCase() === 'true';
-
     const toList = (v: any) =>
       String(v ?? '')
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
 
-    // Redes sociales (desde columnas sueltas + JSON opcional)
     const redes: Array<{ icon: string; url: string }> = [];
     const pushRed = (icon: string, usernameOrUrl: string, base?: string) => {
       if (!usernameOrUrl) return;
@@ -389,7 +420,6 @@ export class AgentsService {
         : usernameOrUrl;
       redes.push({ icon, url });
     };
-
     pushRed('assets/icons/facebook.svg', r.facebook, 'https://facebook.com');
     pushRed('assets/icons/instagram.svg', r.instagram, 'https://instagram.com');
     pushRed('assets/icons/linkedin.svg', r.linkedin, 'https://linkedin.com/in');
@@ -404,24 +434,21 @@ export class AgentsService {
             redes.push({ icon: o.icon, url: o.url });
           }
         } catch {
-          // ignorar líneas no JSON
+          /** ignore */
         }
       }
     }
 
     const mediaThumbs = toList(r.mediaThumbs);
     const mediaHero = (r.mediaHero ?? '').trim();
-
-    // ⚠️ Aseguradoras: mapeo nombre → logo
     const aseguradoras = toList(r.aseguradoras).map(
       AgentsService.carrierToLogo,
     );
 
-    // ✅ Especialidades normalizadas a slugs canónicos
     const espCsv = toList(r.especialidades)
       .map(AgentsService.toEspecialidadSlug)
       .filter(
-        (x): x is 'vehiculos'|'hogar-negocio'|'salud-asistencia' => !!x,
+        (x): x is 'vehiculos' | 'hogar-negocio' | 'salud-asistencia' => !!x,
       );
     const especialidades = Array.from(new Set(espCsv));
 
@@ -437,7 +464,7 @@ export class AgentsService {
       experiencia: toList((r.experiencia ?? '').replace(/\\n/g, '\n')),
       servicios: toList((r.servicios ?? '').replace(/\\n/g, '\n')),
       certificaciones: toList((r.certificaciones ?? '').replace(/\\n/g, '\n')),
-      aseguradoras, // ya son URLs de logo
+      aseguradoras,
       mediaThumbs,
       mediaHero,
       redes: redes.length ? redes : null,

@@ -1,4 +1,3 @@
-// web/src/app/pages/admin/agents/agent-new.page.ts
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -200,11 +199,13 @@ export class AgentNewPage {
     this.form.patchValue({ [ctrl]: Array.from(cur) } as any);
   }
   availableServices(): string[] {
-    const esp = this.form.value.especialidades ?? [];
-    const set = new Set<string>();
-    esp.forEach((e) => (SERVICES_BY_ESPECIALIDAD[e] || []).forEach((s) => set.add(s)));
-    return Array.from(set);
-  }
+  const esp = this.form.value.especialidades ?? [];
+  const set = new Set<string>();
+  esp.forEach((e) =>
+    (SERVICES_BY_ESPECIALIDAD[e] || []).forEach((s) => set.add(s))
+  ); 
+  return Array.from(set);
+}
 
   /** ===== Estados→Municipios (multi) ===== */
   private async loadMunicipiosForMany(estadosNames: string[]) {
@@ -459,7 +460,7 @@ export class AgentNewPage {
     // ubicación primaria (primer municipio/estado)
     const est = v.estados ?? [];
     const mun = v.municipios ?? [];
-    const ubicacion = (v.ubicacion || [mun[0], est[0]].filter(Boolean).join(', ')).trim();
+    const ubicacion = String( v.ubicacion || [mun[0], est[0]].filter(Boolean).join(', ') ).trim();
 
     const dto: Partial<AdminAgent> = {
       slug,
@@ -499,7 +500,8 @@ export class AgentNewPage {
   private async upload(file: File): Promise<string> {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch('http://localhost:3000/api/upload', { method: 'POST', body: fd });
+    // ← ruta relativa: el proxy de Angular la enviará a http://localhost:3000
+    const res = await fetch('/api/agents/upload', { method: 'POST', body: fd });
     if (!res.ok) {
       const txt = await res.text().catch(() => '');
       throw new Error(`Fallo al subir imagen (${res.status}): ${txt}`);

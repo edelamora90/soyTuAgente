@@ -1,4 +1,3 @@
-// api/src/auth/auth.service.ts
 import {
   Injectable,
   UnauthorizedException,
@@ -6,16 +5,16 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+  import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 
 /** Payload estándar dentro del JWT */
 type JwtPayload = {
-  sub: string;                 // id del AdminUser (cuid)
-  username: string;            // username o email
-  roles: string[];             // roles del admin
-  type?: 'access' | 'refresh'; // marca para distinguir tokens
+  sub: string;
+  username: string;
+  roles: string[];
+  type?: 'access' | 'refresh';
 };
 
 @Injectable()
@@ -27,7 +26,6 @@ export class AuthService {
   ) {}
 
   // ===== VALIDACIÓN DE CREDENCIALES =====
-  /** Permite login con email o username; valida password y estado. */
   async validateUser(identifier: string, password: string) {
     const user = await this.users.findByEmailOrUsername(identifier);
     if (!user) throw new UnauthorizedException('NO_USER');
@@ -47,8 +45,8 @@ export class AuthService {
       {
         secret: this.cfg.get<string>('JWT_ACCESS_SECRET'),
         expiresIn: this.cfg.get<string>('JWT_ACCESS_TTL') || '15m',
-        audience: 'admin',
-        issuer: 'soy-tu-agente',
+        audience: this.cfg.get<string>('JWT_AUDIENCE') || 'admin',
+        issuer: this.cfg.get<string>('JWT_ISSUER') || 'soy-tu-agente',
       },
     );
   }
@@ -59,8 +57,8 @@ export class AuthService {
       {
         secret: this.cfg.get<string>('JWT_REFRESH_SECRET'),
         expiresIn: this.cfg.get<string>('JWT_REFRESH_TTL') || '7d',
-        audience: 'admin',
-        issuer: 'soy-tu-agente',
+        audience: this.cfg.get<string>('JWT_AUDIENCE') || 'admin',
+        issuer: this.cfg.get<string>('JWT_ISSUER') || 'soy-tu-agente',
       },
     );
   }
@@ -71,7 +69,7 @@ export class AuthService {
 
     const base: Omit<JwtPayload, 'type'> = {
       sub: user.id,
-      username: user.username ?? user.email, // fallback si username es null
+      username: user.username ?? user.email,
       roles: user.roles ?? [],
     };
 
@@ -105,7 +103,6 @@ export class AuthService {
     const ok = await bcrypt.compare(oldPlain, user.passwordHash);
     if (!ok) throw new UnauthorizedException('Contraseña actual incorrecta');
 
-    // Evita reutilizar la misma contraseña
     const same = await bcrypt.compare(nextPlain, user.passwordHash);
     if (same) throw new BadRequestException('La nueva contraseña debe ser distinta');
 

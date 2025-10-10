@@ -1,8 +1,16 @@
+// web/src/app/shared/profile/agent-profile.mapper.ts
 import type { Agent } from '../../core/agents/agents.data';
 import type { AgentSubmission } from '../../core/submissions/submissions.types';
 import { AgentProfileVM, AVATAR_FALLBACK } from '../../pages/agentes/profile/agent-profile.vm';
+import { environment } from '../../../enviroments/enviroment';
 
-// helpers
+// ==== Base pública para /public/... (dev: http://localhost:3000, prod: origen del API) ====
+const PUBLIC_BASE =
+  (environment.apiUrl || '')
+    .replace(/\/api$/, '')   // 'http://localhost:3000/api' -> 'http://localhost:3000'
+    .replace(/\/+$/, '');    // quita trailing slash
+
+// --- helpers de strings/arrays ---
 const pickStr = (v: unknown, fb = ''): string =>
   typeof v === 'string' && v.trim().length ? v : fb;
 
@@ -12,11 +20,18 @@ const pickArr = (v: unknown): unknown[] =>
 const get = (obj: unknown, key: string): unknown =>
   obj && typeof obj === 'object' ? (obj as any)[key] : undefined;
 
-function asUrl(base: string, value?: string | null): string | null {
-  const raw = String(value || '').trim();
-  if (!raw) return null;
-  if (/^https?:\/\//i.test(raw)) return raw;
-  return `${base.replace(/\/+$/,'')}/${raw.replace(/^\/+/, '')}`;
+// Normaliza un path (avatar, media) a URL pública
+function toPublicUrl(value?: string | null): string {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw) || raw.startsWith('assets/')) return raw;
+
+  const clean = raw.replace(/^\/+/, '');
+  const base = PUBLIC_BASE;
+  if (!base) return `/${clean}`;
+  return clean.startsWith('public/')
+    ? `${base}/${clean}`
+    : `${base}/public/${clean}`;
 }
 
 function asUsernameOrUrl(v: unknown): string {
@@ -26,10 +41,10 @@ function asUsernameOrUrl(v: unknown): string {
 
 // Mapea nombre de plataforma a icono y base URL
 const SOCIAL_DICT: Record<string, { icon: string; base: string; domains: string[] }> = {
-  facebook:  { icon: 'assets/icons/facebook.svg',  base: 'https://facebook.com',   domains: ['facebook.com', 'fb.com'] },
-  instagram: { icon: 'assets/icons/instagram.svg', base: 'https://instagram.com', domains: ['instagram.com', 'instagr.am'] },
-  linkedin:  { icon: 'assets/icons/linkedin.svg',  base: 'https://linkedin.com/in', domains: ['linkedin.com'] },
-  tiktok:    { icon: 'assets/icons/tiktok.svg',    base: 'https://tiktok.com/@',  domains: ['tiktok.com'] },
+  facebook:  { icon: 'assets/icons/facebook.svg',  base: 'https://facebook.com',      domains: ['facebook.com', 'fb.com'] },
+  instagram: { icon: 'assets/icons/instagram.svg', base: 'https://instagram.com',    domains: ['instagram.com', 'instagr.am'] },
+  linkedin:  { icon: 'assets/icons/linkedin.svg',  base: 'https://linkedin.com/in',  domains: ['linkedin.com'] },
+  tiktok:    { icon: 'assets/icons/tiktok.svg',    base: 'https://tiktok.com/@',     domains: ['tiktok.com'] },
 };
 
 // intentar parsear JSON string
@@ -57,15 +72,12 @@ function collectAllStrings(obj: any, max = 2000): string[] {
   const out: string[] = [];
   const seen = new Set<any>();
   function walk(x: any) {
-    if (out.length >= max) return;  // por si acaso
+    if (out.length >= max) return;
     if (x && typeof x === 'object') {
       if (seen.has(x)) return;
       seen.add(x);
-      if (Array.isArray(x)) {
-        for (const it of x) walk(it);
-      } else {
-        for (const k of Object.keys(x)) walk((x as any)[k]);
-      }
+      if (Array.isArray(x)) for (const it of x) walk(it);
+      else for (const k of Object.keys(x)) walk((x as any)[k]);
     } else if (typeof x === 'string') {
       const t = x.trim();
       if (t) out.push(t);
@@ -101,11 +113,9 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
             if (match) {
               out.push({ icon: match.icon, url: String(rawUrl).trim() });
             } else {
-              // plataforma desconocida → usa tal cual
               out.push({ icon: 'assets/icons/link.svg', url: String(rawUrl).trim() });
             }
           } else {
-            // sin plataforma ni icon → intenta deducir por dominio
             const urlStr = String(rawUrl);
             const hit = Object.entries(SOCIAL_DICT).find(([, v]) => looksLikeDomain(urlStr, v.domains));
             if (hit) out.push({ icon: hit[1].icon, url: urlStr });
@@ -113,27 +123,21 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
           }
         }
       }
-      // no break: dejamos combinar con campos sueltos
     }
   }
 
   // 2) campos sueltos (username o URL)
   const platformAliases: Record<string, (keyof typeof SOCIAL_DICT)[]> = {
-    facebook:  ['facebook'],
-    fb:        ['facebook'],
-    instagram: ['instagram'],
-    ig:        ['instagram'],
-    linkedin:  ['linkedin', 'li'],
-    tiktok:    ['tiktok', 'tt'],
-    li:        ['linkedin'],
-    tt:        ['tiktok'],
+    facebook:  ['facebook'], fb: ['facebook'],
+    instagram: ['instagram'], ig: ['instagram'],
+    linkedin:  ['linkedin', 'li'], li: ['linkedin'],
+    tiktok:    ['tiktok', 'tt'],    tt: ['tiktok'],
   };
 
   for (const k of Object.keys(platformAliases)) {
     const raw = get(src, k);
     if (!raw || typeof raw !== 'string') continue;
-    const platforms = platformAliases[k];
-    const p = platforms[0]; // preferencia
+    const p = platformAliases[k][0];
     const url = ensureUrl(p, raw);
     out.push({ icon: SOCIAL_DICT[p].icon, url });
   }
@@ -152,17 +156,14 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
 
   // 4) deduplicar por URL (case-insensitive)
   const seen = new Set<string>();
-  const cleaned = out.filter(r => {
+  return out.filter(r => {
     const key = r.url.trim().toLowerCase();
     if (!key) return false;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-
-  return cleaned;
 }
-
 
 // OVERLOADS
 export function mapToAgentProfileVM(src: AgentSubmission): AgentProfileVM;
@@ -171,10 +172,11 @@ export function mapToAgentProfileVM(src: Record<string, unknown>): AgentProfileV
 
 // implementación
 export function mapToAgentProfileVM(src: any): AgentProfileVM {
-  const avatar =
+  // Avatar con fallback y URL pública
+  const avatarRaw =
     pickStr(get(src, 'avatar')) ||
-    pickStr(get(src, 'foto')) ||
-    AVATAR_FALLBACK;
+    pickStr(get(src, 'foto'));
+  const avatar = avatarRaw ? toPublicUrl(avatarRaw) : AVATAR_FALLBACK;
 
   const ubicacion =
     pickStr(get(src, 'ubicacion')) ||
@@ -184,17 +186,20 @@ export function mapToAgentProfileVM(src: any): AgentProfileVM {
 
   const mediaThumbsAny = pickArr(get(src, 'mediaThumbs'));
   const mediaThumbs = mediaThumbsAny
-    .map(x => pickStr(x as any))
+    .map(x => toPublicUrl(pickStr(x as any)))
     .filter(Boolean);
 
-  // aseguradoras: arreglo o texto con comas
+  // aseguradoras: arreglo o texto con comas → también normalizamos a URL pública si son paths
   let aseguradoras = (pickArr(get(src, 'aseguradoras')) as any[])
-    .map(s => pickStr(s))
+    .map(s => toPublicUrl(pickStr(s)))
     .filter(Boolean);
   if (!aseguradoras.length) {
     const raw = pickStr(get(src, 'aseguradorasText'));
     if (raw) {
-      aseguradoras = raw.split(',').map(s => s.trim()).filter(Boolean);
+      aseguradoras = raw
+        .split(',')
+        .map(s => toPublicUrl(s.trim()))
+        .filter(Boolean);
     }
   }
 

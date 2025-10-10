@@ -1,12 +1,12 @@
 {
-  "name": "web",
-  "targets": {
-    "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
-      "options": {
-        "buildTarget": "web:build",
-        "proxyConfig": "apps/web/proxy.conf.json"
-      }
-    }
+  "/api": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/public": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true
   }
 }

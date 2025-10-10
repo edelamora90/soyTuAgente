@@ -7,7 +7,7 @@ import { environment } from '../../../enviroments/enviroment';
 const API = `${environment.apiUrl}/auth`;
 
 export type LoginResp = {
-  user: { username: string; roles: string[]; name?: string }; // ← name opcional
+  user: { username: string; roles: string[]; name?: string };
   accessToken: string;
   refreshToken: string;
 };
@@ -15,6 +15,7 @@ export type LoginResp = {
 const ACCESS_KEY  = 'accessToken';
 const REFRESH_KEY = 'refreshToken';
 const USER_KEY    = 'user';
+const NAME_KEY    = 'auth_name'; // ← para el header
 
 function decodeJwt<T = any>(token: string): T | null {
   try { return JSON.parse(atob(token.split('.')[1])); } catch { return null; }
@@ -31,7 +32,7 @@ function isExpired(token?: string | null): boolean {
 export class AuthService {
   private http = inject(HttpClient);
 
-  // Mantén tu signal de usuario
+  // Estado reactivo (rehidratado desde localStorage)
   user = signal<{ username: string; roles: string[]; name?: string } | null>(
     (() => {
       const raw = localStorage.getItem(USER_KEY);
@@ -46,18 +47,33 @@ export class AuthService {
     localStorage.setItem(ACCESS_KEY, at);
     localStorage.setItem(REFRESH_KEY, rt);
   }
+
   private setUser(u: { username: string; roles: string[]; name?: string }) {
     this.user.set(u);
     localStorage.setItem(USER_KEY, JSON.stringify(u));
+    // nombre visible que usa el header como fallback
+    const display = u.name || u.username || '';
+    if (display) localStorage.setItem(NAME_KEY, display);
   }
+
+  private clearName() {
+    localStorage.removeItem(NAME_KEY);
+  }
+
   clear() {
     localStorage.removeItem(ACCESS_KEY);
     localStorage.removeItem(REFRESH_KEY);
     localStorage.removeItem(USER_KEY);
+    this.clearName();
     this.user.set(null);
   }
 
-  // ---- login / refresh / helpers (como ya los tienes) ----
+  /** Para que el interceptor pueda forzar un cierre de sesión limpio */
+  forceLogout() {
+    this.clear();
+  }
+
+  // ---- login / refresh / helpers ----
   login(username: string, password: string): Observable<LoginResp> {
     return this.http.post<LoginResp>(`${API}/login`, { username, password }).pipe(
       tap(r => {
@@ -73,6 +89,7 @@ export class AuthService {
     return this.http
       .post<{ accessToken: string; refreshToken: string }>(`${API}/refresh`, {}, { headers })
       .pipe(tap(r => this.setTokens(r.accessToken, r.refreshToken)));
+    // Nota: el usuario no suele cambiar en un refresh; por eso no tocamos USER_KEY aquí.
   }
 
   isLoggedIn(): boolean { return !!this.accessToken && !isExpired(this.accessToken); }
@@ -97,20 +114,13 @@ export class AuthService {
 
   logout() { this.clear(); }
 
-  
-
-  // ====== NUEVO: cambiar contraseña ======
+  // ====== cambiar contraseña (como ya tenías) ======
   changePassword(oldPassword: string, newPassword: string): Observable<void> {
-    // Ajusta la ruta si en tu backend es otra (p. ej., /users/me/password)
-    return this.http.post<void>(`${API}/change-password`, {
-      old:  oldPassword,
-      next: newPassword,
-    });
+    return this.http.post<void>(`${API}/change-password`, { old: oldPassword, next: newPassword });
   }
 
-  // ====== OPCIONAL: actualizar perfil (nombre/email) ======
+  // ====== actualizar perfil opcional ======
   updateProfile(payload: { name?: string; email?: string }): Observable<{ user: { username: string; roles: string[]; name?: string } }> {
-    // Si tu backend devuelve el usuario actualizado:
     return this.http.post<{ user: { username: string; roles: string[]; name?: string } }>(`${API}/profile`, payload)
       .pipe(tap(res => this.setUser(res.user)));
   }

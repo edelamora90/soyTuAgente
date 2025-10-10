@@ -1,29 +1,25 @@
-// api/src/auth/strategies/jwt.strategy.ts
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(cfg: ConfigService) {
+  constructor(@Inject(ConfigService) cfg: ConfigService) {
     const secret = cfg.get<string>('JWT_ACCESS_SECRET');
-    if (!secret) {
-      throw new Error('JWT_ACCESS_SECRET no está definido');
-    }
+    if (!secret) throw new Error('JWT_ACCESS_SECRET no está definido en .env');
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: secret,
       ignoreExpiration: false,
-      audience: cfg.get<string>('JWT_AUDIENCE') ?? 'stagent',
-      issuer: cfg.get<string>('JWT_ISSUER') ?? 'stagent-api',
+      audience: cfg.get<string>('JWT_AUDIENCE') || 'admin',
+      issuer:   cfg.get<string>('JWT_ISSUER')   || 'soy-tu-agente',
       passReqToCallback: false,
     });
   }
 
-  // Ajusta el tipo del payload si lo tipaste
   validate(payload: any) {
-    return payload;
+    return payload; // anexa payload en req.user
   }
 }

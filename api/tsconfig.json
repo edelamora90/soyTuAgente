@@ -1,17 +1,17 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "commonjs",
-    "esModuleInterop": true,
+    "composite": true,
+    "outDir": "../../dist/out-tsc",
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
 
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    "types": ["node", "express", "multer"],
+    "strict": true,
     "skipLibCheck": true,
-    "outDir": "../dist/out-tsc"
+    "useDefineForClassFields": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "dist", "node_modules"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" }
+  ]
 }

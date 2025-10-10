@@ -1,5 +1,7 @@
+// api/src/uploads/uploads.controller.ts
 import { BadRequestException, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
 import { diskStorage } from 'multer';
 import { join, extname, relative } from 'path';
 import { existsSync, mkdirSync } from 'fs';
@@ -14,11 +16,15 @@ ensureDir(AGENTS_DIR);
 
 function sanitizeBase(name: string) {
   const base = (name || '').replace(/\.[^.]+$/, '');
-  return base.trim().toLowerCase()
-    .replace(/[^a-z0-9\-_.]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/(^-|-$)/g, '')
-    .slice(0, 64) || 'file';
+  return (
+    base
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\-_.]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .slice(0, 64) || 'file'
+  );
 }
 
 function pickExt(file: Express.Multer.File) {
@@ -35,32 +41,34 @@ function pickExt(file: Express.Multer.File) {
 export class UploadsController {
   /** POST /api/uploads/agents  (campo: file) */
   @Post('agents')
-  @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: (_req, _file, cb) => {
-        ensureDir(AGENTS_DIR);
-        cb(null, AGENTS_DIR);
-      },
-      filename: (_req, file, cb) => {
-        const base = sanitizeBase(file.originalname || 'file');
-        const ext  = pickExt(file);
-        cb(null, `${Date.now()}-${base}${ext}`);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => {
+          ensureDir(AGENTS_DIR);
+          cb(null, AGENTS_DIR);
+        },
+        filename: (_req, file, cb) => {
+          const base = sanitizeBase(file.originalname || 'file');
+          const ext = pickExt(file);
+          cb(null, `${Date.now()}-${base}${ext}`);
+        },
+      }),
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+      fileFilter: (_req, file, cb) => {
+        if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.mimetype)) {
+          return cb(new BadRequestException('Tipo de archivo no permitido'), false);
+        }
+        cb(null, true);
       },
     }),
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-    fileFilter: (_req, file, cb) => {
-      if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.mimetype)) {
-        return cb(new BadRequestException('Tipo de archivo no permitido'), false);
-      }
-      cb(null, true);
-    },
-  }))
+  )
   uploadAgent(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No file uploaded');
 
-    const base = process.env.PUBLIC_BASE_URL ?? 'http://localhost:3000';
-    const sub  = relative(ROOT, file.destination).replace(/\\/g, '/');
-    const url  = `${base}/public/${sub}/${file.filename}`;
+    const base = process.env['PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+    const sub = relative(ROOT, file.destination).replace(/\\/g, '/');
+    const url = `${base}/public/${sub}/${file.filename}`;
 
     return {
       url,
