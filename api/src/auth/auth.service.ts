@@ -1,3 +1,4 @@
+// api/src/auth/auth.service.ts
 import {
   Injectable,
   UnauthorizedException,
@@ -5,16 +6,16 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-  import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 
 /** Payload estándar dentro del JWT */
 type JwtPayload = {
-  sub: string;
-  username: string;
-  roles: string[];
-  type?: 'access' | 'refresh';
+  sub: string;                 // id del AdminUser
+  username: string;            // username o email
+  roles: string[];             // roles del admin
+  type?: 'access' | 'refresh'; // marca para distinguir tokens
 };
 
 @Injectable()
@@ -26,6 +27,7 @@ export class AuthService {
   ) {}
 
   // ===== VALIDACIÓN DE CREDENCIALES =====
+  /** Permite login con email o username; valida password y estado. */
   async validateUser(identifier: string, password: string) {
     const user = await this.users.findByEmailOrUsername(identifier);
     if (!user) throw new UnauthorizedException('NO_USER');
@@ -38,29 +40,34 @@ export class AuthService {
     return user;
   }
 
-  // ===== GENERACIÓN DE TOKENS =====
+  // ===== GENERACIÓN DE TOKENS (compat v11 de @nestjs/jwt) =====
+  private signToken(
+    kind: 'access' | 'refresh',
+    payload: Omit<JwtPayload, 'type'>
+  ): string {
+    const opts: any = {
+      secret:
+        kind === 'access'
+          ? this.cfg.get<string>('JWT_ACCESS_SECRET')
+          : this.cfg.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn:
+        (kind === 'access'
+          ? this.cfg.get<string>('JWT_ACCESS_TTL')
+          : this.cfg.get<string>('JWT_REFRESH_TTL')) || (kind === 'access' ? '15m' : '7d'),
+      audience: this.cfg.get<string>('JWT_AUDIENCE') || 'admin',
+      issuer: this.cfg.get<string>('JWT_ISSUER') || 'soy-tu-agente',
+    };
+
+    // Cast a any para evitar el choque de tipos con SignOptions basadas en `jose` de v11
+    return this.jwt.sign({ ...payload, type: kind } as any, opts);
+  }
+
   private signAccessToken(payload: Omit<JwtPayload, 'type'>): string {
-    return this.jwt.sign(
-      { ...payload, type: 'access' },
-      {
-        secret: this.cfg.get<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.cfg.get<string>('JWT_ACCESS_TTL') || '15m',
-        audience: this.cfg.get<string>('JWT_AUDIENCE') || 'admin',
-        issuer: this.cfg.get<string>('JWT_ISSUER') || 'soy-tu-agente',
-      },
-    );
+    return this.signToken('access', payload);
   }
 
   private signRefreshToken(payload: Omit<JwtPayload, 'type'>): string {
-    return this.jwt.sign(
-      { ...payload, type: 'refresh' },
-      {
-        secret: this.cfg.get<string>('JWT_REFRESH_SECRET'),
-        expiresIn: this.cfg.get<string>('JWT_REFRESH_TTL') || '7d',
-        audience: this.cfg.get<string>('JWT_AUDIENCE') || 'admin',
-        issuer: this.cfg.get<string>('JWT_ISSUER') || 'soy-tu-agente',
-      },
-    );
+    return this.signToken('refresh', payload);
   }
 
   // ===== FLUJO: LOGIN / REFRESH =====
@@ -69,7 +76,7 @@ export class AuthService {
 
     const base: Omit<JwtPayload, 'type'> = {
       sub: user.id,
-      username: user.username ?? user.email,
+      username: user.username ?? user.email, // fallback si username es null
       roles: user.roles ?? [],
     };
 
@@ -103,6 +110,7 @@ export class AuthService {
     const ok = await bcrypt.compare(oldPlain, user.passwordHash);
     if (!ok) throw new UnauthorizedException('Contraseña actual incorrecta');
 
+    // Evita reutilizar la misma contraseña
     const same = await bcrypt.compare(nextPlain, user.passwordHash);
     if (same) throw new BadRequestException('La nueva contraseña debe ser distinta');
 
@@ -112,3 +120,4 @@ export class AuthService {
     await this.users.updatePassword(userId, hash);
   }
 }
+

@@ -9,21 +9,104 @@ import { Prisma, SubmissionStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 
+type AdminSubmissionView = {
+  id: string;
+  createdAt: Date;
+  status: SubmissionStatus;
+
+  slug: string;
+  nombre: string;
+  cedula: string | null;
+  verificado: boolean;
+
+  ubicacion: string | null;
+  whatsapp: string | null;
+
+  experiencia: string[];          // ← normalizado
+  aseguradoras: string[];         // ← normalizado
+  especialidades: string[];
+  servicios: string[];
+
+  media: {
+    hero: string | null;
+    avatar: string | null;
+    thumbs: string[];             // fotosMini
+    logosAseg: string[];          // logosAseg
+  };
+
+  social: {
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    tiktok?: string | null;
+  };
+};
+
 @Injectable()
 export class SubmissionsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Util para URLs absolutas (si en DB guardas solo nombres)
+  private abs(url?: string | null): string | null {
+    if (!url) return null;
+    if (/^https?:\/\//i.test(url)) return url;
+    const base = process.env.PUBLIC_BASE_URL?.replace(/\/+$/, '') ?? '';
+    // ajusta el prefijo a como sirves estáticos (aquí /public/)
+    return `${base}/public/${url.replace(/^\/+/, '')}`;
+  }
+
+  private toView(sub: any): AdminSubmissionView {
+    const experiencia =
+      typeof sub.experiencia === 'string' && sub.experiencia.trim()
+        ? sub.experiencia.split('\n').map((s: string) => s.trim()).filter(Boolean)
+        : [];
+
+    const aseguradoras =
+      typeof sub.aseguradoras === 'string' && sub.aseguradoras.trim()
+        ? sub.aseguradoras.split(',').map((s: string) => s.trim()).filter(Boolean)
+        : [];
+
+    return {
+      id: sub.id,
+      createdAt: sub.createdAt,
+      status: sub.status,
+
+      slug: sub.slug,
+      nombre: sub.nombre,
+      cedula: sub.cedula ?? null,
+      verificado: Boolean(sub.verificado),
+
+      ubicacion: sub.ubicacion ?? null,
+      whatsapp: sub.whatsapp ?? null,
+
+      experiencia,
+      aseguradoras,
+      especialidades: Array.isArray(sub.especialidades) ? sub.especialidades : [],
+      servicios: Array.isArray(sub.servicios) ? sub.servicios : [],
+
+      media: {
+        hero: this.abs(sub.fotoHero),
+        avatar: this.abs(sub.foto),
+        thumbs: Array.isArray(sub.fotosMini) ? sub.fotosMini.map((x: string) => this.abs(x)!) : [],
+        logosAseg: Array.isArray(sub.logosAseg) ? sub.logosAseg.map((x: string) => this.abs(x)!) : [],
+      },
+
+      social: {
+        facebook: sub.facebook ?? null,
+        instagram: sub.instagram ?? null,
+        linkedin: sub.linkedin ?? null,
+        tiktok: sub.tiktok ?? null,
+      },
+    };
+  }
+
   // ====== Crear solicitud (público) ======
   async create(dto: CreateSubmissionDto) {
-    // Unicidad por slug
     const exists = await this.prisma.agentSubmission.findUnique({
       where: { slug: dto.slug },
     });
-    if (exists) {
-      throw new BadRequestException('El slug ya existe en solicitudes.');
-    }
+    if (exists) throw new BadRequestException('El slug ya existe en solicitudes.');
 
-    // Normaliza tipos a lo que espera el modelo AgentSubmission
     const experienciaTexto =
       dto.experiencia == null
         ? null
@@ -40,7 +123,6 @@ export class SubmissionsService {
 
     const data: Prisma.AgentSubmissionCreateInput = {
       status: SubmissionStatus.PENDING,
-
       slug: dto.slug,
       nombre: dto.nombre,
       cedula: dto.cedula ?? null,
@@ -70,15 +152,10 @@ export class SubmissionsService {
     try {
       return await this.prisma.agentSubmission.create({ data });
     } catch (e: any) {
-      // Log útil de diagnóstico
       console.error('[create submission] prisma error:', e?.code, e?.message, e?.meta);
-      if (e?.code === 'P2002') {
-        throw new BadRequestException('El slug ya existe en solicitudes.');
-      }
+      if (e?.code === 'P2002') throw new BadRequestException('El slug ya existe en solicitudes.');
       if (e?.code === 'P2021') {
-        throw new InternalServerErrorException(
-          'Tabla AgentSubmission no existe. Ejecuta prisma db push.',
-        );
+        throw new InternalServerErrorException('Tabla AgentSubmission no existe. Ejecuta prisma db push.');
       }
       throw new InternalServerErrorException('No se pudo crear la solicitud.');
     }
@@ -87,16 +164,17 @@ export class SubmissionsService {
   // ====== Listar/Detalle (admin) ======
   async findAll(status?: SubmissionStatus) {
     const where = status ? { status } : undefined;
-    return this.prisma.agentSubmission.findMany({
+    const rows = await this.prisma.agentSubmission.findMany({
       where,
       orderBy: { createdAt: 'desc' },
     });
+    return rows.map((r) => this.toView(r));
   }
 
   async findOne(id: string) {
     const sub = await this.prisma.agentSubmission.findUnique({ where: { id } });
     if (!sub) throw new NotFoundException('Solicitud no encontrada');
-    return sub;
+    return this.toView(sub);
   }
 
   // ====== Aprobar (promueve a Agent) ======
@@ -109,30 +187,18 @@ export class SubmissionsService {
         throw new BadRequestException('La solicitud no está en estado PENDING.');
       }
 
-      // Requisitos mínimos para Agent
       if (!sub.cedula) throw new BadRequestException('Falta "cedula".');
       if (!sub.ubicacion) throw new BadRequestException('Falta "ubicacion".');
       if (!sub.fotoHero) throw new BadRequestException('Falta "fotoHero".');
 
-      // Evitar duplicados
-      const dup = await tx.agent.findUnique({ where: { slug: sub.slug } });
-      if (dup) throw new BadRequestException('Ya existe un Agent con ese slug.');
-
-      // Transformaciones para Agent (arrays)
       const experienciaArray =
         typeof sub.experiencia === 'string' && sub.experiencia.trim()
-          ? sub.experiencia
-              .split('\n')
-              .map((s) => s.trim())
-              .filter(Boolean)
+          ? sub.experiencia.split('\n').map((s) => s.trim()).filter(Boolean)
           : [];
 
       const aseguradorasArray =
         typeof sub.aseguradoras === 'string' && sub.aseguradoras.trim()
-          ? sub.aseguradoras
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean)
+          ? sub.aseguradoras.split(',').map((s) => s.trim()).filter(Boolean)
           : [];
 
       await tx.agent.create({
@@ -150,8 +216,7 @@ export class SubmissionsService {
           certificaciones: [],
           aseguradoras: aseguradorasArray,
           mediaThumbs: sub.fotosMini ?? [],
-          mediaHero: sub.fotoHero!, // requerido en Agent
-          // redes: ... (si tu modelo lo tiene, adáptalo aquí)
+          mediaHero: sub.fotoHero!,
         },
       });
 

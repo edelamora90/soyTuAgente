@@ -21,4 +21,4 @@ export interface AgentProfileVM {
   whatsapp?: string | null;
 }
 
-export const AVATAR_FALLBACK = 'assets/avatars/default.png';
+export const AVATAR_FALLBACK = 'assets/perfil-de-usuario.webp';

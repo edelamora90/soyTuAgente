@@ -4,26 +4,20 @@ import type { AgentSubmission } from '../../core/submissions/submissions.types';
 import { AgentProfileVM, AVATAR_FALLBACK } from '../../pages/agentes/profile/agent-profile.vm';
 import { environment } from '../../../environments/environment';
 
-// ==== Base pública para /public/... (dev: http://localhost:3000, prod: origen del API) ====
-const PUBLIC_BASE =
-  (environment.apiUrl || '')
-    .replace(/\/api$/, '')   // 'http://localhost:3000/api' -> 'http://localhost:3000'
-    .replace(/\/+$/, '');    // quita trailing slash
+/* ============================
+   Utilidades de URLs públicas
+   ============================ */
 
-// --- helpers de strings/arrays ---
-const pickStr = (v: unknown, fb = ''): string =>
-  typeof v === 'string' && v.trim().length ? v : fb;
-
-const pickArr = (v: unknown): unknown[] =>
-  Array.isArray(v) ? v : [];
-
-const get = (obj: unknown, key: string): unknown =>
-  obj && typeof obj === 'object' ? (obj as any)[key] : undefined;
+// Base pública para servir /public/... (dev: http://localhost:3000, prod: el mismo host del API)
+const PUBLIC_BASE = (environment.apiUrl || '')
+  .replace(/\/api$/, '') // 'http://localhost:3000/api' -> 'http://localhost:3000'
+  .replace(/\/+$/, '');  // quita trailing slash
 
 // Normaliza un path (avatar, media) a URL pública
 function toPublicUrl(value?: string | null): string {
   const raw = String(value ?? '').trim();
   if (!raw) return '';
+  // Si ya es URL absoluta o asset interno del front, lo dejamos tal cual
   if (/^https?:\/\//i.test(raw) || raw.startsWith('assets/')) return raw;
 
   const clean = raw.replace(/^\/+/, '');
@@ -34,20 +28,42 @@ function toPublicUrl(value?: string | null): string {
     : `${base}/public/${clean}`;
 }
 
-function asUsernameOrUrl(v: unknown): string {
-  if (typeof v !== 'string') return '';
-  return v.trim();
+/* ============================
+   Helpers generales
+   ============================ */
+
+const pickStr = (v: unknown, fb = ''): string =>
+  typeof v === 'string' && v.trim().length ? v : fb;
+
+const pickArr = (v: unknown): unknown[] =>
+  Array.isArray(v) ? v : [];
+
+const get = (obj: unknown, key: string): unknown =>
+  obj && typeof obj === 'object' ? (obj as any)[key] : undefined;
+
+// Convierte string o array-like en un array de strings limpios
+function splitToArray(v: unknown): string[] {
+  if (Array.isArray(v)) return v.map((s) => pickStr(s)).filter(Boolean);
+  if (typeof v === 'string') {
+    return v
+      .split(/\r?\n|,|;/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
 }
 
-// Mapea nombre de plataforma a icono y base URL
+/* ============================
+   Redes sociales
+   ============================ */
+
 const SOCIAL_DICT: Record<string, { icon: string; base: string; domains: string[] }> = {
-  facebook:  { icon: 'assets/icons/facebook.svg',  base: 'https://facebook.com',      domains: ['facebook.com', 'fb.com'] },
-  instagram: { icon: 'assets/icons/instagram.svg', base: 'https://instagram.com',    domains: ['instagram.com', 'instagr.am'] },
-  linkedin:  { icon: 'assets/icons/linkedin.svg',  base: 'https://linkedin.com/in',  domains: ['linkedin.com'] },
-  tiktok:    { icon: 'assets/icons/tiktok.svg',    base: 'https://tiktok.com/@',     domains: ['tiktok.com'] },
+  facebook:  { icon: 'assets/icons/facebook.svg',  base: 'https://facebook.com',     domains: ['facebook.com', 'fb.com'] },
+  instagram: { icon: 'assets/icons/instagram.svg', base: 'https://instagram.com',   domains: ['instagram.com', 'instagr.am'] },
+  linkedin:  { icon: 'assets/icons/linkedin.svg',  base: 'https://linkedin.com/in', domains: ['linkedin.com'] },
+  tiktok:    { icon: 'assets/icons/tiktok.svg',    base: 'https://tiktok.com/@',    domains: ['tiktok.com'] },
 };
 
-// intentar parsear JSON string
 function parseMaybeJson(v: unknown): any {
   if (typeof v !== 'string') return v;
   try { return JSON.parse(v); } catch { return null; }
@@ -57,17 +73,16 @@ function ensureUrl(platform: keyof typeof SOCIAL_DICT, value: string): string {
   const s = (value || '').trim();
   if (!s) return '';
   if (/^https?:\/\//i.test(s)) return s;
-  const base = SOCIAL_DICT[platform].base.replace(/\/+$/,'');
-  const username = s.replace(/^@/,'').replace(/^\/+/, '');
+  const base = SOCIAL_DICT[platform].base.replace(/\/+$/, '');
+  const username = s.replace(/^@/, '').replace(/^\/+/, '');
   return `${base}/${username}`;
 }
 
 function looksLikeDomain(str: string, domains: string[]): boolean {
   const s = str.toLowerCase();
-  return domains.some(d => s.includes(d));
+  return domains.some((d) => s.includes(d));
 }
 
-// Recolecta TODAS las strings del objeto (recursivo, protegiendo ciclos)
 function collectAllStrings(obj: any, max = 2000): string[] {
   const out: string[] = [];
   const seen = new Set<any>();
@@ -104,23 +119,20 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
         const icon =
           (r && (r.icon || r.icono || r.logo)) as string | undefined;
 
-        if (rawUrl) {
-          if (icon) {
-            out.push({ icon, url: String(rawUrl).trim() });
-          } else if (platform) {
-            const key = platform.toString().toLowerCase();
-            const match = SOCIAL_DICT[key as keyof typeof SOCIAL_DICT];
-            if (match) {
-              out.push({ icon: match.icon, url: String(rawUrl).trim() });
-            } else {
-              out.push({ icon: 'assets/icons/link.svg', url: String(rawUrl).trim() });
-            }
-          } else {
-            const urlStr = String(rawUrl);
-            const hit = Object.entries(SOCIAL_DICT).find(([, v]) => looksLikeDomain(urlStr, v.domains));
-            if (hit) out.push({ icon: hit[1].icon, url: urlStr });
-            else out.push({ icon: 'assets/icons/link.svg', url: urlStr });
-          }
+        if (!rawUrl) continue;
+
+        if (icon) {
+          out.push({ icon, url: String(rawUrl).trim() });
+        } else if (platform) {
+          const key = platform.toString().toLowerCase();
+          const match = SOCIAL_DICT[key as keyof typeof SOCIAL_DICT];
+          if (match) out.push({ icon: match.icon, url: String(rawUrl).trim() });
+          else out.push({ icon: 'assets/icons/link.svg', url: String(rawUrl).trim() });
+        } else {
+          const urlStr = String(rawUrl);
+          const hit = Object.entries(SOCIAL_DICT).find(([, v]) => looksLikeDomain(urlStr, v.domains));
+          if (hit) out.push({ icon: hit[1].icon, url: urlStr });
+          else out.push({ icon: 'assets/icons/link.svg', url: urlStr });
         }
       }
     }
@@ -146,7 +158,7 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
   const allStrings = collectAllStrings(src);
   for (const s of allStrings) {
     if (!/^https?:\/\//i.test(s)) continue;
-    for (const [plat, meta] of Object.entries(SOCIAL_DICT)) {
+    for (const [, meta] of Object.entries(SOCIAL_DICT)) {
       if (looksLikeDomain(s, meta.domains)) {
         out.push({ icon: meta.icon, url: s });
         break;
@@ -154,9 +166,9 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
     }
   }
 
-  // 4) deduplicar por URL (case-insensitive)
+  // 4) deduplicar por URL
   const seen = new Set<string>();
-  return out.filter(r => {
+  return out.filter((r) => {
     const key = r.url.trim().toLowerCase();
     if (!key) return false;
     if (seen.has(key)) return false;
@@ -165,68 +177,81 @@ function normalizeRedes(src: any): Array<{ icon: string; url: string }> {
   });
 }
 
-// OVERLOADS
+/* ============================
+   Mapper (overloads y cuerpo)
+   ============================ */
+
 export function mapToAgentProfileVM(src: AgentSubmission): AgentProfileVM;
 export function mapToAgentProfileVM(src: Agent): AgentProfileVM;
 export function mapToAgentProfileVM(src: Record<string, unknown>): AgentProfileVM;
 
-// implementación
 export function mapToAgentProfileVM(src: any): AgentProfileVM {
-  // Avatar con fallback y URL pública
-  const avatarRaw =
-    pickStr(get(src, 'avatar')) ||
-    pickStr(get(src, 'foto'));
+  // Avatar (cae a fallback si no hay)
+  const avatarRaw = pickStr(get(src, 'avatar')) || pickStr(get(src, 'foto'));
   const avatar = avatarRaw ? toPublicUrl(avatarRaw) : AVATAR_FALLBACK;
 
+  // Ubicación
   const ubicacion =
     pickStr(get(src, 'ubicacion')) ||
     [pickStr(get(src, 'municipio')), pickStr(get(src, 'estado'))]
       .filter(Boolean)
       .join(', ');
 
+  // Media: thumbs + héroe (lo incluimos al inicio si existe)
   const mediaThumbsAny = pickArr(get(src, 'mediaThumbs'));
-  const mediaThumbs = mediaThumbsAny
-    .map(x => toPublicUrl(pickStr(x as any)))
+  let mediaThumbs = mediaThumbsAny
+    .map((x) => toPublicUrl(pickStr(x as any)))
     .filter(Boolean);
 
-  // aseguradoras: arreglo o texto con comas → también normalizamos a URL pública si son paths
+  const heroRaw = pickStr(get(src, 'mediaHero')) || pickStr(get(src, 'fotoHero'));
+  const mediaHero = heroRaw ? toPublicUrl(heroRaw) : '';
+  if (mediaHero && !mediaThumbs.includes(mediaHero)) {
+    mediaThumbs = [mediaHero, ...mediaThumbs];
+  }
+
+  // Aseguradoras: array o texto con comas/ln
   let aseguradoras = (pickArr(get(src, 'aseguradoras')) as any[])
-    .map(s => toPublicUrl(pickStr(s)))
+    .map((s) => toPublicUrl(pickStr(s)))
     .filter(Boolean);
+
   if (!aseguradoras.length) {
-    const raw = pickStr(get(src, 'aseguradorasText'));
+    const raw = pickStr(get(src, 'aseguradorasText')) || pickStr(get(src, 'aseguradoras'));
     if (raw) {
       aseguradoras = raw
-        .split(',')
-        .map(s => toPublicUrl(s.trim()))
+        .split(/\r?\n|,|;/)
+        .map((s) => toPublicUrl(s.trim()))
         .filter(Boolean);
     }
   }
+
+  // Campos que podrían venir como string o array
+  const especialidades  = splitToArray(get(src, 'especialidades'));
+  const servicios       = splitToArray(get(src, 'servicios'));
+  const experiencia     = splitToArray(get(src, 'experiencia'));
+  const certificaciones = splitToArray(get(src, 'certificaciones'));
 
   return {
     nombre: pickStr(get(src, 'nombre'), 'Agente'),
     avatar,
     ubicacion,
 
-    especialidades:  (pickArr(get(src, 'especialidades')) as any[]).map(s => pickStr(s)).filter(Boolean),
-    servicios:       (pickArr(get(src, 'servicios')) as any[]).map(s => pickStr(s)).filter(Boolean),
-    experiencia:     (pickArr(get(src, 'experiencia')) as any[]).map(s => pickStr(s)).filter(Boolean),
-    certificaciones: (pickArr(get(src, 'certificaciones')) as any[]).map(s => pickStr(s)).filter(Boolean),
+    especialidades,
+    servicios,
+    experiencia,
+    certificaciones,
     aseguradoras,
     mediaThumbs,
 
     verificado: Boolean(get(src, 'verificado')),
     cedula: pickStr(get(src, 'cedula')) || undefined,
 
-    // 🔥 redes robustas
     redes: normalizeRedes(src),
 
-    // opcional: si en tu data hay whatsapp/telefono
     telefono: pickStr(get(src, 'telefono')) || undefined,
     whatsapp: pickStr(get(src, 'whatsapp')) || undefined,
   };
 }
 
-// Aliases
+// Aliases convenientes
 export const mapAgentToVM      = mapToAgentProfileVM;
 export const mapSubmissionToVM = mapToAgentProfileVM;
