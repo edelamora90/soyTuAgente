@@ -1,34 +1,48 @@
-/* ===== 1) Tokens ===== */
+/* ===== 1) Tokens / theme ===== */
 :root {
   --brand: #0fb366;
   --brand-2: #12c27a;
   --brand-dark: #0a7c4b;
-  --ink: #1d2939;           /* texto oscuro */
-  --muted: #667085;         /* texto suave */
-  --bg: #ffffff;
+
+  --ink: #1d2939;
+  --muted: #667085;
+
+  --bg: #ffffff;      /* fondo base blanco */
   --bg-alt: #f6f8fa;
+
   --card: #ffffff;
   --border: #e5e7eb;
+
   --radius: 14px;
   --shadow: 0 8px 20px rgba(16, 24, 40, .08);
+
   --container: 1800px;
-  /* Footer specific */
-   --footer-bg: #0b2f34;       /* fondo azul petróleo */
-  --footer-muted: #c7e4dc;    /* textos secundarios */
-  --footer-text: #eaf6f2;     /* textos principales */
-  --brand: #0fb366;
+
   /* altura compartida por ambas tarjetas */
   --panel-height: clamp(360px, 42vw, 520px);
+
+  /* Escalas tipográficas (opcional; usadas por el home) */
+  --step--1: clamp(0.85rem, 0.80rem + 0.2vw, 0.95rem);
+  --step-0: clamp(1.00rem, 0.95rem + 0.3vw, 1.125rem); /* ~16→18 */
+  --step-1: clamp(1.125rem, 1.05rem + 0.5vw, 1.25rem); /* ~18→20 */
+  --step-2: clamp(1.25rem, 1.15rem + 0.9vw, 1.5rem);   /* ~20→24 */
+  --step-3: clamp(1.5rem, 1.30rem + 1.4vw, 2rem);      /* ~24→32 */
+  --step-4: clamp(1.75rem, 1.50rem + 2vw, 2.5rem);     /* ~28→40 */
+  --step-5: clamp(2rem, 1.7rem + 3vw, 3rem);           /* ~32→48 */
+  --step-6: clamp(2.25rem, 2rem + 4vw, 4.125rem);      /* ~36→66 */
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+  --font-serif: "DM Serif Text", Georgia, "Times New Roman", serif;
+  --fw-head: 800;
 }
 
-:target {
-  scroll-margin-top: 120px;  /* ajusta a la altura real de tu header */
-}
+:target { scroll-margin-top: 120px; }
+
 /* ===== 2) Reset + base ===== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+  font: 16px/1.5 var(--font-sans);
   color: var(--ink);
   background: var(--bg);
 }
@@ -36,11 +50,20 @@ body {
 a { color: var(--brand); text-decoration: none; }
 a:hover { color: var(--brand-dark); }
 
-.container { max-width: var(--container); margin: 0 auto; padding: 0 10px; }
-.section { padding: 56px 0; }
-.h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -.02em; }
-.h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 800; letter-spacing: -.02em; }
-.lead { color: var(--muted); }
+/* Contenedor global */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 10px; /* desktop/tablet por defecto */
+}
+
+/* En móvil (≤640px): 10% de margen por lado */
+@media (max-width: 40em) {
+  .container {
+    padding-inline: 10% !important;
+    max-width: none;
+  }
+}
 
 /* ===== 3) Botones / inputs ===== */
 .btn {
@@ -67,55 +90,35 @@ a:hover { color: var(--brand-dark); }
 }
 .badge { display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; background:#e9faf2; color:var(--brand); font-weight:700; }
 
-
-/*====Fonts====*/
+/* ===== 5) Fuentes ===== */
 @font-face {
   font-family: 'DM Serif Text';
   src: url('/assets/fonts/DMSerifText-Regular.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
-
+@font-face {
+  font-family: 'DM Serif Text';
+  src: url('/assets/fonts/DMSerifText-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
 @font-face {
   font-family: 'Figtree VariableFont wght';
   src: url('/assets/fonts/Figtree-VariableFont_wght.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 100 900;
   font-style: normal;
-}
-/*
-p {
-  font-family: 'Figtree VariableFont wght', sans-serif;
-  color: #545454;
-  line-height: 1.6;
-  font-size: clamp(16px, 1.2vw, 18px);
-  
+  font-display: swap;
 }
 
-li {
-  font-family: 'Figtree VariableFont wght', sans-serif;
-  color: #545454;
-  line-height: 1.6;
-  font-size: clamp(16px, 1.2vw, 18px);
-  
-}
-*/
-
-/* ===== List Styles ===== */
-
-h2.especialista {
-  font-size: 20px;
-  font-weight: 500;
-  color: rgb(83, 83, 83) !important;
-}
-
-
-/* ======= FORMULARIOS ======= */
-/* ------- Controles de formulario por defecto (admin) ------- */
+/* ===== 6) Formularios admin (como tenías) ===== */
 .admin form input:not([type='checkbox']):not([type='radio']):not([type='file']),
 .admin form select,
 .admin form textarea {
   border: 1px solid var(--border);
-  border-radius: 8px;           /* ← esquinas redondeadas */
+  border-radius: 8px;
   background: #fff;
   padding: .65rem .75rem;
   width: 100%;
@@ -123,7 +126,6 @@ h2.especialista {
   line-height: 1.2;
   outline: none;
 }
-
 .admin form input:focus,
 .admin form select:focus,
 .admin form textarea:focus {
@@ -131,3 +133,11 @@ h2.especialista {
   box-shadow: 0 0 0 3px rgba(15,179,102,.15);
 }
 
+/* ===== 7) Overrides solicitados ===== */
+/* Eliminar “franja” de color en TODAS las resoluciones en el home */
+.home-hero,
+.home-categorias {
+  background: transparent !important;
+}
+/* Mantener superficies blancas */
+.cat-surface { background: #ffffff; }

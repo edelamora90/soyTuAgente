@@ -1,0 +1,6 @@
+@use './tokens';
+@use './reset';
+@use './utilities';
+
+/* Overrides globales del Home que quieres fijar para todas las páginas */
+.home-hero, .home-categorias { background: transparent; } /* como pediste */

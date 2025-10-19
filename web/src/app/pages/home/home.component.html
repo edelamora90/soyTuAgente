@@ -1,306 +1,309 @@
 <!-- web/src/app/pages/home/home.component.html -->
-<section class="home-hero" (mouseenter)="pause()" (mouseleave)="play()">
-  <div class="container">
-    <div class="hero-banner" role="region" aria-label="Destacados">
+<div class="page-zoom">
+  <section class="home-hero" (mouseenter)="pause()" (mouseleave)="play()">
+    <div class="container">
+      <div class="hero-banner" role="region" aria-label="Destacados">
 
-      <!-- Capa de slides (solo fondos) -->
-      <div class="slides">
-        <div
-          class="slide"
-          *ngFor="let s of slides; let i = index"
-          [class.active]="i === idx"
-          [style.backgroundImage]="'url(' + s.img + ')'"
-          [style.backgroundPosition]="s.pos"
-          aria-hidden="true">
+        <!-- Capa de slides (solo fondos) -->
+        <div class="slides">
+          <div
+            class="slide"
+            *ngFor="let s of slides; let i = index"
+            [class.active]="i === idx"
+            [style.backgroundImage]="'url(' + s.img + ')'"
+            [style.backgroundPosition]="s.pos"
+            aria-hidden="true">
+          </div>
         </div>
+
+        <!-- Texto dinámico del slide activo -->
+        <div class="hero-copy" *ngIf="slides.length">
+          <h1 [innerHTML]="slides[idx]?.h1Html"></h1>
+          <h2 class="emph"><em>{{ slides[idx]?.h2 }}</em></h2>
+        </div>
+
+        <!-- Dots del carrusel -->
+        <nav class="hero-dots" aria-label="Cambiar slide">
+          <button
+            *ngFor="let s of slides; let i = index"
+            type="button"
+            class="dot"
+            [class.active]="i === idx"
+            [attr.aria-label]="'Ir al slide ' + (i+1)"
+            (click)="go(i)">
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- Barra de búsqueda superpuesta (no cierres nada extra aquí) -->
+  <form
+    class="hero-search"
+    (submit)="goToSearch(sel.value); $event.preventDefault()"
+    novalidate>
+    <select
+      #sel
+      class="select"
+      aria-label="Selecciona un tipo de seguro">
+      <option value="">Selecciona un tipo de seguro</option>
+      <option value="vehiculos">Vehículos</option>
+      <option value="hogar-negocio">Hogar y Negocio</option>
+      <option value="salud-asistencia">Salud y Asistencia</option>
+    </select>
+
+    <button type="submit" class="btn-cta">
+      Buscar a mi agente
+    </button>
+  </form>
+
+  <section class="home-categorias">
+    <div class="container">
+      <div class="cat-surface">
+        <div class="categorias-header">
+          <h2>
+            ¿Qué <span class="highlight">tipo de seguro</span> estás buscando hoy?
+          </h2>
+          <p>
+            Explora las principales categorías y accede a agentes especializados
+            en el tipo de seguro que necesitas.
+          </p>
+        </div>
+
+        <div class="categorias-grid">
+          <a
+            class="cat-card"
+            *ngFor="let c of categorias; trackBy: trackByTitulo"
+            [routerLink]="c.slug ? ['/agente', c.slug] : ['/agentes']"
+            [queryParams]="c.slug ? null : { tipo: c.tipo }"
+            [attr.aria-label]="'Ver agentes para ' + c.titulo">
+            <img class="cat-img" [src]="c.img" [alt]="c.titulo" />
+            <div class="overlay"></div>
+
+            <div class="cat-copy">
+              <div class="sub">{{ c.sub }}</div>
+              <div class="title">{{ c.titulo }}</div>
+              <span class="btn-dark">Ver agentes →</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- ========== SECCIÓN 3: CTA AGENTE ========== -->
+<div class="cta-surface">
+  <!-- Izquierda: imagen -->
+  <div class="cta-media">
+    <img src="assets/home/cta-agente.jpg" alt="Agente certificado" />
+  </div>
+
+  <!-- Derecha: panel oscuro -->
+  <div class="cta-panel">
+    <div class="cta-inner">
+      <div class="cta-head">
+        <h3 class="cta-title">
+          Comienza o haz crecer tu<br />
+          carrera como <span class="grad">agente de seguros</span>
+        </h3>
+        <p class="cta-lead">
+          Accede a valiosas herramientas y a una comunidad activa
+          de agentes experimentados
+        </p>
       </div>
 
-      <!-- Texto dinámico del slide activo -->
-      <div class="hero-copy" *ngIf="slides.length">
-        <h1 [innerHTML]="slides[idx]?.h1Html"></h1>
-        <h2 class="emph"><em>{{ slides[idx]?.h2 }}</em></h2>
+      <ul class="cta-steps">
+        <li class="step-pill">
+          <span class="num">1.</span>
+          <div class="txt">
+            <div class="t">Únete</div>
+            <div class="s">Regístrate, crea tu perfil y accede a la comunidad.</div>
+          </div>
+        </li>
+
+        <li class="step-pill">
+          <span class="num">2.</span>
+          <div class="txt">
+            <div class="t">Capacítate</div>
+            <div class="s">Aprende con formación práctica y mentores expertos.</div>
+          </div>
+        </li>
+
+        <li class="step-pill">
+          <span class="num">3.</span>
+          <div class="txt">
+            <div class="t">Certifícate</div>
+            <div class="s">Obtén tu acreditación oficial como agente.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="cta-actions">
+        <a routerLink="/nosotros" class="btn-ghost-dark">Más información →</a>
+        <a routerLink="/unirme" class="btn-primary btn-pill">Unirme a Soy tu Agente</a>
       </div>
-
-
-      <!-- Dots del carrusel -->
-      <nav class="hero-dots" aria-label="Cambiar slide">
-        <button
-          *ngFor="let s of slides; let i = index"
-          type="button"
-          class="dot"
-          [class.active]="i === idx"
-          [attr.aria-label]="'Ir al slide ' + (i+1)"
-          (click)="go(i)">
-        </button>
-      </nav>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Barra de búsqueda superpuesta (no cierres nada extra aquí) -->
-<form
-  class="hero-search"
-  (submit)="goToSearch(sel.value); $event.preventDefault()"
-  novalidate>
-  <select
-    #sel
-    class="select"
-    aria-label="Selecciona un tipo de seguro">
-    <option value="">Selecciona un tipo de seguro</option>
-    <option value="vehiculos">Vehículos</option>
-    <option value="hogar-negocio">Hogar y Negocio</option>
-    <option value="salud-asistencia">Salud y Asistencia</option>
-  </select>
 
-  <button type="submit" class="btn-cta">
-    Buscar a mi agente
-  </button>
-</form>
+        <header class="tst-head">
+          <h2>Conoce lo que opinan otros <span class="grad">agentes de seguros</span> como tú</h2>
+          <p>
+            Descubre cómo Soy Tu Agente ha impulsado la carrera de nuevos agentes y ha ayudado a expertos a actualizarse
+            para ofrecer más a sus clientes.
+          </p>
+        </header>
 
-<section class="home-categorias">
-  <div class="container">
-    <div class="cat-surface">
-      <div class="categorias-header">
-        <h2>
-          ¿Qué <span class="highlight">tipo de seguro</span> estás buscando hoy?
-        </h2>
-        <p>
-          Explora las principales categorías y accede a agentes especializados
-          en el tipo de seguro que necesitas.
-        </p>
-      </div>
-
-      <div class="categorias-grid">
-        <a
-          class="cat-card"
-          *ngFor="let c of categorias; trackBy: trackByTitulo"
-          [routerLink]="c.slug ? ['/agente', c.slug] : ['/agentes']"
-          [queryParams]="c.slug ? null : { tipo: c.tipo }"
-          [attr.aria-label]="'Ver agentes para ' + c.titulo">
-          <img class="cat-img" [src]="c.img" [alt]="c.titulo" />
-          <div class="overlay"></div>
-
-          <div class="cat-copy">
-            <div class="sub">{{ c.sub }}</div>
-            <div class="title">{{ c.titulo }}</div>
-            <span class="btn-dark">Ver agentes →</span>
-          </div>
-        </a>
-      </div>
-
-      <div class="cta-surface">
-        <!-- Izquierda: imagen -->
-        <div class="cta-media">
-          <img src="assets/home/cta-agente.jpg" alt="Agente certificado" />
-        </div>
-
-        <!-- Derecha: panel oscuro -->
-        <div class="cta-panel">
-          <div class="cta-head">
-            <h3 class="cta-title">
-              Comienza o haz crecer tu<br />
-              carrera como <span class="grad">agente de seguros</span>
-            </h3>
-            <p class="cta-lead">
-              Accede a valiosas herramientas y a una comunidad activa
-              de agentes experimentados
+        <div class="tst-grid">
+          <!-- Columna 1 -->
+          <article class="t-card1">
+            <h3 class="t-title">Mi mejor decisión profesional</h3>
+            <p class="t-body">
+              Llegué sin experiencia y en solo 4 meses ya tenía mi certificación y mis primeras pólizas vendidas.
             </p>
-          </div>
+            <div class="t-author">
+              <img src="assets/people/paulo.jpg" alt="Paulo Ochoa Ibarra" />
+              <div><strong>Paulo Ochoa Ibarra</strong><span>Agente Certificado</span></div>
+            </div>
+          </article>
 
-          <ul class="cta-steps">
-            <li class="step-pill">
-              <span class="num">1.</span>
-              <div class="txt">
-                <div class="t">Únete</div>
-                <div class="s">Regístrate, crea tu perfil y accede a la comunidad.</div>
-              </div>
-            </li>
-            <li class="sep-dot" aria-hidden="true"></li>
+          <article class="t-card center">
+            <p class="t-sub">Al unirte tienes todos los beneficios de</p>
+            <img class="t-logo" src="assets/logo.svg" alt="Soy tu Agente" />
+            <button routerLink="/unirme" class="btn-outline-strong">SIN COSTO</button>
+          </article>
 
-            <li class="step-pill">
-              <span class="num">2.</span>
-              <div class="txt">
-                <div class="t">Capacítate</div>
-                <div class="s">Aprende con formación práctica y mentores expertos.</div>
-              </div>
-            </li>
-            <li class="sep-dot" aria-hidden="true"></li>
+          <a class="t-video card" href="#" aria-label="Reproducir testimonio en video">
+            <img src="assets/home/testimonio-video.jpg" alt="Video de agente" />
+            <span class="play"></span>
+          </a>
 
-            <li class="step-pill">
-              <span class="num">3.</span>
-              <div class="txt">
-                <div class="t">Certifícate</div>
-                <div class="s">Obtén tu acreditación oficial como agente.</div>
-              </div>
-            </li>
-          </ul>
+          <article class="t-card2">
+            <h3 class="t-title">La mejor comunidad de agentes</h3>
+            <p class="t-body">
+              La comunidad de agentes siempre está dispuesta a ayudar. Aquí nunca te sientes solo en el proceso.
+            </p>
+            <div class="t-author">
+              <img src="assets/people/marisela.jpg" alt="Marisela Álvarez" />
+              <div><strong>Marisela Álvarez</strong><span>Agente Certificado</span></div>
+            </div>
+          </article>
 
-          <div class="cta-actions">
-            <a routerLink="/nosotros" class="btn-ghost-dark">Más información →</a>
-            <a routerLink="/unirme" class="btn-primary btn-pill">Unirme a Soy tu Agente</a>
-          </div>
+          <article class="t-card3">
+            <h3 class="t-title">10 años en el mercado y sigo aprendiendo</h3>
+            <p class="t-body">
+              Actualicé mis conocimientos y ahora puedo ofrecer más productos y un mejor servicio a mis clientes.
+            </p>
+            <div class="t-author">
+              <img src="assets/people/ricardo.jpg" alt="Ricardo Martínez" />
+              <div><strong>Ricardo Martínez</strong><span>Agente Certificado</span></div>
+            </div>
+          </article>
+
+          <article class="t-card4">
+            <h3 class="t-title">Mucho más que una capacitación</h3>
+            <p class="t-body">Me ha ayudado a formarme desde cero ¡Gracias!</p>
+            <div class="t-author">
+              <img src="assets/people/victor.jpg" alt="Víctor Andrade" />
+              <div><strong>Víctor Andrade</strong><span>Agente Certificado</span></div>
+            </div>
+          </article>
         </div>
-      </div>
 
-      <header class="tst-head">
-        <h2>Conoce lo que opinan otros <span class="grad">agentes de seguros</span> como tú</h2>
-        <p>
-          Descubre cómo Soy Tu Agente ha impulsado la carrera de nuevos agentes y ha ayudado a expertos a actualizarse
-          para ofrecer más a sus clientes.
-        </p>
-      </header>
+        <header class="ev-head">
+          <h2>Entérate y participa de <span class="grad">nuestros próximos eventos</span></h2>
+        </header>
 
-      <div class="tst-grid">
-        <!-- Columna 1 -->
-        <article class="t-card1">
-          <h3 class="t-title">Mi mejor decisión profesional</h3>
-          <p class="t-body">
-            Llegué sin experiencia y en solo 4 meses ya tenía mi certificación y mis primeras pólizas vendidas.
-          </p>
-          <div class="t-author">
-            <img src="assets/people/paulo.jpg" alt="Paulo Ochoa Ibarra" />
-            <div><strong>Paulo Ochoa Ibarra</strong><span>Agente Certificado</span></div>
-          </div>
-        </article>
+        <div class="ev-grid">
+          <!-- Card grande / carrusel (por ahora estático) -->
+          <article class="ev-hero">
+            <img src="assets/events/ev-01.jpg" alt="Evento capacitación" />
+            <span class="chip">Capacitación</span>
+            <div class="ev-overlay"></div>
 
-        <article class="t-card center">
-          <p class="t-sub">Al unirte tienes todos los beneficios de</p>
-          <img class="t-logo" src="assets/logo.svg" alt="Soy tu Agente" />
-          <button routerLink="/unirme" class="btn-outline-strong">SIN COSTO</button>
-        </article>
+            <div class="ev-copy">
+              <div class="ev-date">21 de Agosto</div>
 
-        <a class="t-video card" href="#" aria-label="Reproducir testimonio en video">
-          <img src="assets/home/testimonio-video.jpg" alt="Video de agente" />
-          <span class="play"></span>
-        </a>
+              <div class="ev-header">
+                <h3 class="ev-title">Nuevas regulaciones<br/>de coaseguro 2025 - 2026</h3>
+                <a class="btn-dark" href="#">
+                  Más información <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
 
-        <article class="t-card2">
-          <h3 class="t-title">La mejor comunidad de agentes</h3>
-          <p class="t-body">
-            La comunidad de agentes siempre está dispuesta a ayudar. Aquí nunca te sientes solo en el proceso.
-          </p>
-          <div class="t-author">
-            <img src="assets/people/marisela.jpg" alt="Marisela Álvarez" />
-            <div><strong>Marisela Álvarez</strong><span>Agente Certificado</span></div>
-          </div>
-        </article>
+            <button class="nav prev" aria-label="Anterior">‹</button>
+            <button class="nav next" aria-label="Siguiente">›</button>
+          </article>
 
-        <article class="t-card3">
-          <h3 class="t-title">10 años en el mercado y sigo aprendiendo</h3>
-          <p class="t-body">
-            Actualicé mis conocimientos y ahora puedo ofrecer más productos y un mejor servicio a mis clientes.
-          </p>
-          <div class="t-author">
-            <img src="assets/people/ricardo.jpg" alt="Ricardo Martínez" />
-            <div><strong>Ricardo Martínez</strong><span>Agente Certificado</span></div>
-          </div>
-        </article>
+          <!-- Panel de invitación -->
+          <aside class="ev-invite">
+            <div class="ev-panel">
+              <h3>Recibe invitaciones</h3>
+              <p>a nuestros próximos eventos<br/>de manera gratuita</p>
 
-        <article class="t-card4">
-          <h3 class="t-title">Mucho más que una capacitación</h3>
-          <p class="t-body">Me ha ayudado a formarme desde cero ¡Gracias!</p>
-          <div class="t-author">
-            <img src="assets/people/victor.jpg" alt="Víctor Andrade" />
-            <div><strong>Víctor Andrade</strong><span>Agente Certificado</span></div>
-          </div>
-        </article>
-      </div>
+              <ul class="ev-list">
+                <li>Capacitaciones</li>
+                <li>Certificaciones</li>
+                <li>Cursos</li>
+              </ul>
 
-      <header class="ev-head">
-        <h2>Entérate y participa de <span class="grad">nuestros próximos eventos</span></h2>
-      </header>
-
-      <div class="ev-grid">
-        <!-- Card grande / carrusel (por ahora estático) -->
-        <article class="ev-hero">
-          <img src="assets/events/ev-01.jpg" alt="Evento capacitación" />
-          <span class="chip">Capacitación</span>
-          <div class="ev-overlay"></div>
-
-          <div class="ev-copy">
-            <div class="ev-date">21 de Agosto</div>
-
-            <div class="ev-header">
-              <h3 class="ev-title">Nuevas regulaciones<br/>de coaseguro 2025 - 2026</h3>
-              <a class="btn-dark" href="#">
-                Más información <span aria-hidden="true">→</span>
+              <a routerLink="/unirme" class="btn-primary btn-pill">
+                Unirme a Soy tu Agente
               </a>
             </div>
-          </div>
 
-          <button class="nav prev" aria-label="Anterior">‹</button>
-          <button class="nav next" aria-label="Siguiente">›</button>
-        </article>
+            <!-- persona recortada dentro del panel -->
+            <img class="ev-person" src="assets/events/invite-person.png" alt="Invitaciones" />
+          </aside>
+        </div>
 
-        <!-- Panel de invitación -->
-        <aside class="ev-invite">
-          <div class="ev-panel">
-            <h3>Recibe invitaciones</h3>
-            <p>a nuestros próximos eventos<br/>de manera gratuita</p>
+        <header class="news-head">
+          <h2>Artículos y <span class="grad">noticias</span> para agentes</h2>
+        </header>
 
-            <ul class="ev-list">
-              <li>Capacitaciones</li>
-              <li>Certificaciones</li>
-              <li>Cursos</li>
-            </ul>
-
-            <a routerLink="/unirme" class="btn-primary btn-pill">
-              Unirme a Soy tu Agente
+        <div class="news-grid">
+          <!-- Card 1 -->
+          <article class="news-card">
+            <a class="news-media" href="#">
+              <img src="assets/news/norm-aplazada.jpg" alt="Aplazada la norma NOM-200091" />
+              <div class="shade"></div>
+              <h3 class="news-title">Aplazada la norma<br />NOM-200091</h3>
             </a>
-          </div>
+            <p class="news-excerpt">
+              Se pospone la aplicación de nuevas regulaciones referentes a actualización
+              de NOMs en México hasta el 2027 …
+            </p>
+            <a class="news-link" href="#">Continuar leyendo</a>
+          </article>
 
-          <!-- persona recortada dentro del panel -->
-          <img class="ev-person" src="assets/events/invite-person.png" alt="Invitaciones" />
-        </aside>
-      </div>
+          <!-- Card 2 -->
+          <article class="news-card">
+            <a class="news-media" href="#">
+              <img src="assets/news/agentes-frontera.jpg" alt="Nueva certificación para agentes fronterizos" />
+              <div class="shade"></div>
+              <h3 class="news-title">Nueva certificación<br />para agentes fronterizos</h3>
+            </a>
+            <p class="news-excerpt">
+              La cámara de comercio reguladora de agentes de aseguranza emite una nueva certificación disponible para …
+            </p>
+            <a class="news-link" href="#">Continuar leyendo</a>
+          </article>
 
-      <header class="news-head">
-        <h2>Artículos y <span class="grad">noticias</span> para agentes</h2>
-      </header>
+          <!-- Card 3 -->
+          <article class="news-card">
+            <a class="news-media" href="#">
+              <img src="assets/news/qualitas-bbva.jpg" alt="Qualitas y BBVA unifican servicios" />
+              <div class="shade"></div>
+              <h3 class="news-title">Qualitas y BBVA<br />unifican servicios</h3>
+            </a>
+            <p class="news-excerpt">
+              Desde el pasado 30 de Julio del presente año ambas compañías han acordado la migración del …
+            </p>
+            <a class="news-link" href="#">Continuar leyendo</a>
+          </article>
+        </div>
+      </div> <!-- .cat-surface -->
+    </div>   <!-- .container -->
+  </section> <!-- .home-categorias -->
 
-      <div class="news-grid">
-        <!-- Card 1 -->
-        <article class="news-card">
-          <a class="news-media" href="#">
-            <img src="assets/news/norm-aplazada.jpg" alt="Aplazada la norma NOM-200091" />
-            <div class="shade"></div>
-            <h3 class="news-title">Aplazada la norma<br />NOM-200091</h3>
-          </a>
-          <p class="news-excerpt">
-            Se pospone la aplicación de nuevas regulaciones referentes a actualización
-            de NOMs en México hasta el 2027 …
-          </p>
-          <a class="news-link" href="#">Continuar leyendo</a>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="news-card">
-          <a class="news-media" href="#">
-            <img src="assets/news/agentes-frontera.jpg" alt="Nueva certificación para agentes fronterizos" />
-            <div class="shade"></div>
-            <h3 class="news-title">Nueva certificación<br />para agentes fronterizos</h3>
-          </a>
-          <p class="news-excerpt">
-            La cámara de comercio reguladora de agentes de aseguranza emite una nueva certificación disponible para …
-          </p>
-          <a class="news-link" href="#">Continuar leyendo</a>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="news-card">
-          <a class="news-media" href="#">
-            <img src="assets/news/qualitas-bbva.jpg" alt="Qualitas y BBVA unifican servicios" />
-            <div class="shade"></div>
-            <h3 class="news-title">Qualitas y BBVA<br />unifican servicios</h3>
-          </a>
-          <p class="news-excerpt">
-            Desde el pasado 30 de Julio del presente año ambas compañías han acordado la migración del …
-          </p>
-          <a class="news-link" href="#">Continuar leyendo</a>
-        </article>
-      </div>
-    </div> <!-- .cat-surface -->
-  </div>   <!-- .container -->
-</section> <!-- .home-categorias -->
-
-<app-scroll-top></app-scroll-top>
+  <app-scroll-top></app-scroll-top>
+</div>
