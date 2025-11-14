@@ -14,7 +14,7 @@ import { UpdateAgentDto } from './dto/update-agent.dto';
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as sharp from 'sharp';
+const sharp = require('sharp');
 
 // ===== Helpers para URLs públicas (solo backend) =====
 const PUBLIC = (process.env['PUBLIC_BASE_URL'] || 'http://localhost:3000').replace(
