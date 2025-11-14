@@ -24,7 +24,7 @@
           <td>{{ a.nombre }}</td>
           <td>{{ a.slug }}</td>
           <td>{{ a.ubicacion }}</td>
-          <td>{{ a.especialidades ?? [] .join(', ') }}</td>
+          <td>{{ (a.especialidades || []).join(', ') }}</td>
           <td class="actions">
             <button class="btn" (click)="edit(a)">Editar</button>
             <button class="btn danger" (click)="delete(a)" [disabled]="!a.id">Eliminar</button>

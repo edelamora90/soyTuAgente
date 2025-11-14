@@ -84,23 +84,6 @@ fi
 
 log "Carpeta de publicación detectada: $SRC"
 
-# ===== 3) Backup (opcional) =====
-timestamp="$(date +%Y%m%d-%H%M%S)"
-if [ "$SKIP_BACKUP" = false ]; then
-  mkdir -p "$BACKUP_DIR"
-  BKP="$BACKUP_DIR/site-$timestamp.tar.gz"
-  log "Creando backup del docroot actual → $BKP"
-  if [ "$DRY_RUN" = true ]; then
-    warn "[dry-run] omitiendo backup real"
-  else
-    # Si el docroot está vacío no falles
-    if [ -d "$DOCROOT" ]; then
-      tar -C "$DOCROOT" -czf "$BKP" . 2>/dev/null || true
-    fi
-  fi
-else
-  warn "Saltando backup --skip-backup"
-fi
 
 # ===== 4) Publicación =====
 log "Publicando con rsync → $DOCROOT"

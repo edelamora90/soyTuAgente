@@ -1,4 +1,4 @@
-# caches/builds
+# ====== CACHES / BUILDS ======
 .nx/
 tmp/
 generated/
@@ -6,16 +6,18 @@ dist/
 api/dist/
 web/dist/
 
-# uploads de usuarios
+# ====== UPLOADS REAL ======
 api/uploads/
 
-# secretos
+# ====== SECRETOS ======
 .env
+*.env
+api/.env*
 *.key
 *private_key*.key
-_.consultoriacareve.com_private_key.key
+_*.consultoriacareve.com_private_key.key
 
-# node/IDE
+# ====== NODE / IDE ======
 node_modules/
 .angular/
 .vscode/*
@@ -24,7 +26,17 @@ node_modules/
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# macOS / logs
-.DS_Store
+# ====== BACKUPS / EXPORTS ======
+backups/
+soyTuAgente_code_*.tar.gz
+
+# ====== LOGS ======
 *.log
 error.log
+
+# ====== SISTEMA OPERATIVO ======
+.DS_Store
+
+# ====== JEST / TEMP ======
+coverage/
+

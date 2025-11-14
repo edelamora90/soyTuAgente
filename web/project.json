@@ -16,7 +16,7 @@
     "polyfills": ["zone.js"],
     "tsConfig": "web/tsconfig.app.json",
     "inlineStyleLanguage": "scss",
-    "assets": ["web/src/favicon.ico", "web/src/assets"],
+    "assets": ["web/src/favicon.ico", "web/src/assets", "web/src/manifest.webmanifest"],
     "styles": ["web/src/styles.scss"]
   },
   "configurations": {

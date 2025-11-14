@@ -1,14 +1,13 @@
-<!-- web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.html -->
 <section class="ap container profile" *ngIf="!loading && agent as a; else skeleton">
 
-  <!-- Tarjeta -->
+  <!-- Tarjeta principal con todas las secciones -->
   <section class="ap-card">
-    <!-- Col 1: Avatar (fila 1, col 1) -->
+    <!-- Col 1: Avatar -->
     <div class="ap-avatar">
       <img [src]="a.avatar" [alt]="a.nombre" />
     </div>
 
-    <!-- Col 2: Info (fila 1, col 2) -->
+    <!-- Col 2: Información general -->
     <div class="ap-info">
       <h1 class="ap-name">
         {{ a.nombre }}
@@ -17,8 +16,6 @@
 
       <div class="ap-id" *ngIf="a.cedula"><strong>Cédula:</strong> {{ a.cedula }}</div>
 
-
-      <!-- Ubicaciones: una por línea -->
       <div class="ap-meta" *ngIf="locations.length; else noLocs">
         <div class="label"><strong>Ubicaciones:</strong></div>
         <div class="loc" *ngFor="let l of locations; trackBy: trackByIndex">{{ l }}</div>
@@ -38,15 +35,15 @@
       </div>
     </div>
 
-    <!-- Fila 2, Col 1: Redes -->
+    <!-- Redes Sociales -->
     <div class="ap-social" *ngIf="a.redes?.length">
       <a *ngFor="let r of a.redes" [href]="r.url" target="_blank" rel="noopener">
         <img [src]="r.icon" alt="" />
       </a>
     </div>
 
-    <!-- Fila 2, Col 2: CTAs -->
-    <div class="ap-cta">
+    <!-- Botones CTA superiores -->
+    <div class="ap-cta ap-cta--top">
       <a class="ap-btn ap-btn--call"
          [attr.href]="phoneHref"
          [class.is-disabled]="!phoneHref"
@@ -59,83 +56,78 @@
         <span class="label">Contactar por WhatsApp</span>
       </button>
     </div>
-  </section>
-  <div class="ap-separator"></div>
 
-  <!-- Conóceme / Galería -->
-  <section class="ap-block" *ngIf="thumbs.length">
-    <h2>Conóceme</h2>
-
-    <div class="ap-media">
-      <div class="thumbs">
-        <button class="thumb"
-                *ngFor="let t of thumbs; trackBy: trackByIndex"
-                type="button"
-                (click)="openGallery(t)"
-                [attr.aria-label]="'Abrir imagen ' + t">
-          <img [src]="t" alt="Miniatura" loading="lazy" />
-        </button>
+    <!-- Galería / Conóceme -->
+    <div class="ap-divider"></div>
+    <div class="ap-gallery" *ngIf="thumbs.length">
+      <h2>Conóceme</h2>
+      <div class="ap-gallery-grid">
+        <img *ngFor="let t of thumbs; trackBy: trackByIndex"
+             [src]="t"
+             alt="Miniatura"
+             loading="lazy"
+             (click)="openGallery(t)" />
       </div>
     </div>
 
-    <div class="ap-lightbox" *ngIf="showLightbox" role="dialog" aria-modal="true" tabindex="0"
-         (click)="closeGallery()" (keydown.escape)="closeGallery()"
-         (keydown.enter)="closeGallery()" (keydown.space)="closeGallery()">
-      <div class="ap-lightbox__content"
-           role="document"
-           tabindex="0"
-           (click)="$event.stopPropagation()"
-           (keydown.enter)="$event.stopPropagation()"
-           (keydown.space)="$event.preventDefault(); $event.stopPropagation()">
-        <!-- (si muestras imagen actual, añade aquí la <img [src]="currentImg" ...>) -->
+    <!-- Experiencia -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.experiencia?.length">
+      <h2>Experiencia</h2>
+      <p *ngFor="let p of a.experiencia; trackBy: trackByIndex">{{ p }}</p>
+    </div>
+
+    <!-- Servicios -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.servicios?.length">
+      <h2>Mis servicios</h2>
+      <ul class="list">
+        <li *ngFor="let s of a.servicios; trackBy: trackByIndex">{{ s }}</li>
+      </ul>
+    </div>
+
+    <!-- Certificaciones -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.certificaciones?.length">
+      <h2>Certificaciones</h2>
+      <ul class="checks">
+        <li *ngFor="let c of a.certificaciones; trackBy: trackByIndex">
+          <span class="check">✔</span> {{ c }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Aseguradoras -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.aseguradoras?.length">
+      <h2>Aseguradoras asociadas</h2>
+      <div class="brands-grid">
+        <div class="brand" *ngFor="let b of a.aseguradoras; trackBy: trackByIndex">
+          <img [src]="b" alt="Aseguradora" loading="lazy" />
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- Experiencia -->
-  <section class="ap-block" *ngIf="a.experiencia?.length">
-    <h2>Experiencia</h2>
-    <p *ngFor="let p of a.experiencia; trackBy: trackByIndex">{{ p }}</p>
-  </section>
+    <!-- CTA final centrado -->
+    <div class="ap-divider"></div>
+    <div class="ap-cta ap-cta--footer">
+      <a class="ap-btn ap-btn--call"
+         [attr.href]="phoneHref"
+         [class.is-disabled]="!phoneHref"
+         (click)="$event.stopPropagation()">
+        <span class="label">Llamar al agente</span>
+      </a>
 
-  <!-- Servicios -->
-  <section class="ap-block" *ngIf="a.servicios?.length">
-    <h2>Mis servicios</h2>
-    <ul class="list">
-      <li *ngFor="let s of a.servicios; trackBy: trackByIndex">{{ s }}</li>
-    </ul>
-  </section>
-
-  <!-- Certificaciones -->
-  <section class="ap-block" *ngIf="a.certificaciones?.length">
-    <h2>Certificaciones</h2>
-    <ul class="checks">
-      <li *ngFor="let c of a.certificaciones; trackBy: trackByIndex">
-        <span class="check">✔</span> {{ c }}
-      </li>
-    </ul>
-  </section>
-
-  <!-- Aseguradoras -->
-  <section class="ap-block" *ngIf="a.aseguradoras?.length">
-    <h2>Aseguradoras asociadas</h2>
-    <div class="brands">
-      <img *ngFor="let b of a.aseguradoras; trackBy: trackByIndex" [src]="b" alt="Aseguradora" loading="lazy" />
+      <button type="button" class="ap-btn ap-btn--wa" (click)="openWhatsApp()">
+        <img src="assets/icons/whatsapp.svg" class="ico" alt="" aria-hidden="true" />
+        <span class="label">Contactar por WhatsApp</span>
+      </button>
     </div>
-  </section>
 
-  <section class="ap-cta ap-cta--footer">
-    <a class="ap-btn ap-btn--call"
-       [attr.href]="phoneHref"
-       [class.is-disabled]="!phoneHref"
-       (click)="$event.stopPropagation()">
-      <span class="label">Llamar al agente</span>
-    </a>
-
-    <button type="button" class="ap-btn ap-btn--wa" (click)="openWhatsApp()">
-      <img src="assets/icons/whatsapp.svg" class="ico" alt="" aria-hidden="true" />
-      <span class="label">Contactar por WhatsApp</span>
-    </button>
+    <!-- Modal Lightbox -->
+    <div *ngIf="showLightbox" class="ap-lightbox" (click)="closeGallery()">
+      <img [src]="currentImg" class="ap-lightbox-img" alt="Imagen ampliada" />
+    </div>
   </section>
 
 </section>

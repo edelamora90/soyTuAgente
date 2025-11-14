@@ -1,81 +1,63 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 model AdminUser {
-  id           String    @id @default(cuid())
+  id           String    @id
   email        String    @unique
   username     String?   @unique
   passwordHash String
-  roles        String[]  @default(["admin"]) // roles como array de strings
+  roles        String[]  @default(["admin"])
   isActive     Boolean   @default(true)
-  tokenVersion Int       @default(0) // para invalidar refresh tokens
+  tokenVersion Int       @default(0)
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
 
 model Agent {
-  id         String  @id @default(cuid())
-  slug       String  @unique
-  nombre     String
-  cedula     String
-  verificado Boolean @default(false)
-  avatar     String?
-  ubicacion  String
-  whatsapp   String? // opcional
-
-  // listas (PostgreSQL soporta arrays nativos)
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  nombre          String
+  cedula          String
+  verificado      Boolean  @default(false)
+  avatar          String?
+  ubicacion       String
+  whatsapp        String?
   especialidades  String[]
   experiencia     String[]
   servicios       String[]
   certificaciones String[]
   aseguradoras    String[]
   mediaThumbs     String[]
-
-  mediaHero String
-
-  // redes sociales como JSON
-  redes Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  mediaHero       String
+  redes           Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model AgentSubmission {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Estado del flujo
-  status     SubmissionStatus @default(PENDING)
-  reviewedAt DateTime?
-
-  // Revisor
-  reviewedById String? // opcional: id de usuario admin si manejas auth
-  reviewNotes  String?
-
-  // Datos del “formulario” (espejo de CreateAgentDto)
-  slug           String   @unique
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  status         SubmissionStatus @default(PENDING)
+  reviewedAt     DateTime?
+  reviewedById   String?
+  reviewNotes    String?
+  slug           String           @unique
   nombre         String
   cedula         String?
-  verificado     Boolean? @default(false)
-  foto           String? // avatar
-  ubicacion      String? // "Municipio, Estado"
+  verificado     Boolean?         @default(false)
+  foto           String?
+  ubicacion      String?
   whatsapp       String?
-  especialidades String[] @default([])
+  especialidades String[]         @default([])
   experiencia    String?
-  servicios      String[] @default([])
-  aseguradoras   String? // o String[] si ya lo tienes así en Agent
+  servicios      String[]         @default([])
+  aseguradoras   String?
   logroDestacado String?
-  logosAseg      String[] @default([]) // si en Agent usas array
-  fotosMini      String[] @default([])
+  logosAseg      String[]         @default([])
+  fotosMini      String[]         @default([])
   fotoHero       String?
   facebook       String?
   instagram      String?
@@ -87,4 +69,29 @@ enum SubmissionStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  img         String? // URL o path a imagen
+  tag         String? // etiqueta corta (p.e. "Tendencias")
+  topic       String? // tema o categoría
+  readMinutes Int       @default(5)
+  contentMd   String? // markdown
+  date        DateTime  @default(now()) // fecha del artículo (puede ser de publicación o editorial)
+  externalUrl String?   @map("external_url")
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, publishedAt])
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }

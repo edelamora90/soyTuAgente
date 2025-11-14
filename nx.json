@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+
+  "useInferencePlugins": false,
+
   "namedInputs": {
     "default": ["{projectRoot}/**/*"],
     "production": [
@@ -13,6 +16,7 @@
       "!{projectRoot}/test-setup.[jt]s"
     ]
   },
+
   "targetDefaults": {
     "@angular/build:application": {
       "cache": true,
@@ -37,32 +41,32 @@
       }
     }
   },
+
   "plugins": [
-  { "plugin": "@nx/playwright/plugin", "options": { "targetName": "e2e" } },
-  { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
-
-  { "plugin": "@nx/angular/plugin",
-    "options": {
-      "buildTargetName": "build",
-      "serveTargetName": "serve",
-      "testTargetName": "test",
-      "lintTargetName": "lint",
-      "extractI18nTargetName": "extract-i18n"
+    { "plugin": "@nx/playwright/plugin", "options": { "targetName": "e2e" } },
+    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
+    {
+      "plugin": "@nx/angular/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "testTargetName": "test",
+        "lintTargetName": "lint",
+        "extractI18nTargetName": "extract-i18n"
+      }
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
     }
-  },
+  ],
 
-  {
-    "plugin": "@nx/webpack/plugin",
-    "options": {
-      "buildTargetName": "build",
-      "serveTargetName": "serve",
-      "previewTargetName": "preview",
-      "buildDepsTargetName": "build-deps",
-      "watchDepsTargetName": "watch-deps"
-    }
-  }
-]
-,
   "generators": {
     "@nx/angular:application": {
       "e2eTestRunner": "playwright",
@@ -71,5 +75,11 @@
       "unitTestRunner": "jest"
     },
     "@nx/angular:component": { "style": "css" }
+  },
+
+  "projects": {
+    "web": "web",
+    "api": "api",
+    "api-e2e": "api-e2e"
   }
 }

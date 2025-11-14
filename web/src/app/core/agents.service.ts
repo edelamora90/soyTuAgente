@@ -8,6 +8,7 @@ export interface Agent {
   id: string;
   slug: string;
   whatsapp?: string;  // E.164 sin signos, ej: '5213121234567'
+  telefono?: string | null;
 
   nombre: string;
   cedula: string;
@@ -56,6 +57,7 @@ export class AgentService {
       avatar: b.avatar ?? '',           // UI espera string
       ubicacion: b.ubicacion,
       whatsapp: b.whatsapp ?? undefined,
+        telefono: b.telefono ?? b.whatsapp ?? null,
       especialidades: b.especialidades ?? [],
       redes: (b.redes ?? undefined) as { icon: string; url: string }[] | undefined,
 

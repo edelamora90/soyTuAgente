@@ -10,7 +10,7 @@
         "target": "node",
         "outputPath": "dist/api",
         "main": "api/src/main.ts",
-        "tsConfig": "api/tsconfig.app.json",
+        "tsConfig": "api/tsconfig.build.json",
         "compiler": "tsc",
         "webpackConfig": "api/webpack.config.js",
         "assets": []

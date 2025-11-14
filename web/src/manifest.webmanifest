@@ -1,0 +1,10 @@
+{
+  "name": "Soy tu Agente",
+  "short_name": "SoyTuAgente",
+  "theme_color": "#0b2f34",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": []
+}

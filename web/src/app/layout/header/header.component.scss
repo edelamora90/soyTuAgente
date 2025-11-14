@@ -1,169 +1,305 @@
-/* ---------------- Vars */
-:root {
-  --header-h: 115px;         /* alto header desktop */
-  --header-h-sm: 100px;      /* alto header móvil */
+/* ===== Header alineado al contenedor global (min 85vw, tope 1200) ===== */
+.site-header{
+  position: sticky; top: 0; z-index: 50;
+  background:#fff; border-bottom:1px solid #e5e7eb;
+  box-shadow:0 1px 0 rgba(16,24,40,.04);
 }
 
-/* ---- Header base ---- */
-.site-header {
-  position: sticky;
-  top: 0;
-  padding-top:5px;
-  z-index: 50;
-  background: #fff;
-  border-bottom: 1px solid var(--border, #e9efec);
-  box-shadow: 0 1px 0 rgba(16, 24, 40, 0.04);
-}
+.site-header > .container{
+  width: min(85vw, 1200px);
+  margin-inline: auto;
+  padding-inline: 0;
+  padding-block: clamp(6px, 1.2vw, 10px);
+  min-height: clamp(60px, 8vw, 96px);
 
-.site-header .container {
-  height: var(--header-h);                   /* ← usa variable */
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;            /* ← reparte extremos */
-  gap: 20px;
-  margin-top: 40px;
-  margin-bottom: 40px;
+  column-gap: clamp(12px, 3vw, 40px);
 }
 
 /* Marca */
-.brand { min-width: 160px; }                 /* evita que se comprima demasiado */
-.brand img {
-  height: 48px;
-  display: block;
+.site-header .brand{
+  min-width: clamp(120px, 12vw, 180px);
+}
+.site-header .brand img{
+  display:block;
+  height: clamp(28px, 5.5vw, 44px);
+  width: auto;
 }
 
-/* Navegación desktop */
-.primary-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(18px, 4vw, 56px);
-  margin: 0 auto;                            /* queda centrada entre logo y actions */
-
-  a {
-    font-weight: 800;
-    font-size: 22px;
-    color: #132e35;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color .2s ease;
-    padding: 6px 0;                          /* área clickeable un poco mayor */
-  }
-  a:hover { color: #0a7c4b; }
-  a.active { color: #0b2f34; text-decoration: underline; text-underline-offset: 0.28em; }
+/* Nav desktop */
+.site-header .primary-nav{
+  display:flex; align-items:center; justify-content:center;
+  gap: clamp(14px, 3.2vw, 40px);
+}
+.site-header .primary-nav a{
+  font-weight:800; white-space:nowrap; text-decoration:none;
+  color:#132e35; padding:6px 0; font-size: clamp(14px, 1.6vw, 18px);
+  transition: color .2s ease;
+}
+.site-header .primary-nav a:hover{ color:#0a7c4b; }
+.site-header .primary-nav a.active{
+  color:#0b2f34; text-decoration: underline; text-underline-offset:.28em;
 }
 
-/* Bloque de acciones (derecha) */
-.actions {
-  margin-left: auto;                          /* ← empuja a la derecha */
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Acciones */
+.site-header .actions{
+  display:flex; align-items:center; justify-content:flex-end;
+  gap: clamp(6px,1.6vw,14px);
 }
 
-/* CTA desktop (pill oscuro) */
-.btn-cta {
-  display: inline-flex; align-items: center; justify-content: center;
-  height: 44px; padding: 0 18px; border-radius: 999px; font-weight: 800;
-  background: #0b2f34; color: #e8f3ff; text-decoration: none; font-size: 18px; border: 0;
-  transition: background .2s ease, transform .2s ease;
+/* CTA Unirme */
+.site-header .btn-cta{
+  display:inline-flex; align-items:center; justify-content:center;
+  height: clamp(36px, 5.2vw, 44px);
+  padding: 0 clamp(12px, 2.4vw, 18px);
+  border-radius: 999px; font-weight:800; border:0;
+  background:#0b2f34; color:#e8f3ff; text-decoration:none;
+  font-size: clamp(14px, 1.6vw, 18px);
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
-.btn-cta:hover { background: color-mix(in srgb, #0b2f34 85%, black); transform: translateY(-1px); }
-
-/* Hamburguesa (oculta en desktop) */
-.hamb {
-  width: 42px; height: 42px; border-radius: 10px; border: 1px solid #e6ecea;
-  background: #fff; display: none; place-items: center; padding: 0; margin-left: 8px;
+.site-header .btn-cta:hover{
+  background: color-mix(in srgb, #0b2f34 85%, black);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16,24,40,.12);
 }
-.hamb span {
-  display: block; width: 20px; height: 2px; background: #0b2f34; margin: 4px auto;
-  transition: transform .2s ease, opacity .2s ease;
+.site-header .btn-cta:focus-visible{
+  outline: 2px solid #bfead5; outline-offset: 2px;
 }
-
-/* ---- Menú móvil: cae justo debajo del header ---- */
-.mobile-menu {
-  position: absolute;
-  left: 0; right: 0;
-  top: var(--header-h);                      /* ← sincronizado con el alto del header */
-  background: #fff;
-  border-bottom: 1px solid var(--border, #e9efec);
-  box-shadow: 0 10px 30px rgba(16,24,40,.08);
-  display: grid;
-  gap: 6px;
-  padding: 12px 16px 16px;
-
-  a {
-    padding: 10px 8px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #0b2f34;
-    font-weight: 700;
-  }
-  a:hover { background: #f2f6f4; }
-  a.btn-cta { margin-top: 6px; }
-}
-
-/* ---- Responsive ---- */
-@media (max-width: 1024px) {
-  .site-header .container { height: var(--header-h-sm); }   /* header más compacto */
-  .primary-nav { display: none; }                           /* ocultar menú desktop */
-  .actions .btn-cta { display: none; }                      /* ocultar CTA desktop */
-  .hamb { display: grid; }                                  /* mostrar hamburguesa */
-  .mobile-menu { top: var(--header-h-sm); }                 /* ← ajusta dropdown */
-}
-
-/* Animación del ícono cuando está abierto (opcional) */
-.site-header.is-open .hamb span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-.site-header.is-open .hamb span:nth-child(2) { opacity: 0; }
-.site-header.is-open .hamb span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-
 
 /* Menú de usuario (desktop) */
-.user-menu { position: relative; margin-right: 8px; }
-.user-btn {
-  border: 1px solid #d0d5dd; background: #fff;
-  height: 40px; border-radius: 999px; padding: 0 10px 0 6px;
-  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+.site-header .user-menu{ position: relative; }
+.site-header .user-btn{
+  border:1px solid #d0d5dd; background:#fff;
+  height: 38px;
+  border-radius: 999px; padding: 0 10px 0 6px;
+  display:inline-flex; align-items:center; gap: 8px; cursor: pointer;
+  box-sizing: border-box;
+  font-weight: 600; font-size: 0.95rem; line-height: 1; letter-spacing: .01em;
 }
-.user-btn .avatar {
-  width: 28px; height: 28px; border-radius: 999px;
-  background: #0fb366; color: #fff; display: inline-grid; place-items: center;
-  font-weight: 800; font-size: 12px;
+.site-header .user-btn .avatar{
+  width:26px; height:26px; border-radius:999px; background:#0fb366; color:#fff;
+  display:inline-grid; place-items:center; font-weight:800; font-size:11px;
 }
-.user-btn .name { font-weight: 800; color: #0b2f34; }
-.user-btn .chev { font-size: 12px; color: #6a7f79; margin-left: 2px; }
+.site-header .user-btn .name{
+  font-weight: 700; font-size: 0.95rem;
+  max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.site-header .user-btn .chev{ font-size:11px; color:#6a7f79; margin-left:2px; }
+.site-header .user-btn:hover{ background-color:#f7faf9; }
+.site-header .user-btn:focus-visible{ outline:2px solid #bfead5; outline-offset:2px; }
 
-.user-menu .menu {
-  position: absolute; right: 0; top: calc(100% + 8px); min-width: 200px;
-  background: #fff; border: 1px solid #e9efec; border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(16,24,40,.12);
-  padding: 6px; display: grid; gap: 4px; z-index: 1000;
+.site-header .user-menu .menu{
+  position:absolute; right:0; top: calc(100% + 8px); min-width:200px;
+  background:#fff; border:1px solid #e9efec; border-radius:12px;
+  box-shadow:0 10px 30px rgba(16,24,40,.12);
+  padding:6px; display:grid; gap:4px; z-index:1000;
 }
-.user-menu .menu button {
-  text-align: left; border: 0; background: transparent; padding: 10px 12px;
-  border-radius: 10px; cursor: pointer; color: #0b2f34; font-weight: 700; width: 100%;
+.site-header .user-menu .menu a,
+.site-header .user-menu .menu button{
+  text-align:left; border:0; background:transparent; padding:10px 12px;
+  border-radius:10px; cursor:pointer; color:#0b2f34; font-weight:700; width:100%;
 }
-.user-menu .menu button:hover { background: #f5f8f7; }
+.site-header .user-menu .menu a:hover,
+.site-header .user-menu .menu button:hover{ background:#f5f8f7; }
+
+/* ===== Hamburguesa mejorada ===== */
+.site-header .hamb{
+  --size: 42px;
+  width: var(--size); height: var(--size);
+  border-radius: 12px; border:1px solid #e6ecea;
+  background:#fff; display:none; align-items:center; justify-content:center;
+  padding:0; cursor:pointer;
+  transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.site-header .hamb:focus-visible{
+  outline: 2px solid #bfead5; outline-offset: 2px;
+}
+.site-header .hamb:hover{
+  border-color:#d9e6e1; background:#f8fbfa;
+  box-shadow: 0 4px 12px rgba(16,24,40,.08);
+}
+
+/* Ícono (3 líneas redondeadas que animan a “X”) */
+.site-header .hamb-box{
+  position: relative; width: 22px; height: 16px;
+  display: inline-block;
+}
+.site-header .hamb-line{
+  position:absolute; left:0; right:0; height:2px; border-radius: 2px;
+  background:#0b2f34; transform-origin: center; transition: transform .22s ease, opacity .22s ease, top .22s ease;
+}
+.site-header .hamb-line.top{ top:0; }
+.site-header .hamb-line.mid{ top:7px; }
+.site-header .hamb-line.bot{ top:14px; }
+
+/* Animación a “X” */
+.site-header.is-open .hamb-line.top{
+  top:7px; transform: rotate(45deg);
+}
+.site-header.is-open .hamb-line.mid{
+  opacity:0;
+}
+.site-header.is-open .hamb-line.bot{
+  top:7px; transform: rotate(-45deg);
+}
+
+/* Respeta accesibilidad de motion */
+@media (prefers-reduced-motion: reduce){
+  .site-header .hamb-line{ transition: none; }
+  .site-header .btn-cta{ transition: none; }
+}
+
+/* ===== Menú móvil ===== */
+.site-header .mobile-menu{
+  position:absolute; left:0; right:0; top:100%;
+  background:#fff; border-bottom:1px solid #e5e7eb;
+  box-shadow:0 10px 30px rgba(16,24,40,.08);
+  padding-block: 12px 16px;
+
+  /* mismo borde lateral que el contenedor (1200px máx) */
+  padding-inline: max(clamp(12px, 4vw, 20px), calc(50vw - 600px));
+  display:grid; gap:6px;
+}
+.site-header .mobile-menu a{
+  padding:12px 8px; border-radius:10px; color:#0b2f34; font-weight:700; text-decoration:none;
+}
+.site-header .mobile-menu a:hover{ background:#f2f6f4; }
+.site-header .mobile-menu .btn-cta{
+  margin-top:8px; width:100%;
+  height: 44px; font-size: 1rem;
+}
 
 /* Bloque usuario en menú móvil */
-.mobile-user { border-top: 1px solid #e9efec; margin-top: 8px; padding-top: 8px; display: grid; gap: 6px; }
-.mobile-user .mu-head { display: flex; align-items: center; gap: 10px; }
-.mobile-user .avatar {
-  width: 28px; height: 28px; border-radius: 999px; background: #0fb366; color: #fff;
-  display: inline-grid; place-items: center; font-weight: 800; font-size: 12px;
+.site-header .mobile-user{
+  border-top:1px solid #e9efec; margin-top:8px; padding-top:10px; display:grid; gap:8px;
 }
-.mobile-user .name { font-weight: 800; color: #0b2f34; }
-.mobile-user a { padding: 8px 0; text-decoration: none; color: #0b2f34; font-weight: 700; }
-.mobile-user a:hover { text-decoration: underline; }
-
-
-.mobile-user button,
-.user-menu .menu button {
-  background: transparent;
-  border: 0;
-  padding: 8px 0;
-  text-align: left;
-  color: #0b2f34;
-  font-weight: 700;
-  cursor: pointer;
+.site-header .mobile-user .mu-head{ display:flex; align-items:center; gap:10px; }
+.site-header .mobile-user .avatar{
+  width:28px; height:28px; border-radius:999px; background:#0fb366; color:#fff;
+  display:inline-grid; place-items:center; font-weight:800; font-size:12px;
 }
-.mobile-user button:hover { text-decoration: underline; }
+.site-header .mobile-user .name{ font-weight:800; color:#0b2f34; }
+.site-header .mobile-user a{
+  padding:10px 0; text-decoration:none; color:#0b2f34; font-weight:700;
+}
+.site-header .mobile-user a:hover{ text-decoration:underline; }
+.site-header .mobile-user button{
+  background: transparent; border: 0; padding: 10px 0; text-align: left; color: #0b2f34; font-weight: 700; cursor: pointer;
+}
+.site-header .mobile-user button:hover{ text-decoration: underline; }
+
+/* ===== Breakpoints ===== */
+@media (max-width: 1200px){
+  /* por si usas contenedor más angosto en layouts estrechos */
+}
+
+@media (max-width:1024px){
+  .site-header .primary-nav{ display:none; }
+  .site-header .hamb{ display:flex; }
+  .site-header > .container{ grid-template-columns: auto auto; }
+}
+
+@media (max-width:640px){
+  .site-header > .container{ padding-inline: clamp(12px, 4vw, 20px); }
+  /* el nombre del usuario no crece de más en móviles */
+  .site-header .user-btn .name{ max-width: 10ch; }
+}
+/* ===== Solo móvil / tablet ===== */
+@media (max-width:1024px){
+  /* Oculta CTA de header y el pill de usuario en la barra superior */
+  .site-header .actions .btn-cta{ display:none; }
+  .site-header .user-menu{ display:none; }
+
+  /* Deja visible solo la hamburguesa */
+  .site-header .hamb{ display:flex; }
+  .site-header .primary-nav{ display:none; }
+
+  /* Acomoda separación del header compacto */
+  .site-header > .container{ grid-template-columns: auto auto; }
+  .site-header .actions{ gap: 8px; }
+}
+
+/* El CTA vive en el menú móvil (drawer) */
+.site-header .mobile-menu .btn-cta{
+  display:inline-flex;  /* asegúrate de que se vea como botón */
+  width:100%;
+  height:44px;
+  font-size:1rem;
+}
+/* === Variante "verde" para el CTA del menú móvil === */
+/* Se aplica solo al CTA dentro del drawer móvil */
+.site-header .mobile-menu .btn-cta{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  /* tamaño y forma */
+  height: 56px;                 /* píldora alta como en la captura */
+  padding: 0 18px;
+  border-radius: 999px;
+
+  /* tipografía */
+  font-weight: 800;
+  font-size: 1.05rem;           /* ligeramente más grande */
+  letter-spacing: -.01em;
+
+  /* colores “verde iOS-like” */
+  background: #39B56A;          /* cuerpo */
+  color: #fff;
+  border: 1px solid #2E9F5B;    /* borde sutil más oscuro */
+
+  /* relieve */
+  box-shadow:
+    inset 0 -2px 0 rgba(0,0,0,.10),    /* sombreado inferior interno */
+    0 1px 0 rgba(16,24,40,.06);        /* línea de base externa */
+
+  text-decoration: none;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+/* estados */
+.site-header .mobile-menu .btn-cta:hover{
+  background: #33A861;          /* un tono más oscuro al hover */
+}
+.site-header .mobile-menu .btn-cta:active{
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 -1px 0 rgba(0,0,0,.12),
+    0 0 0 rgba(0,0,0,0);
+}
+.site-header .mobile-menu .btn-cta:focus-visible{
+  outline: 2px solid #C8F0D8;   /* foco accesible */
+  outline-offset: 3px;
+}
+
+/* margen superior para separarlo del listado de enlaces */
+.site-header .mobile-menu .btn-cta{ margin-top: 12px; }
+.site-header .mobile-menu .btn-cta{
+  height: clamp(42px, 6.5vw, 48px);
+  padding: 0 16px;
+  width: auto;                 /* override del 100% */
+  max-width: min(90%, 340px);
+  margin: 10px auto 6px;
+  display: inline-flex;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  background: #39B56A;
+  color: #fff;
+  border: 1px solid #2E9F5B;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.10), 0 1px 0 rgba(16,24,40,.06);
+}
+.site-header .mobile-menu .btn-cta:hover{ background:#33A861; }
+.site-header .mobile-menu .btn-cta:active{ transform: translateY(1px); }
+.site-header .mobile-menu .btn-cta:focus-visible{ outline:2px solid #C8F0D8; outline-offset:3px; }
+
+@media (max-width: 360px){
+  .site-header .mobile-menu .btn-cta{
+    max-width: 92%;
+    padding: 0 14px;
+    font-size: 0.9rem;
+    height: 42px;
+  }
+}

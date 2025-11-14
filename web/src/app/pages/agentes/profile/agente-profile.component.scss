@@ -1,71 +1,299 @@
-// web/src/app/pages/agentes/profile/agente-profile.component.scss
-:host {
-  display: block;
-}
-
-/* Fondo gris claro a pantalla completa (solo en esta página) */
-.page-wrap {
-  background: #f4f6f5; /* gris muy suave */
-  /* Que el área gris cubra al menos el alto de la ventana */
-  min-height: 100dvh; /* usa dvh para móviles modernos; si prefieres, 100vh */
-}
-
-/* Contenedor centrado y con respiro lateral */
-.page-container {
-  max-width: 1120px;            /* ancho máximo de la “página” */
-  margin: 0 auto;
-  padding: clamp(16px, 2.2vw, 28px) clamp(12px, 2vw, 20px);
-  box-sizing: border-box;
-}
-
-/* Tarjeta blanca que envuelve TODO el contenido del perfil */
-.card {
-  background: #fff;
-  border: 1px solid #e9efec;
-  border-radius: 22px;
-  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
-}
-
 .card--profile {
-  /* Espaciado interior de la tarjeta */
-  padding: clamp(16px, 2.5vw, 28px);
-}
+  padding: clamp(24px, 4vw, 48px);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+  border: 1px solid var(--border);
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: clamp(180px, 28%, 260px) 1fr;
+  gap: 32px;
+  align-items: start;
 
-/* Opcional: ajusta el margen vertical de la tarjeta respecto al wrap */
-@media (min-width: 768px) {
-  .card--profile {
-    margin: 12px auto;
+  /* Avatar */
+  ::ng-deep .avatar {
+    width: clamp(140px, 24vw, 240px);
+    height: clamp(140px, 24vw, 240px);
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 14px rgba(16, 24, 40, 0.12);
+    justify-self: center;
+  }
+
+  /* Contenido derecho */
+  ::ng-deep .profile-info {
+    display: grid;
+    gap: 18px;
+  }
+
+  /* Nombre y verificación */
+  ::ng-deep .profile-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  ::ng-deep .verified {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #e6fbf3;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Meta */
+  ::ng-deep .profile-meta {
+    font-size: clamp(14px, 1.4vw, 16px);
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* Especialidades */
+  ::ng-deep .profile-specialties {
+    margin-top: 6px;
+  }
+
+  ::ng-deep .specialties-title {
+    font-weight: 700;
+    font-size: clamp(16px, 1.8vw, 22px);
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  ::ng-deep .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  ::ng-deep .tag {
+    background: var(--bg-soft);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  /* Redes sociales */
+  ::ng-deep .social {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  ::ng-deep .soc {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    transition: transform 0.15s ease;
+  }
+
+  ::ng-deep .soc:hover {
+    transform: translateY(-2px);
+  }
+
+  ::ng-deep .soc img {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Botones */
+  ::ng-deep .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  ::ng-deep .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: clamp(14px, 1.6vw, 16px);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  }
+
+  ::ng-deep .btn-agendar {
+    background: #0b2f34;
+    color: #fff;
+    border: 2px solid #0b2f34;
+  }
+
+  ::ng-deep .btn-agendar:hover {
+    background: #fff;
+    color: #0b2f34;
+    transform: translateY(-2px);
+  }
+
+  ::ng-deep .btn-mensaje {
+    background: #25d366;
+    color: #fff;
+    border: 2px solid #25d366;
+  }
+
+  ::ng-deep .btn-mensaje:hover {
+    background: #fff;
+    color: #25d366;
+    transform: translateY(-2px);
+  }
+
+  /* Galería */
+  ::ng-deep .gallery {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+
+    .gallery-item {
+      width: clamp(160px, 30%, 240px);
+      aspect-ratio: 1/1;
+      border-radius: 18px;
+      object-fit: cover;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  /* Aseguradoras */
+  ::ng-deep .insurers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+
+    .insurer-logo {
+      height: 48px;
+      max-width: 140px;
+      object-fit: contain;
+      filter: grayscale(1);
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .insurer-logo:hover {
+      opacity: 1;
+    }
   }
 }
 
-/* ===== Espaciado más alto entre secciones del perfil (sin tocar el presenter) ===== */
-:host ::ng-deep .ap-block,
-:host ::ng-deep .block {
-  /* antes era ~28px; subimos con clamp para responsive */
-  margin-top: clamp(32px, 6vw, 64px) !important;
+/* RESPONSIVE */
+@media (max-width: 980px) {
+  .card--profile {
+    grid-template-columns: 1fr;
+    text-align: center;
+
+    ::ng-deep .avatar {
+      margin: 0 auto;
+    }
+
+    ::ng-deep .profile-info {
+      justify-items: center;
+    }
+
+    ::ng-deep .actions {
+      justify-content: center;
+    }
+  }
 }
 
-/* Un poco más de respiro entre el header de la tarjeta y la primera sección */
-.card--profile > .container.profile,
-.card--profile > app-agent-profile-presenter {
-  display: block;
+@media (max-width: 540px) {
+  .card--profile {
+    padding: 24px 16px;
+
+    ::ng-deep .avatar {
+      width: 140px;
+      height: 140px;
+    }
+
+    ::ng-deep .profile-name {
+      font-size: 20px;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    ::ng-deep .verified {
+      width: 20px;
+      height: 20px;
+    }
+
+    ::ng-deep .profile-meta {
+      font-size: 13px;
+    }
+
+    ::ng-deep .specialties-title {
+      font-size: 15px;
+    }
+
+    ::ng-deep .tag {
+      font-size: 13.5px;
+      padding: 5px 14px;
+    }
+
+    ::ng-deep .social {
+      justify-content: center;
+    }
+
+    ::ng-deep .actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    ::ng-deep .action-btn {
+      justify-content: center;
+      width: 100%;
+    }
+
+    ::ng-deep .gallery-item {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 16 / 9;
+    }
+
+    ::ng-deep .insurer-logo {
+      height: 36px;
+      max-width: 90px;
+    }
+  }
 }
 
-/* Títulos de sección con respiro adicional */
-:host ::ng-deep .ap-block h2,
-:host ::ng-deep .block h2 {
-  margin-bottom: clamp(14px, 2vw, 20px) !important;
-}
 
-/* (Opcional) línea sutil entre secciones para reforzar la separación visual */
-:host ::ng-deep .ap-block + .ap-block,
-:host ::ng-deep .block + .block {
-  border-top: 1px solid #eef3f1;
-  padding-top: clamp(20px, 3vw, 28px);
+/* =========================================================
+   FIX — Permitir ancho completo del componente presenter
+   ========================================================= */
+.card--profile:has(app-agent-profile-presenter) {
+  display: block !important;
+  grid-template-columns: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  max-width: 100% !important;
 }
-
-/* (Opcional) más aire abajo de toda la tarjeta */
-.page-container {
-  padding-bottom: clamp(24px, 4vw, 56px);
-}
-

@@ -1,0 +1,43 @@
+<!--web/src/app/pages/blog-list/blog-list.component.html-->
+<section class="s6">
+  <div class="container">
+    <header class="blog-head">
+      <h1>Artículos y <span class="grad">recursos</span> para agentes</h1>
+      <a class="more" routerLink="/blog">Ver todos →</a>
+    </header>
+
+    <div class="blog-grid" *ngIf="posts$ | async as posts; else sk">
+      <article class="blog-card"
+               *ngFor="let p of posts; trackBy: trackById"
+               itemscope itemtype="https://schema.org/BlogPosting">
+        <div class="media">
+          <img [src]="p.img"
+               [alt]="p.title"
+               itemprop="image"
+               (error)="onImgError($event)">
+        </div>
+        <div class="shade"></div>
+        <span class="pill" *ngIf="p.tag" itemprop="articleSection">{{ p.tag }}</span>
+
+        <div class="copy">
+          <h3 class="title" itemprop="headline">
+            <a *ngIf="!p.externalUrl" [routerLink]="['/blog', p.slug]">{{ p.title }}</a>
+            <a *ngIf="p.externalUrl" [href]="p.externalUrl" target="_blank" rel="noopener">{{ p.title }}</a>
+          </h3>
+          <p class="meta">
+            {{ p.readMinutes }} min • {{ p.topic }}
+            <time class="sr-only" itemprop="datePublished" [attr.datetime]="p.publishedAt">{{ p.publishedAt }}</time>
+          </p>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #sk>
+      <div class="blog-grid">
+        <div class="blog-card skeleton"></div>
+        <div class="blog-card skeleton"></div>
+        <div class="blog-card skeleton"></div>
+      </div>
+    </ng-template>
+  </div>
+</section>

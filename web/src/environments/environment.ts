@@ -1,7 +1,7 @@
-// web/src/environments/environment.ts (dev)
+// environment.ts (dev)
 export const environment = {
   production: false,
-  useMock: false,
-  apiUrl: 'http://localhost:3000/api',
-  publicBaseUrl: 'http://localhost:3000',         // ⬅️ NUEVO
+  useMock: false,                       // usa la API real
+  apiUrl: 'http://localhost:3000/api',  // URL completa a tu API
+  publicBaseUrl: 'http://localhost:3000'
 };

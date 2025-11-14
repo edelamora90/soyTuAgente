@@ -3,6 +3,13 @@
   width: min(85vw, 1200px);
   margin-inline: auto;
 }
+/* ====== SECCIÓN SPACE ====== */
+
+.space{
+  font-size: 1rem;                 /* ancla el em al root */
+  inline-size: 100%;
+  block-size: clamp(2.25em, 4vw, 6em); /* min ~20px, max ~45px */
+}
 
 /* ====== SECCIÓN 1: HERO ====== */
 .about-hero{
@@ -55,6 +62,8 @@
 @media (max-width: 900px){
   .about-hero .lede-row{ flex-wrap: wrap; row-gap: 10px; }
 }
+/* ====== SECCIÓN SPACE ====== */
+
 
 /* ====== SECCIÓN 2: BENEFICIOS ====== */
 .about-benefits{
@@ -219,14 +228,6 @@
       margin: 0; font-size: clamp(15px, 1.6vw, 16px); line-height: 1.55; color: #344054;
     }
   }
-}
-
-/* ====== SECCIÓN SPACE ====== */
-
-.space{
-  font-size: 1rem;                 /* ancla el em al root */
-  inline-size: 100%;
-  block-size: clamp(2.25em, 4vw, 6em); /* min ~20px, max ~45px */
 }
 
 /* ====== SECCIÓN 4: FAQ ====== */

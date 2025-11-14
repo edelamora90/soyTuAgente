@@ -1,11 +1,14 @@
 // api/src/submissions/submissions.controller.ts
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body, Controller, Get, Param, Patch, Post, Query, UseGuards,
+  DefaultValuePipe, ParseEnumPipe,
+} from '@nestjs/common';
 import { SubmissionsService } from './submissions.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-
+import { SubmissionStatus } from '@prisma/client';  // <<< usa el enum de Prisma
 
 @Controller('submissions')
 export class SubmissionsController {
@@ -17,11 +20,18 @@ export class SubmissionsController {
     return this.service.create(dto);
   }
 
- // Admin: listar, detalle, aprobar y rechazar (SÍ llevan guard)
+  // Admin: listar (con filtro de estado validado)
   @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('admin')
+  @Roles('admin')
   @Get()
-  findAll(@Query('status') status?: 'PENDING'|'APPROVED'|'REJECTED') {
+  findAll(
+    @Query(
+      'status',
+      new DefaultValuePipe(undefined),
+      new ParseEnumPipe(SubmissionStatus, { optional: true }),
+    )
+    status?: SubmissionStatus,
+  ) {
     return this.service.findAll(status);
   }
 
@@ -33,7 +43,7 @@ export class SubmissionsController {
     return this.service.findOne(id);
   }
 
-  // Admin: aprobar -> crea Agent y marca como APPROVED
+  // Admin: aprobar
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id/approve')
@@ -41,7 +51,7 @@ export class SubmissionsController {
     return this.service.approve(id);
   }
 
-  // Admin: rechazar con notas
+  // Admin: rechazar
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id/reject')

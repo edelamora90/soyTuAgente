@@ -10,6 +10,7 @@ export interface Agent {
   avatar?: string | null;
   ubicacion: string;
   whatsapp?: string | null;
+  telefono?: string | null; 
   especialidades: string[];
   experiencia: string[];
   servicios: string[];

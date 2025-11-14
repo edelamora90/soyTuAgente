@@ -1,0 +1,30 @@
+<!--web/src/app/pages/blog-post/blog-post.component.html-->
+<section class="post-wrap">
+  <div class="container">
+    <article class="md" *ngIf="post as p">
+      <header class="post-head">
+        <h1 class="post-title">{{ p.title }}</h1>
+        <p class="post-meta">
+          <span class="pill" *ngIf="p.tag">{{ p.tag }}</span>
+          <span class="sep" *ngIf="p.tag">•</span>
+          {{ p.readMinutes }} min • {{ p.topic }}
+          <time class="sr-only" [attr.datetime]="p.publishedAt">{{ p.publishedAt }}</time>
+        </p>
+        <img *ngIf="p.img" class="cover" [src]="p.img" [alt]="p.title" (error)="onImgError($event)">
+      </header>
+
+      <!-- Contenido en Markdown -->
+      <markdown [data]="p.contentMd || ''"></markdown>
+    </article>
+
+    <!-- Skeleton simple cuando no hay post aún -->
+    <article class="md skeleton" *ngIf="!post">
+      <div class="sk h1"></div>
+      <div class="sk meta"></div>
+      <div class="sk img"></div>
+      <div class="sk p"></div>
+      <div class="sk p"></div>
+      <div class="sk p short"></div>
+    </article>
+  </div>
+</section>

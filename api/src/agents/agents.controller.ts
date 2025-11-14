@@ -25,7 +25,7 @@ import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
 
 // ====== util upload ======
-const ROOT = join(process.cwd(), 'api', 'uploads');
+const ROOT = join(__dirname, '..', '..', 'uploads');
 const AGENTS_DIR = join(ROOT, 'agents');
 function ensureDir(dir: string) {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -56,7 +56,7 @@ function pickExt(file: Express.Multer.File) {
 
 /** Construye la URL pública para un archivo subido a /api/uploads/... */
 function publicUrlFor(file: Express.Multer.File) {
-  const base = (process.env.PUBLIC_BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+  const base = (process.env['PUBLIC_BASE_URL'] || 'http://localhost:3000').replace(/\/+$/, '');
   const sub  = relative(ROOT, file.destination).replace(/\\/g, '/'); // 'agents'
   return `${base}/public/${sub}/${file.filename}`;
 }

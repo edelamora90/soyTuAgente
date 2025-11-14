@@ -3,15 +3,21 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
+  InternalServerErrorException,
+} 
+from '@nestjs/common';
 import type { Express } from 'express';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
 
+import * as fs from 'fs';
+import * as path from 'path';
+import * as sharp from 'sharp';
+
 // ===== Helpers para URLs públicas (solo backend) =====
-const PUBLIC = (process.env.PUBLIC_BASE_URL || 'http://localhost:3000').replace(
+const PUBLIC = (process.env['PUBLIC_BASE_URL'] || 'http://localhost:3000').replace(
   /\/+$/,
   '',
 );
@@ -61,7 +67,12 @@ function mapAgentUrls<T extends AgentLike>(a: T): T {
 
 @Injectable()
 export class AgentsService {
-  constructor(private prisma: PrismaService) {}
+
+  private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads', 'agents');
+
+  constructor(private prisma: PrismaService) {
+    fs.mkdirSync(this.uploadDir, { recursive: true });
+  }
 
   async findAll() {
     const list = await this.prisma.agent.findMany({
@@ -334,6 +345,52 @@ export class AgentsService {
       createdSlugs: created,
       updatedSlugs: updated,
     };
+  }
+
+  // ================== Upload de avatar ==================
+  async saveAvatar(file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No se recibió archivo de imagen.');
+    }
+
+    // Validación básica de tipo / tamaño
+    const okType = /^image\/(png|jpe?g|webp|gif|avif)$/i.test(file.mimetype);
+    if (!okType) {
+      throw new BadRequestException('Formato de imagen no permitido.');
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      throw new BadRequestException('La imagen excede 10MB.');
+    }
+
+    try {
+      // Usamos timestamp para evitar colisiones
+      const id = Date.now();
+
+      // Importante: usamos extensión .jpg y la carpeta "agents"
+      // El archivo físico quedará en: api/uploads/agents/<id>-perfil-de-usuario.jpg
+      const fileName = `${id}-perfil-de-usuario.jpg`;
+      const destPath = path.join(this.uploadDir, fileName);
+
+      // Procesamos con sharp (opcional, pero recomendado)
+      await sharp(file.buffer)
+        .resize(800, 800, { fit: 'cover', position: 'centre' })
+        .jpeg({ quality: 80 })
+        .toFile(destPath);
+
+      // Ruta relativa que se guarda en BD (coherente con toPublicUrl)
+      // toPublicUrl('agents/xxx.jpg') -> https://dominio/public/agents/xxx.jpg
+      const storagePath = `agents/${fileName}`;
+      const url = toPublicUrl(storagePath);
+
+      return {
+        ok: true,
+        path: storagePath, // para guardar en BD
+        url,               // URL completa por si la queremos usar directa
+      };
+    } catch (err) {
+      console.error('Error guardando avatar:', err);
+      throw new InternalServerErrorException('No se pudo guardar la imagen del agente.');
+    }
   }
 
   // ========================= Helpers =========================

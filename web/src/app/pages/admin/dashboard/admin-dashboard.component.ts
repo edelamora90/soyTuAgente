@@ -1,3 +1,4 @@
+//web/src/app/pages/admin/dashboard/admin-dashboard.component.ts
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
@@ -22,7 +23,10 @@ import { SubmissionsApi } from '../../../core/submissions/submissions.api';
         </a>
 
         <a routerLink="agentes" routerLinkActive="active">🛠️ Editar agentes</a>
-      </nav>
+      
+      <a [routerLink]="['/admin','blog']" routerLinkActive="active">📰 Artículos</a>
+<a [routerLink]="['/admin','blog','new']" routerLinkActive="active">✍️ Nuevo artículo</a>
+</nav>
     </aside>
 
     <!-- Contenido -->

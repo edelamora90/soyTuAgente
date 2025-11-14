@@ -50,7 +50,7 @@ export class SubmissionsService {
   private abs(url?: string | null): string | null {
     if (!url) return null;
     if (/^https?:\/\//i.test(url)) return url;
-    const base = process.env.PUBLIC_BASE_URL?.replace(/\/+$/, '') ?? '';
+    const base = process.env['PUBLIC_BASE_URL']?.replace(/\/+$/, '') ?? '';
     // ajusta el prefijo a como sirves estáticos (aquí /public/)
     return `${base}/public/${url.replace(/^\/+/, '')}`;
   }

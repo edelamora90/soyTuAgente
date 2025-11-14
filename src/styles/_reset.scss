@@ -9,7 +9,9 @@ html, body { height:100%; }
 @font-face{ font-family:"DM Serif Text"; font-weight:400; font-style:italic; font-display:swap;
   src:url('assets/fonts/DMSerifText-Italic.woff2') format('woff2'); }
 
-:root{ font-size: clamp(14px, (100vw / 1728) * 16px, 18px); }
+:root {
+  font-size: clamp(16px, calc(100vw / 108), 18px); // (100vw / 1728) * 16 == 100vw / 108
+}
 
 body{
   font-family: var(--font-sans);

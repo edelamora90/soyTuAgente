@@ -40,7 +40,7 @@
         <td><code>{{ r.slug }}</code></td>
         <td>{{ r.ubicacion || '—' }}</td>
         <td>{{ r.whatsapp || '—' }}</td>
-        <td>{{ r.especialidades?.join(', ') || '—' }}</td>
+        <td>{{ (r.especialidades || []).join(', ') || '—' }}</td>
         <td>{{ r.createdAt | date:'short' }}</td>
         <td class="col-actions"><button class="btn btn-ghost" (click)="open(r, dlg)">Ver</button></td>
       </tr>

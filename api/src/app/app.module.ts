@@ -9,6 +9,7 @@ import { AgentsModule } from '../agents/agents.module';
 import { SubmissionsModule } from '../submissions/submissions.module';
 import { UploadsModule } from '../uploads/uploads.module';
 import { UsersModule } from '../users/users.module';
+import { BlogModule } from '../blog/blog.module';
 
 @Module({
   imports: [
@@ -16,8 +17,6 @@ import { UsersModule } from '../users/users.module';
       isGlobal: true,
       envFilePath: [
         join(process.cwd(), '.env'),
-        join(process.cwd(), 'api', '.env'),
-        join(process.cwd(), 'apps', 'api', '.env'), // por si acaso
       ],
     }),
     PrismaModule,
@@ -26,6 +25,7 @@ import { UsersModule } from '../users/users.module';
     AgentsModule,
     SubmissionsModule,
     UploadsModule,
+    BlogModule, 
   ],
 })
 export class AppModule {}

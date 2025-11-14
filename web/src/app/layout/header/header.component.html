@@ -1,4 +1,3 @@
-<!-- web/src/app/layout/header/header.component.html -->
 <header class="site-header" [class.is-open]="open">
   <div class="container">
     <!-- Marca -->
@@ -16,12 +15,10 @@
 
     <!-- Acciones (CTA / Usuario + Hamburguesa) -->
     <div class="actions">
-      <!-- Si NO hay sesión: CTA -->
       <ng-container *ngIf="!isLoggedIn(); else loggedActions">
         <a class="btn-cta" routerLink="/unirme">Unirme a Soy tu Agente</a>
       </ng-container>
 
-      <!-- Si SÍ hay sesión: menú de usuario (desktop) -->
       <ng-template #loggedActions>
         <div class="user-menu" [class.open]="userOpen">
           <button
@@ -32,11 +29,10 @@
             aria-haspopup="menu">
             <span class="avatar">{{ initials() }}</span>
             <span class="name">{{ shortName() }}</span>
-            <span class="chev">▾</span>
+            <span class="chev" aria-hidden="true">▾</span>
           </button>
 
           <div class="menu" role="menu" *ngIf="userOpen">
-            <!-- (Opcional) Dashboard también en desktop -->
             <a role="menuitem" routerLink="/admin" (click)="closeMenu()">Dashboard</a>
             <a role="menuitem" routerLink="/admin/cuenta" (click)="closeMenu()">Editar</a>
             <button role="menuitem" type="button" (click)="closeMenu(); logout()">Salir</button>
@@ -44,26 +40,30 @@
         </div>
       </ng-template>
 
-      <!-- Hamburguesa -->
+      <!-- Hamburguesa mejorada -->
       <button
         class="hamb"
         type="button"
         (click)="open = !open"
         aria-label="Abrir menú"
-        [attr.aria-expanded]="open">
-        <span></span><span></span><span></span>
+        [attr.aria-expanded]="open"
+        aria-controls="mobileMenu">
+        <span class="hamb-box" aria-hidden="true">
+          <span class="hamb-line top"></span>
+          <span class="hamb-line mid"></span>
+          <span class="hamb-line bot"></span>
+        </span>
       </button>
-    </div>
-  </div>
+    </div><!-- /actions -->
+  </div><!-- /container -->
 
-  <!-- Menú móvil -->
-  <nav class="mobile-menu" *ngIf="open" aria-label="Menú móvil">
+  <!-- Menú móvil (fuera del .container, pero dentro del header) -->
+  <nav id="mobileMenu" class="mobile-menu" *ngIf="open" aria-label="Menú móvil">
     <a (click)="closeMenu()" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
     <a (click)="closeMenu()" routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
     <a (click)="closeMenu()" routerLink="/certificaciones" routerLinkActive="active">Certificaciones</a>
     <a (click)="closeMenu()" routerLink="/agentes" routerLinkActive="active">Buscar Agente</a>
 
-    <!-- CTA o acciones de usuario en móvil -->
     <ng-container *ngIf="!isLoggedIn(); else mobileLogged">
       <a (click)="closeMenu()" routerLink="/unirme" class="btn-cta">Unirme a Soy tu Agente</a>
     </ng-container>
@@ -76,8 +76,6 @@
             <div class="name">{{ shortName() }}</div>
           </div>
         </div>
-
-        <!-- ← Dashboard en móvil -->
         <a routerLink="/admin" (click)="closeMenu()">Dashboard</a>
         <a routerLink="/admin/cuenta" (click)="closeMenu()">Editar</a>
         <button type="button" (click)="closeMenu(); logout()">Salir</button>

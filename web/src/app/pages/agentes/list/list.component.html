@@ -1,4 +1,3 @@
-<!-- web/src/app/pages/agentes/list/list.component.html -->
 <section class="ag-list">
   <div class="container">
 
@@ -79,7 +78,7 @@
           </div>
         </div>
 
-        <!-- Footer de la tarjeta (línea + redes a la izq, botones a la dcha) -->
+        <!-- Footer de la tarjeta -->
         <div class="card-foot">
           <!-- Redes (si hay) -->
           <div class="social" *ngIf="a.redes?.length">
@@ -100,14 +99,26 @@
               Ver perfil de agente
             </a>
 
-            <a
-              class="btn-contact"
-              [href]="a.whatsapp ? 'https://wa.me/' + a.whatsapp : null"
-              [attr.target]="a.whatsapp ? '_blank' : null"
-              [class.disabled]="!a.whatsapp">
-              <img src="assets/icons/whatsapp.svg" alt="" class="icon-whatsapp" />
-              Contactar Agente
-            </a>
+            <!-- Contenedor inline para Llamar + WhatsApp (alineados horizontalmente) -->
+            <div class="cta-inline">
+              <a
+                class="btn-call"
+                [href]="a.telefono ? 'tel:' + a.telefono : null"
+                [class.disabled]="!a.telefono"
+                [attr.target]="a.telefono ? '_self' : null">
+                <img src="assets/icons/phone.png" alt="" class="icon-phone" />
+                Llamar
+              </a>
+
+              <a
+                class="btn-contact"
+                [href]="a.whatsapp ? 'https://wa.me/' + a.whatsapp : null"
+                [attr.target]="a.whatsapp ? '_blank' : null"
+                [class.disabled]="!a.whatsapp">
+                <img src="assets/icons/whatsapp.svg" alt="" class="icon-whatsapp" />
+                WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </article>
