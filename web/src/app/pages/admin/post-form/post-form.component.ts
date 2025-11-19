@@ -1,8 +1,23 @@
 // web/src/app/pages/admin/post-form/post-form.component.ts
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BlogApiService, CreatePostDto, PostDto } from '@core/services/blog-api.service';
+import { firstValueFrom } from 'rxjs';
+
+// 👈 Usa ruta relativa para evitar problemas con el alias @core
+import {
+  BlogApiService,
+  CreatePostDto,
+  PostDto,
+} from '../../../core/services/blog-api.service';
 
 @Component({
   selector: 'app-post-form',
@@ -18,22 +33,10 @@ export class PostFormComponent implements OnInit {
   assetsPreview: string[] = [];
 
   // Edición
-  postId?: string; // si editas un post existente
+  postId?: string;
 
-  // Formulario
-  form = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(4)]],
-    slug: [''],
-    content: ['', [Validators.required, Validators.minLength(20)]],
-    tag: [''],
-    topic: [''],
-    readMinutes: [4],
-    externalUrl: [''],
-    published: [true],
-    // archivos (no viajan en JSON, solo para UI)
-    cover: [null as File | null],
-    assets: [null as File[] | null],
-  });
+  // Formulario (sin tipos estrictos para no pelear con TS)
+  form!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -42,105 +45,191 @@ export class PostFormComponent implements OnInit {
     private router: Router
   ) {}
 
+  // ==========================================
+  //            CICLO DE VIDA
+  // ==========================================
   ngOnInit(): void {
-    // Si usas modo edición por id en la URL: /admin/posts/edit/:id
+    // 1) Construir formulario AQUÍ (fb ya está inyectado)
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(4)]],
+      slug: [''],
+      content: ['', [Validators.required, Validators.minLength(20)]],
+      tag: [''],
+      topic: [''],
+      readMinutes: [4],
+      externalUrl: [''],
+      published: [true],
+      isFeatured: [false],
+      cover: [null as File | null],
+      assets: [[] as File[]],
+    });
+
+    // 2) Ver si venimos en modo edición
     this.postId = this.route.snapshot.paramMap.get('id') ?? undefined;
-    // Si vas a precargar datos en edición, podrías llamarlos por slug o id si tienes endpoint.
+    if (this.postId) {
+      this.loadPost(this.postId);
+    }
   }
 
-  // === Previews ===
-  onCoverChange(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+  // ==========================================
+  //         CARGAR POST EN MODO EDICIÓN
+  // ==========================================
+  private loadPost(id: string) {
+    this.loading = true;
+    this.api.getById(id).subscribe({
+      next: (post: PostDto) => {
+        this.form.patchValue({
+          title: post.title,
+          slug: post.slug ?? '',
+          content: post.content ?? post.contentMd ?? '',
+          tag: post.tag ?? '',
+          topic: post.topic ?? '',
+          readMinutes: post.readMinutes ?? 4,
+          externalUrl: post.externalUrl ?? post.external_url ?? '',
+          published: post.published ?? false,
+          isFeatured: (post as any).isFeatured ?? false,
+        });
+
+        if (post.img) {
+          this.coverPreview = post.img;
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando post', err);
+        this.loading = false;
+        this.router.navigate(['../'], { relativeTo: this.route });
+      },
+    });
+  }
+
+  // ==========================================
+  //                FILE INPUTS
+  // ==========================================
+  onCoverChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length ? input.files[0] : null;
+
+    if (!file) {
+      this.coverPreview = null;
+      this.form.patchValue({ cover: null });
+      return;
+    }
 
     if (!/^image\/(png|jpe?g|webp|gif|avif)$/.test(file.type)) {
-      alert('Formato no permitido');
+      alert('Formato de imagen no permitido.');
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      alert('Imagen > 10MB');
+      alert('La imagen supera los 10MB.');
       return;
     }
 
     this.form.patchValue({ cover: file });
-    const r = new FileReader();
-    r.onload = () => (this.coverPreview = r.result as string);
-    r.readAsDataURL(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.coverPreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
-  onAssetsChange(e: Event) {
-    const input = e.target as HTMLInputElement;
+  onAssetsChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
     const files = input.files ? Array.from(input.files) : [];
-    if (!files.length) return;
 
-    const valid = files.filter(f => /^image\/(png|jpe?g|webp|gif|avif)$/.test(f.type) && f.size <= 10 * 1024 * 1024);
-    if (valid.length !== files.length) alert('Algunos archivos fueron descartados por formato o tamaño.');
+    if (!files.length) {
+      this.form.patchValue({ assets: [] });
+      this.assetsPreview = [];
+      return;
+    }
+
+    const valid = files.filter(
+      (f) =>
+        /^image\/(png|jpe?g|webp|gif|avif)$/.test(f.type) &&
+        f.size <= 10 * 1024 * 1024
+    );
+
+    if (valid.length !== files.length) {
+      alert('Algunos archivos fueron descartados por formato o tamaño.');
+    }
 
     this.form.patchValue({ assets: valid });
 
-    // Previews
     this.assetsPreview = [];
-    valid.forEach(f => {
-      const r = new FileReader();
-      r.onload = () => this.assetsPreview.push(r.result as string);
-      r.readAsDataURL(f);
+    valid.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.assetsPreview = [
+          ...this.assetsPreview,
+          reader.result as string,
+        ];
+      };
+      reader.readAsDataURL(file);
     });
   }
 
-  // === Guardar ===
-  async submit() {
+  // ==========================================
+  //                 SUBMIT
+  // ==========================================
+  async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.saving = true;
+    const value = this.form.value;
+
+    // OJO: el servicio espera contentMd, pero en el form usamos "content"
+    const dto: CreatePostDto = {
+      title: value.title!,
+      slug: value.slug || null,
+      contentMd: value.content!, // 👈 mapeamos content -> contentMd
+      tag: value.tag || null,
+      topic: value.topic || null,
+      readMinutes: value.readMinutes ?? null,
+      externalUrl: value.externalUrl || null,
+      published: !!value.published,
+    };
 
     try {
-      // 1) Crea/actualiza el post (solo datos JSON)
-      const dto: CreatePostDto = {
-        title: this.form.value.title!,
-        slug: this.form.value.slug || undefined,
-        content: this.form.value.content!,
-        tag: this.form.value.tag || undefined,
-        topic: this.form.value.topic || undefined,
-        readMinutes: this.form.value.readMinutes ?? undefined,
-        externalUrl: this.form.value.externalUrl || undefined,
-        published: !!this.form.value.published,
-      };
-
       let created: PostDto;
+
       if (this.postId) {
-        created = await this.api.update(this.postId, dto).toPromise();
+        // UPDATE
+        created = await firstValueFrom(
+          this.api.update(this.postId, dto)
+        );
       } else {
-        created = await this.api.create(dto).toPromise();
-        this.postId = created.id; // necesario para subir imágenes
+        // CREATE
+        created = await firstValueFrom(this.api.create(dto));
+        this.postId = created.id;
       }
 
-      // 2) Portada (opcional)
+      // Portada
       const cover = this.form.value.cover as File | null;
       if (cover && this.postId) {
-        await this.api.uploadCover(this.postId, cover).toPromise();
+        await firstValueFrom(this.api.uploadCover(this.postId, cover));
       }
 
-      // 3) Assets del contenido (opcional)
-      const assets = (this.form.value.assets as File[] | null) ?? [];
+      // Assets
+      const assets = (this.form.value.assets as File[]) ?? [];
       if (assets.length && this.postId) {
-        await this.api.uploadAssets(this.postId, assets).toPromise();
+        await firstValueFrom(this.api.uploadAssets(this.postId, assets));
       }
 
-      // 4) Navegar o resetear
       this.saving = false;
-      this.router.navigate(['../'], { relativeTo: this.route }); // vuelve al listado
+      this.router.navigate(['../'], { relativeTo: this.route });
     } catch (err) {
+      console.error('Error guardando post', err);
       this.saving = false;
-      console.error(err);
       alert('Error al guardar el post.');
     }
   }
 
-  cancel() {
+  cancel(): void {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 }
