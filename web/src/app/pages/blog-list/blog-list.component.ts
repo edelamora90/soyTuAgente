@@ -1,10 +1,14 @@
-//web/src/app/pages/blog-list/blog-list.component.ts
+// web/src/app/pages/blog-list/blog-list.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, map, startWith, switchMap } from 'rxjs';
-import { Post } from '../../core/models/post.model';
-import { BlogService } from '../../core/blog.service';
+import { Observable } from 'rxjs';
+
+// 👇 Usamos directamente el DTO del API real
+import {
+  BlogApiService,
+  PostDto,
+} from '../../core/services/blog-api.service';
 
 @Component({
   standalone: true,
@@ -14,17 +18,17 @@ import { BlogService } from '../../core/blog.service';
   styleUrls: ['./blog-list.component.scss'],
 })
 export class BlogListComponent implements OnInit {
-  private blog = inject(BlogService);
+  private api = inject(BlogApiService);
 
   /** Entradas publicadas para el grid */
-  posts$!: Observable<Post[]>;
+  posts$!: Observable<PostDto[]>;
 
   /** TrackBy para *ngFor */
-  trackById = (_: number, p: Post) => p.id;
+  trackById = (_: number, p: PostDto) => p.id;
 
   ngOnInit(): void {
-    // Lista pública de posts (ajusta `take` según tu paginación)
-    this.posts$ = this.blog.list({ published: true, take: 24 });
+    // Lista pública de posts desde el backend
+    this.posts$ = this.api.list({ published: true, take: 24 });
   }
 
   /** Fallback de imagen cuando falla la portada */

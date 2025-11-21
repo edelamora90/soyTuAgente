@@ -1,4 +1,4 @@
-<!--web/src/app/pages/blog-post/blog-post.component.html-->
+<!-- web/src/app/pages/blog-post/blog-post.component.html -->
 <section class="post-wrap">
   <div class="container">
     <article class="md" *ngIf="post as p">
@@ -10,11 +10,17 @@
           {{ p.readMinutes }} min • {{ p.topic }}
           <time class="sr-only" [attr.datetime]="p.publishedAt">{{ p.publishedAt }}</time>
         </p>
-        <img *ngIf="p.img" class="cover" [src]="p.img" [alt]="p.title" (error)="onImgError($event)">
+        <img
+          *ngIf="p.img"
+          class="cover"
+          [src]="p.img"
+          [alt]="p.title"
+          (error)="onImgError($event)"
+        />
       </header>
 
-      <!-- Contenido en Markdown -->
-      <markdown [data]="p.contentMd || ''"></markdown>
+      <!-- Contenido: usamos contentMd (o content como respaldo) -->
+      <markdown [data]="p.contentMd || p.content || ''"></markdown>
     </article>
 
     <!-- Skeleton simple cuando no hay post aún -->
