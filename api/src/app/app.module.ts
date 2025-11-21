@@ -10,9 +10,12 @@ import { SubmissionsModule } from '../submissions/submissions.module';
 import { UploadsModule } from '../uploads/uploads.module';
 import { UsersModule } from '../users/users.module';
 import { BlogModule } from '../blog/blog.module';
+import { HealthModule } from '../../health/health.module';
+
 
 @Module({
   imports: [
+    HealthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [

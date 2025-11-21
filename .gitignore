@@ -40,3 +40,7 @@ error.log
 # ====== JEST / TEMP ======
 coverage/
 
+
+# Docroot solo local
+.local-docroot/
+uploads/
