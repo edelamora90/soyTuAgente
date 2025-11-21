@@ -4,15 +4,16 @@ import {
   OnInit,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
   Validators,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-// 👈 Usa ruta relativa para evitar problemas con el alias @core
 import {
   BlogApiService,
   CreatePostDto,
@@ -20,10 +21,15 @@ import {
 } from '../../../core/services/blog-api.service';
 
 @Component({
+  standalone: true, // 👈 ahora es standalone
   selector: 'app-post-form',
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule, // 👈 aquí vive formGroup, formControlName, etc.
+  ],
 })
 export class PostFormComponent implements OnInit {
   // UI state
@@ -35,7 +41,7 @@ export class PostFormComponent implements OnInit {
   // Edición
   postId?: string;
 
-  // Formulario (sin tipos estrictos para no pelear con TS)
+  // Formulario
   form!: FormGroup;
 
   constructor(
@@ -49,7 +55,6 @@ export class PostFormComponent implements OnInit {
   //            CICLO DE VIDA
   // ==========================================
   ngOnInit(): void {
-    // 1) Construir formulario AQUÍ (fb ya está inyectado)
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(4)]],
       slug: [''],
@@ -64,7 +69,6 @@ export class PostFormComponent implements OnInit {
       assets: [[] as File[]],
     });
 
-    // 2) Ver si venimos en modo edición
     this.postId = this.route.snapshot.paramMap.get('id') ?? undefined;
     if (this.postId) {
       this.loadPost(this.postId);
@@ -182,11 +186,10 @@ export class PostFormComponent implements OnInit {
     this.saving = true;
     const value = this.form.value;
 
-    // OJO: el servicio espera contentMd, pero en el form usamos "content"
     const dto: CreatePostDto = {
       title: value.title!,
       slug: value.slug || null,
-      contentMd: value.content!, // 👈 mapeamos content -> contentMd
+      contentMd: value.content!,         // content -> contentMd
       tag: value.tag || null,
       topic: value.topic || null,
       readMinutes: value.readMinutes ?? null,
@@ -198,23 +201,19 @@ export class PostFormComponent implements OnInit {
       let created: PostDto;
 
       if (this.postId) {
-        // UPDATE
         created = await firstValueFrom(
           this.api.update(this.postId, dto)
         );
       } else {
-        // CREATE
         created = await firstValueFrom(this.api.create(dto));
         this.postId = created.id;
       }
 
-      // Portada
       const cover = this.form.value.cover as File | null;
       if (cover && this.postId) {
         await firstValueFrom(this.api.uploadCover(this.postId, cover));
       }
 
-      // Assets
       const assets = (this.form.value.assets as File[]) ?? [];
       if (assets.length && this.postId) {
         await firstValueFrom(this.api.uploadAssets(this.postId, assets));

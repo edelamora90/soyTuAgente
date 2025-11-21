@@ -17,7 +17,8 @@ import {
   BlogApiService,
   CreatePostDto,
   PostDto,
-} from '@core/services/blog-api.service';
+} from '../../../core/services/blog-api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -73,15 +74,15 @@ export class PostEditorComponent implements OnInit {
   private async precargar(id: string) {
     this.loading.set(true);
     try {
-      const post = await this.api.getById(id).toPromise();
-      this.existing = post ?? undefined;
+      const post = await firstValueFrom(this.api.getById(id));
+      this.existing = post ?? null;
 
       if (!post) throw new Error('Post no encontrado');
 
       this.form.patchValue({
         title: post.title ?? '',
         slug: post.slug ?? '',
-        // 👇 Usamos content (adaptado en BlogApiService) con fallback a contentMd
+        // Usamos content (adaptado en BlogApiService) con fallback a contentMd
         content: post.content ?? post.contentMd ?? '',
         tag: post.tag ?? '',
         topic: post.topic ?? '',
@@ -201,8 +202,8 @@ export class PostEditorComponent implements OnInit {
       const dto: CreatePostDto = {
         title: this.form.value.title!,
         slug: this.form.value.slug || undefined,
-        // 👇 aquí debe llamarse content (BlogApiService lo convierte a contentMd)
-        content: this.form.value.content!,
+        // El DTO usa contentMd. El form tiene "content".
+        contentMd: this.form.value.content!,
         tag: this.form.value.tag || undefined,
         topic: this.form.value.topic || undefined,
         readMinutes: this.form.value.readMinutes ?? undefined,
@@ -212,34 +213,34 @@ export class PostEditorComponent implements OnInit {
 
       let post: PostDto;
       if (this.postId) {
-        post = await this.api.update(this.postId, dto).toPromise();
+        post = await firstValueFrom(this.api.update(this.postId, dto));
       } else {
-        post = await this.api.create(dto).toPromise();
+        post = await firstValueFrom(this.api.create(dto));
         this.postId = post.id;
       }
 
       // Portada
       if (this.pendingCover && this.postId) {
-        await this.api
-          .uploadCover(this.postId, this.pendingCover)
-          .toPromise();
+        await firstValueFrom(
+          this.api.uploadCover(this.postId, this.pendingCover),
+        );
       }
 
       // Assets
       if (this.pendingAssets.length && this.postId) {
-        await this.api
-          .uploadAssets(this.postId, this.pendingAssets)
-          .toPromise();
+        await firstValueFrom(
+          this.api.uploadAssets(this.postId, this.pendingAssets),
+        );
       }
 
-      this.saving.set(false);
       this.router.navigate(['../'], {
         relativeTo: this.route,
       });
     } catch (err) {
       console.error(err);
-      this.saving.set(false);
       alert('Error al guardar el post');
+    } finally {
+      this.saving.set(false);
     }
   }
 
