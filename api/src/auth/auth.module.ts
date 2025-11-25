@@ -1,4 +1,3 @@
-//api/src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
@@ -14,7 +13,6 @@ import { UsersModule } from '../users/users.module';
 @Module({
   imports: [
     ConfigModule,
-    // No pasamos secretos aquí; las strategies/servicio leen de ConfigService
     JwtModule.register({}),
     UsersModule,
   ],

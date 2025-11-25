@@ -1,42 +1,66 @@
-// api/src/blog/blog.service.ts
+//api/src/blog/blog.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import slugify from '@sindresorhus/slugify';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { slugify } from '../../src/blog/utils/slugify.util';
 
 @Injectable()
 export class BlogService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreatePostDto) {
-  const slug = dto.slug?.trim() || slugify(dto.title);
-  const publishedAt = dto.published ? new Date() : null;
+    const data = {
+      ...dto,
+      slug: dto.slug || slugify(dto.title),
+    };
 
-  return this.prisma.post.create({
-    data: { ...dto, slug, publishedAt },
-  });
-}
+    return this.prisma.post.create({ data });
+  }
 
-async update(id: string, dto: UpdatePostDto) {
-  const exists = await this.prisma.post.findUnique({ where: { id } });
-  if (!exists) throw new NotFoundException('Post not found');
+  async update(id: string, dto: UpdatePostDto) {
+    const post = await this.prisma.post.findUnique({ where: { id } });
+    if (!post) throw new NotFoundException('Post no encontrado');
 
-  const slug = dto.slug ? slugify(dto.slug) : undefined;
-  const publishedAt =
-    dto.published === true && !exists.publishedAt ? new Date()
-    : dto.published === false ? null
-    : undefined;
+    return this.prisma.post.update({
+      where: { id },
+      data: {
+        ...dto,
+        slug: dto.slug ?? (dto.title ? slugify(dto.title) : undefined),
 
-  return this.prisma.post.update({
-    where: { id },
-    data: { ...dto, ...(slug && { slug }), ...(publishedAt !== undefined && { publishedAt }) },
-  });
-}
-
+      },
+    });
+  }
 
   async remove(id: string) {
     return this.prisma.post.delete({ where: { id } });
+  }
+
+  async list(opts?: {
+    q?: string;
+    published?: boolean;
+    skip?: number;
+    take?: number;
+  }) {
+    return this.prisma.post.findMany({
+      where: {
+        ...(opts?.published !== undefined
+          ? { published: opts.published }
+          : {}),
+        ...(opts?.q
+          ? {
+              OR: [
+                { title: { contains: opts.q, mode: 'insensitive' } },
+                { topic: { contains: opts.q, mode: 'insensitive' } },
+                { tag: { contains: opts.q, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: { publishedAt: 'desc' },
+      skip: opts?.skip,
+      take: opts?.take,
+    });
   }
 
   async getLatest(limit = 3) {
@@ -44,23 +68,18 @@ async update(id: string, dto: UpdatePostDto) {
       where: { published: true },
       orderBy: { publishedAt: 'desc' },
       take: limit,
-      select: { id: true, title: true, slug: true, img: true, topic: true, tag: true, readMinutes: true, externalUrl: true, publishedAt: true },
-    });
-  }
-
-  async list(params: { q?: string; skip?: number; take?: number; published?: boolean }) {
-    const { q, skip = 0, take = 20, published } = params;
-    return this.prisma.post.findMany({
-      where: {
-        ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
-        ...(published !== undefined ? { published } : {}),
-      },
-      orderBy: [{ publishedAt: 'desc' }, { updatedAt: 'desc' }],
-      skip, take,
     });
   }
 
   async getBySlug(slug: string) {
-    return this.prisma.post.findUnique({ where: { slug } });
+    const post = await this.prisma.post.findFirst({
+      where: {
+        slug,
+        published: true,
+      },
+    });
+
+    if (!post) throw new NotFoundException('Post no encontrado');
+    return post;
   }
 }

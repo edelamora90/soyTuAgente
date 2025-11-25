@@ -2,13 +2,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, map, shareReplay } from 'rxjs';
 
-// 👇 Usamos directamente el DTO del API real
 import {
   BlogApiService,
   PostDto,
 } from '../../core/services/blog-api.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -20,20 +20,87 @@ import {
 export class BlogListComponent implements OnInit {
   private api = inject(BlogApiService);
 
-  /** Entradas publicadas para el grid */
   posts$!: Observable<PostDto[]>;
+  featuredPost$!: Observable<PostDto | null>;
+  otherPosts$!: Observable<PostDto[]>;
 
-  /** TrackBy para *ngFor */
+  readonly defaultCover = 'assets/blog/fallback.webp';
+
   trackById = (_: number, p: PostDto) => p.id;
 
   ngOnInit(): void {
-    // Lista pública de posts desde el backend
-    this.posts$ = this.api.list({ published: true, take: 24 });
+    const source$ = this.api
+      .list({ published: true, take: 24 })
+      .pipe(shareReplay(1));
+
+    this.posts$ = source$;
+
+    this.featuredPost$ = source$.pipe(
+      map((posts) => {
+        const featured = posts.find((p: any) => p.isFeatured);
+        return featured ?? posts[0] ?? null;
+      }),
+    );
+
+    this.otherPosts$ = source$.pipe(
+      map((posts) => {
+        const featured = posts.find((p: any) => p.isFeatured);
+        const featuredId = featured?.id ?? posts[0]?.id;
+        return posts.filter((p) => p.id !== featuredId);
+      }),
+    );
   }
 
-  /** Fallback de imagen cuando falla la portada */
+  getCoverUrl(p: PostDto): string {
+    const img = p.img?.trim();
+    if (!img) return this.defaultCover;
+
+    if (img.startsWith('http')) return img;
+
+    if (img.startsWith('/public/')) {
+      return `${environment.apiBaseUrl}${img}`;
+    }
+
+    if (img.startsWith('assets/')) return img;
+
+    return this.defaultCover;
+  }
+
   onImgError(ev: Event) {
     const img = ev.target as HTMLImageElement;
-    img.src = 'assets/blog/fallback.webp'; // o .jpg si no tienes webp
+    if (!img.src.includes(this.defaultCover)) {
+      img.src = this.defaultCover;
+    }
   }
+
+  /** Texto para el hero: usa excerpt si existe, si no genera uno del contenido */
+  getHeroSubtitle(p: PostDto): string {
+  // 1) Si hay excerpt manual, usamos ese
+  if (p.excerpt && p.excerpt.trim().length > 0) {
+    return p.excerpt.trim();
+  }
+
+  // 2) Si no, generamos a partir del contenido
+  let src = (p.contentMd || p.content || '').trim();
+
+  if (!src) {
+    return 'Descubre estrategias prácticas, ejemplos reales y consejos para hacer crecer tu cartera de clientes sin perder la cercanía.';
+  }
+
+  // Limpiar markdown básico
+  src = src
+    .replace(/[#>*_`]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const LIMIT = 150; // 🔥 150 caracteres
+
+  if (src.length <= LIMIT) return src;
+
+  const cut = src.slice(0, LIMIT);
+  const lastSpace = cut.lastIndexOf(' ');
+  const safe = lastSpace > 60 ? cut.slice(0, lastSpace) : cut;
+
+  return safe + '…';
+}
 }

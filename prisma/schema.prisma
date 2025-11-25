@@ -79,7 +79,8 @@ model Post {
   tag         String? // etiqueta corta (p.e. "Tendencias" )
   topic       String? // tema o categoría
   readMinutes Int       @default(5)
-  content   String? 
+  contentMd    String?   @db.Text
+  content      String?   @db.Text
   date        DateTime  @default(now()) // fecha del artículo (puede ser de publicación o editorial)
   externalUrl String?   @map("external_url")
   published   Boolean   @default(false)
@@ -94,5 +95,5 @@ model Post {
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  
 }

@@ -9,7 +9,7 @@ export interface Post {
   date?: string;
   published?: boolean;
   publishedAt?: string;
-  contentMd?: string;
+  contentMd?: string | null;
   content?: string;
   externalUrl?: string | null;
   createdAt?: string;

@@ -1,30 +1,46 @@
-<!-- web/src/app/pages/blog-post/blog-post.component.html -->
 <section class="post-wrap">
-  <div class="container">
-    <article class="md" *ngIf="post as p">
+  <div class="post-container">
+    <article class="post md" *ngIf="post as p">
       <header class="post-head">
+        <nav class="post-breadcrumb">
+          <a routerLink="/blog">Blog</a>
+          <span class="sep">/</span>
+          <span>{{ p.topic || 'Artículo' }}</span>
+        </nav>
+
         <h1 class="post-title">{{ p.title }}</h1>
+
         <p class="post-meta">
           <span class="pill" *ngIf="p.tag">{{ p.tag }}</span>
           <span class="sep" *ngIf="p.tag">•</span>
-          {{ p.readMinutes }} min • {{ p.topic }}
-          <time class="sr-only" [attr.datetime]="p.publishedAt">{{ p.publishedAt }}</time>
+          <span *ngIf="p.readMinutes">{{ p.readMinutes }} min de lectura</span>
+          <span class="sep" *ngIf="p.readMinutes && p.topic">•</span>
+          <span *ngIf="p.topic">{{ p.topic }}</span>
+
+          <time
+            class="post-date"
+            *ngIf="p.publishedAt"
+            [attr.datetime]="p.publishedAt"
+          >
+            · {{ p.publishedAt | date: 'd MMM y' }}
+          </time>
         </p>
+
         <img
-          *ngIf="p.img"
-          class="cover"
-          [src]="p.img"
+          class="post-cover"
+          [src]="getCoverUrl()"
           [alt]="p.title"
           (error)="onImgError($event)"
         />
       </header>
 
-      <!-- Contenido: usamos contentMd (o content como respaldo) -->
-      <markdown [data]="p.contentMd || p.content || ''"></markdown>
+      <markdown
+        class="post-body"
+        [data]="p.contentMd || p.content || ''"
+      ></markdown>
     </article>
 
-    <!-- Skeleton simple cuando no hay post aún -->
-    <article class="md skeleton" *ngIf="!post">
+    <article class="post skeleton" *ngIf="!post">
       <div class="sk h1"></div>
       <div class="sk meta"></div>
       <div class="sk img"></div>

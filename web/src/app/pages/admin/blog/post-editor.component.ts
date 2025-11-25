@@ -1,252 +1,281 @@
 // web/src/app/pages/admin/blog/post-editor.component.ts
-import {
-  Component,
-  ChangeDetectionStrategy,
-  OnInit,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
+  FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { forkJoin, Observable } from 'rxjs';
+
 import {
   BlogApiService,
   CreatePostDto,
   PostDto,
 } from '../../../core/services/blog-api.service';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-post-editor',
   templateUrl: './post-editor.component.html',
   styleUrls: ['./post-editor.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
 })
 export class PostEditorComponent implements OnInit {
+  // Inyecciones
   private fb = inject(FormBuilder);
   private api = inject(BlogApiService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  loading = signal(false);
-  saving = signal(false);
-
-  // ====== Estado edición ======
-  postId?: string; // viene de /admin/blog/:id/edit
-  existing?: PostDto | null;
-
-  // ====== Drag & drop / previews ======
-  dragOverCover = signal(false);
-  dragOverAssets = signal(false);
-  coverPreview = signal<string | null>(null);
-  assetsPreview = signal<string[]>([]);
-
-  // Archivos pendientes de subir (después de crear/actualizar)
-  private pendingCover: File | null = null;
-  private pendingAssets: File[] = [];
-
-  // ====== Form ======
-  form = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(4)]],
+  // Formulario reactivo
+  form: FormGroup = this.fb.group({
+    title: ['', Validators.required],
     slug: [''],
-    content: ['', [Validators.required, Validators.minLength(20)]],
     tag: [''],
     topic: [''],
     readMinutes: [4],
     externalUrl: [''],
-    published: [true],
+    content: ['', Validators.required], // se mapea a contentMd al enviar
   });
 
+  // Id del post (modo edición) o null (modo nuevo)
+  postId: string | null = null;
+
+  // Estado de guardado
+  saving = false;
+
+  // Drag & drop estados visuales
+  private _dragOverCover = false;
+  private _dragOverAssets = false;
+
+  // Archivos y previews
+  private coverFile: File | null = null;
+  private coverPreviewUrl: string | null = null;
+
+  private assetFiles: File[] = [];
+  private assetPreviewUrls: string[] = [];
+
+  // Getters usados por la plantilla
+  dragOverCover(): boolean {
+    return this._dragOverCover;
+  }
+
+  dragOverAssets(): boolean {
+    return this._dragOverAssets;
+  }
+
+  coverPreview(): string | null {
+    return this.coverPreviewUrl;
+  }
+
+  assetsPreview(): string[] {
+    return this.assetPreviewUrls;
+  }
+
+  // ---------------------------------------------------------------------------
+  // CICLO DE VIDA
+  // ---------------------------------------------------------------------------
   ngOnInit(): void {
-    this.postId = this.route.snapshot.paramMap.get('id') ?? undefined;
+    this.postId = this.route.snapshot.paramMap.get('id');
+
     if (this.postId) {
-      this.precargar(this.postId);
+      this.loadPost(this.postId);
     }
   }
 
-  // ===================== Precarga para edición =====================
-  private async precargar(id: string) {
-    this.loading.set(true);
-    try {
-      const post = await firstValueFrom(this.api.getById(id));
-      this.existing = post ?? null;
+  private loadPost(id: string) {
+    this.api.getById(id).subscribe({
+      next: (post: PostDto) => {
+        this.form.patchValue({
+          title: post.title,
+          slug: post.slug,
+          tag: post.tag ?? '',
+          topic: post.topic ?? '',
+          readMinutes: post.readMinutes ?? null,
+          externalUrl: post.externalUrl ?? post.external_url ?? '',
+          content: post.contentMd ?? post.content ?? '',
+        });
 
-      if (!post) throw new Error('Post no encontrado');
-
-      this.form.patchValue({
-        title: post.title ?? '',
-        slug: post.slug ?? '',
-        // Usamos content (adaptado en BlogApiService) con fallback a contentMd
-        content: post.content ?? post.contentMd ?? '',
-        tag: post.tag ?? '',
-        topic: post.topic ?? '',
-        readMinutes: post.readMinutes ?? 4,
-        externalUrl: post.externalUrl ?? '',
-        published: post.published ?? true,
-      });
-
-      if (post.img) {
-        this.coverPreview.set(post.img);
-      }
-    } catch (e) {
-      console.error('Error precargando post', e);
-      alert('No se pudo cargar el post.');
-      this.router.navigate(['../'], { relativeTo: this.route });
-    } finally {
-      this.loading.set(false);
-    }
+        // Mostrar la portada existente, si hay
+        this.coverPreviewUrl = post.img ?? null;
+      },
+      error: (err) => {
+        console.error('Error cargando post', err);
+      },
+    });
   }
 
-  // ===================== Drag & Drop (PORTADA) =====================
-  onDragOver(which: 'cover' | 'assets', e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (which === 'cover') this.dragOverCover.set(true);
-    else this.dragOverAssets.set(true);
-  }
+  // ---------------------------------------------------------------------------
+  // SUBMIT
+  // ---------------------------------------------------------------------------
+  submit(): void {
+    if (this.saving) return;
 
-  onDragLeave(which: 'cover' | 'assets') {
-    if (which === 'cover') this.dragOverCover.set(false);
-    else this.dragOverAssets.set(false);
-  }
-
-  async onCoverDrop(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.dragOverCover.set(false);
-    const f = e.dataTransfer?.files?.[0];
-    if (f) await this.handleCoverFile(f);
-  }
-
-  async onCoverSelect(e: Event) {
-    const i = e.target as HTMLInputElement;
-    const f = i.files?.[0] ?? null;
-    if (f) await this.handleCoverFile(f);
-    i.value = '';
-  }
-
-  private async handleCoverFile(file: File) {
-    if (!this.isValidImage(file)) return;
-    this.coverPreview.set(URL.createObjectURL(file));
-    this.pendingCover = file; // se sube en submit()
-  }
-
-  // ===================== Drag & Drop (ASSETS) =====================
-  async onAssetsDrop(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.dragOverAssets.set(false);
-    const files = Array.from(e.dataTransfer?.files ?? []);
-    await this.handleAssetsFiles(files);
-  }
-
-  async onAssetsSelect(e: Event) {
-    const i = e.target as HTMLInputElement;
-    const files = Array.from(i.files ?? []);
-    await this.handleAssetsFiles(files);
-    i.value = '';
-  }
-
-  private async handleAssetsFiles(files: File[]) {
-    if (!files.length) return;
-    const valid: File[] = [];
-    for (const f of files) {
-      if (!this.isValidImage(f)) continue;
-      valid.push(f);
-      this.assetsPreview.update((prev) => [
-        ...prev,
-        URL.createObjectURL(f),
-      ]);
-    }
-    this.pendingAssets.push(...valid); // se suben en submit()
-  }
-
-  removeAssetPreview(index: number) {
-    this.assetsPreview.update((prev) =>
-      prev.filter((_, i) => i !== index),
-    );
-    this.pendingAssets = this.pendingAssets.filter((_, i) => i !== index);
-  }
-
-  // ===================== Validaciones de archivos =====================
-  private isValidImage(f: File): boolean {
-    const okType =
-      /^image\/(png|jpe?g|webp|gif|avif)$/i.test(f.type);
-    if (!okType) {
-      alert('Formato no permitido');
-      return false;
-    }
-    const okSize = f.size <= 10 * 1024 * 1024; // 10 MB
-    if (!okSize) {
-      alert('El archivo excede 10MB');
-      return false;
-    }
-    return true;
-  }
-
-  // ===================== Submit =====================
-  async submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.saving.set(true);
 
-    try {
-      const dto: CreatePostDto = {
-        title: this.form.value.title!,
-        slug: this.form.value.slug || undefined,
-        // El DTO usa contentMd. El form tiene "content".
-        contentMd: this.form.value.content!,
-        tag: this.form.value.tag || undefined,
-        topic: this.form.value.topic || undefined,
-        readMinutes: this.form.value.readMinutes ?? undefined,
-        externalUrl: this.form.value.externalUrl || undefined,
-        published: !!this.form.value.published,
-      };
+    this.saving = true;
 
-      let post: PostDto;
-      if (this.postId) {
-        post = await firstValueFrom(this.api.update(this.postId, dto));
-      } else {
-        post = await firstValueFrom(this.api.create(dto));
-        this.postId = post.id;
-      }
+    const v = this.form.value;
 
-      // Portada
-      if (this.pendingCover && this.postId) {
-        await firstValueFrom(
-          this.api.uploadCover(this.postId, this.pendingCover),
-        );
-      }
+    const dto: CreatePostDto = {
+      title: v.title ?? '',
+      slug: v.slug || null,
+      tag: v.tag || null,
+      topic: v.topic || null,
+      readMinutes: v.readMinutes ?? null,
+      externalUrl: v.externalUrl || null,
+      contentMd: v.content ?? '',
+      published: true,
+    };
 
-      // Assets
-      if (this.pendingAssets.length && this.postId) {
-        await firstValueFrom(
-          this.api.uploadAssets(this.postId, this.pendingAssets),
-        );
-      }
+    const req$ = this.postId
+      ? this.api.update(this.postId, dto)
+      : this.api.create(dto);
 
-      this.router.navigate(['../'], {
-        relativeTo: this.route,
-      });
-    } catch (err) {
-      console.error(err);
-      alert('Error al guardar el post');
-    } finally {
-      this.saving.set(false);
+    req$.subscribe({
+      next: (post) => this.afterSavePost(post),
+      error: (err) => {
+        console.error('Error guardando post', err);
+        this.saving = false;
+      },
+    });
+  }
+
+  /**
+   * Una vez guardado el post (create/update), subimos portada y assets si aplica.
+   */
+  private afterSavePost(post: PostDto): void {
+    const tasks: Observable<any>[] = [];
+
+    if (this.coverFile) {
+      tasks.push(this.api.uploadCover(post.id, this.coverFile));
+    }
+
+    if (this.assetFiles.length > 0) {
+      tasks.push(this.api.uploadAssets(post.id, this.assetFiles));
+    }
+
+    if (tasks.length === 0) {
+      this.finishSave();
+      return;
+    }
+
+    forkJoin(tasks).subscribe({
+      next: () => this.finishSave(),
+      error: (err) => {
+        console.error('Error subiendo imágenes', err);
+        this.finishSave();
+      },
+    });
+  }
+
+  private finishSave(): void {
+    this.saving = false;
+    // Redirige a la lista de posts admin (ajusta ruta si quieres otro destino)
+    this.router.navigate(['/admin/blog']);
+  }
+
+  cancel(): void {
+    this.router.navigate(['/admin/blog']);
+  }
+
+  // ---------------------------------------------------------------------------
+  // PORTADA (cover) - drag & drop + selección
+  // ---------------------------------------------------------------------------
+  onDragOver(kind: 'cover' | 'assets', event: DragEvent): void {
+    event.preventDefault();
+    if (kind === 'cover') {
+      this._dragOverCover = true;
+    } else {
+      this._dragOverAssets = true;
     }
   }
 
-  cancel() {
-    this.router.navigate(['../'], {
-      relativeTo: this.route,
+  onDragLeave(kind: 'cover' | 'assets'): void {
+    if (kind === 'cover') {
+      this._dragOverCover = false;
+    } else {
+      this._dragOverAssets = false;
+    }
+  }
+
+  onCoverDrop(event: DragEvent): void {
+    event.preventDefault();
+    this._dragOverCover = false;
+
+    const files = event.dataTransfer?.files;
+    if (!files?.length) return;
+
+    const img = Array.from(files).find((f) => f.type.startsWith('image/'));
+    if (img) {
+      this.setCoverFile(img);
+    }
+  }
+
+  onCoverSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    this.setCoverFile(file);
+    // reset para permitir seleccionar la misma imagen otra vez si quiere
+    input.value = '';
+  }
+
+  private setCoverFile(file: File): void {
+    this.coverFile = file;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.coverPreviewUrl = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ---------------------------------------------------------------------------
+  // ASSETS (galería) - drag & drop + selección múltiple
+  // ---------------------------------------------------------------------------
+  onAssetsDrop(event: DragEvent): void {
+    event.preventDefault();
+    this._dragOverAssets = false;
+
+    const files = event.dataTransfer?.files;
+    if (!files?.length) return;
+
+    this.addAssetFiles(Array.from(files));
+  }
+
+  onAssetsSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    this.addAssetFiles(Array.from(input.files));
+    input.value = '';
+  }
+
+  private addAssetFiles(files: File[]): void {
+    const images = files.filter((f) => f.type.startsWith('image/'));
+    if (!images.length) return;
+
+    images.forEach((file) => {
+      this.assetFiles.push(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.assetPreviewUrls.push(String(reader.result));
+      };
+      reader.readAsDataURL(file);
     });
+  }
+
+  removeAssetPreview(index: number): void {
+    this.assetPreviewUrls.splice(index, 1);
+    this.assetFiles.splice(index, 1);
   }
 }

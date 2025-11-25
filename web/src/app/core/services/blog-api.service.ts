@@ -8,10 +8,13 @@ export interface PostDto {
   id: string;
   title: string;
   slug: string;
+
   img?: string | null;
+
   tag?: string | null;
   topic?: string | null;
   readMinutes?: number | null;
+  excerpt?: string | null; 
 
   // Campos de contenido
   contentMd?: string | null;     // campo real en la API / BD
@@ -32,7 +35,7 @@ export interface CreatePostDto {
   slug?: string | null;
 
   // ahora el DTO habla en contentMd igual que el backend
-  contentMd: string;
+  contentMd?: string | null;
 
   tag?: string | null;
   topic?: string | null;
@@ -55,15 +58,48 @@ export class BlogApiService {
 
   constructor(private http: HttpClient) {}
 
-  /** Normaliza a camel para la UI */
-  private adapt = (p: PostDto): PostDto => ({
-    ...p,
-    // asegurar que siempre tengamos ambas variantes
-    externalUrl: p.externalUrl ?? p.external_url ?? null,
-    external_url: p.external_url ?? p.externalUrl ?? null,
-    content: p.content ?? p.contentMd ?? null,
-    contentMd: p.contentMd ?? p.content ?? null,
-  });
+  /** Normaliza datos del API → formato cómodo para la UI */
+  private adapt = (p: PostDto): PostDto => {
+    // 1) Normalizar img: quitar host si viene absoluta (http://localhost:3000/...)
+    const normalizeImg = (url?: string | null): string | null => {
+      if (!url) return null;
+
+      // Si viene absoluta, quitamos protocolo + host
+      const stripped = url.replace(/^https?:\/\/[^/]+/i, '');
+
+      // Si empieza con /public, perfecto → la dejamos relativa para que pase por el proxy
+      if (stripped.startsWith('/public/')) {
+        return stripped;
+      }
+
+      // Si el backend ya regresó relativa, respetamos
+      if (url.startsWith('/public/')) {
+        return url;
+      }
+
+      // Cualquier otro caso raro, devolvemos tal cual para no romper nada
+      return url;
+    };
+
+    const img = normalizeImg(p.img);
+
+    // 2) Normalizar contenido
+    const contentMd = p.contentMd ?? p.content ?? null;
+    const content = p.content ?? p.contentMd ?? null;
+
+    // 3) Normalizar externalUrl / external_url
+    const externalUrl = p.externalUrl ?? p.external_url ?? null;
+    const external_url = p.external_url ?? p.externalUrl ?? null;
+
+    return {
+      ...p,
+      img,
+      content,
+      contentMd,
+      externalUrl,
+      external_url,
+    };
+  };
 
   // ---------- CREATE ----------
   create(dto: CreatePostDto): Observable<PostDto> {

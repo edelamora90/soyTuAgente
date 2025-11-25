@@ -1,26 +1,31 @@
 // api/src/main.ts
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app/app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Prefijo global: /api
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.enableCors();
+
+  // prefijo /api -> todas las rutas quedan /api/...
   app.setGlobalPrefix('api');
 
-  // Pipes globales de validación (si ya usas class-validator)
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
+  // Monorepo Nx:
+  // process.cwd() -> raíz del repo (soytuagente/)
+  // PUBLIC_ROOT   -> soytuagente/api/public
+  const PUBLIC_ROOT = join(process.cwd(), 'api', 'public');
 
-  const port = process.env.PORT ? Number(process.env.PORT) : 3000;
-  await app.listen(port);
-  console.log(`API escuchando en puerto ${port}`);
+  app.useStaticAssets(PUBLIC_ROOT, {
+    prefix: '/public/',
+  });
+
+  await app.listen(3000);
+
+  console.log('PUBLIC_ROOT =', PUBLIC_ROOT);
+  console.log('API disponible en http://localhost:3000/api/health');
 }
-
 bootstrap();

@@ -4,29 +4,20 @@
   "sourceRoot": "api/src",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "target": "node",
         "outputPath": "dist/api",
         "main": "api/src/main.ts",
         "tsConfig": "api/tsconfig.build.json",
-        "compiler": "tsc",
-        "webpackConfig": "api/webpack.config.js",
         "assets": []
-      },
-      "configurations": {
-        "development": { "mode": "development" },
-        "production": { "mode": "production" }
-      },
-      "defaultConfiguration": "development"
+      }
     },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api:build",
-        "watch": true,
-        "inspect": true
+        "watch": true
       }
     }
   },

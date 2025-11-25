@@ -14,29 +14,24 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { BlogService } from './blog.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-
-// Subida en memoria
 import {
   FileFieldsInterceptor,
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { join } from 'path';
 
-// Helpers de subida/optimización
+import { BlogService } from './blog.service';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import {
   BLOG_ROOT,
   ensureDir,
   saveOptimizedWebp,
-  publicUrlFromPath,
+  PUBLIC_ROOT,
+  toPublicRelative,
 } from './uploads.util';
-
-// PUBLIC_BASE_URL + acceso directo a Prisma
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
-import { join } from 'path';
 
 const storage = memoryStorage();
 const IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
@@ -46,12 +41,9 @@ export class BlogController {
   constructor(
     private readonly svc: BlogService,
     private readonly prisma: PrismaService,
-    private readonly cfg: ConfigService,
   ) {}
 
-  // =========================================================
-  // CRUD
-  // =========================================================
+  // ===== CRUD =====
 
   @Get('latest')
   latest(@Query('limit') limit?: string) {
@@ -67,29 +59,22 @@ export class BlogController {
   ) {
     return this.svc.list({
       q,
-      published:
-        published !== undefined ? published === 'true' : undefined,
+      published: published !== undefined ? published === 'true' : undefined,
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,
     });
   }
 
-  // --- Rutas para admin / API REST puro ---
-
-  // GET /posts/id/:id  → usado por BlogApiService.getById
   @Get('id/:id')
   byId(@Param('id') id: string) {
     return this.prisma.post.findUnique({ where: { id } });
   }
 
-  // GET /posts/slug/:slug → usado por BlogApiService.getBySlug
   @Get('slug/:slug')
   bySlugRest(@Param('slug') slug: string) {
     return this.svc.getBySlug(slug);
   }
 
-  // --- Ruta pública legacy: /posts/:slug ---
-  // (la dejamos para el detalle público del blog)
   @Get(':slug')
   bySlugPublic(@Param('slug') slug: string) {
     return this.svc.getBySlug(slug);
@@ -100,13 +85,11 @@ export class BlogController {
     return this.svc.create(dto);
   }
 
-  // Alias PUT (si alguna cosa antigua lo usa)
   @Put(':id')
   replace(@Param('id') id: string, @Body() dto: UpdatePostDto) {
     return this.svc.update(id, dto);
   }
 
-  // PATCH /posts/:id → usado por BlogApiService.update
   @Patch(':id')
   patch(@Param('id') id: string, @Body() dto: UpdatePostDto) {
     return this.svc.update(id, dto);
@@ -117,11 +100,8 @@ export class BlogController {
     return this.svc.remove(id);
   }
 
-  // =========================================================
-  // SUBIDAS DE IMÁGENES
-  // =========================================================
+  // ===== SUBIDAS =====
 
-  /** Resuelve carpetas de portada y assets según slug o id */
   private async resolvePostDirs(postId: string) {
     const post = await this.prisma.post.findUnique({
       where: { id: postId },
@@ -129,6 +109,7 @@ export class BlogController {
     if (!post) throw new BadRequestException('Post no encontrado');
 
     const folder = (post.slug || post.id).trim();
+
     const base = join(BLOG_ROOT, folder);
     const coverD = join(base, 'cover');
     const assetsD = join(base, 'assets');
@@ -139,7 +120,6 @@ export class BlogController {
     return { post, base, coverD, assetsD };
   }
 
-  /** Subir portada (field: "file") → guarda cover.webp y actualiza post.img */
   @Post(':id/upload/cover')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -159,13 +139,14 @@ export class BlogController {
     const { coverD, post } = await this.resolvePostDirs(id);
     const outPath = join(coverD, 'cover.webp');
 
-    const { bytes, path } = await saveOptimizedWebp(file.buffer, outPath, {
-      maxWidth: 1600,
-      targetKB: 300,
-    });
+    const { bytes, path: savedPath } = await saveOptimizedWebp(
+      file.buffer,
+      outPath,
+      { maxWidth: 1600, targetKB: 300 },
+    );
 
-    const baseUrl = this.cfg.get<string>('PUBLIC_BASE_URL') || '';
-    const imgUrl = publicUrlFromPath(path, baseUrl);
+    const relativePath = toPublicRelative(savedPath); // /blog/slug/cover/cover.webp
+    const imgUrl = `/public${relativePath}`;          // /public/blog/slug/cover/cover.webp
 
     const updated = await this.prisma.post.update({
       where: { id: post.id },
@@ -173,18 +154,25 @@ export class BlogController {
       select: { id: true, slug: true, img: true, title: true },
     });
 
-    return { ok: true, bytes, url: imgUrl, post: updated };
+    return {
+      ok: true,
+      bytes,
+      url: imgUrl,
+      post: updated,
+      debug: {
+        PUBLIC_ROOT,
+        savedPath,
+        relativePath,
+        imgUrl,
+      },
+    };
   }
 
-  /** Subir assets del contenido (field: "files") → WebP + URLs */
   @Post(':id/upload/assets')
   @UseInterceptors(
     FileFieldsInterceptor(
       [{ name: 'files', maxCount: 20 }],
-      {
-        storage,
-        limits: { fileSize: 10 * 1024 * 1024 },
-      },
+      { storage, limits: { fileSize: 10 * 1024 * 1024 } },
     ),
   )
   async uploadAssets(
@@ -196,7 +184,6 @@ export class BlogController {
     if (!list.length) throw new BadRequestException('Sin archivos');
 
     const { assetsD, post } = await this.resolvePostDirs(id);
-    const baseUrl = this.cfg.get<string>('PUBLIC_BASE_URL') || '';
 
     const results: Array<{ name: string; url: string; bytes: number }> = [];
 
@@ -209,15 +196,18 @@ export class BlogController {
         .replace(/\.[^.]+$/, '');
 
       const outPath = join(assetsD, `${baseName}.webp`);
-      const { bytes, path } = await saveOptimizedWebp(
+      const { bytes, path: savedPath } = await saveOptimizedWebp(
         f.buffer,
         outPath,
         { maxWidth: 1200, targetKB: 300 },
       );
 
+      const relativePath = toPublicRelative(savedPath);
+      const url = `/public${relativePath}`;
+
       results.push({
         name: `${baseName}.webp`,
-        url: publicUrlFromPath(path, baseUrl),
+        url,
         bytes,
       });
     }

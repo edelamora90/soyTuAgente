@@ -1,4 +1,3 @@
-//api/src/auth/auth.controller.ts
 import {
   BadRequestException,
   Body,
@@ -32,7 +31,6 @@ export class AuthController {
 
   @Post('logout')
   logout() {
-    // El cliente borra tokens; aquí sólo confirmamos.
     return { ok: true };
   }
 
