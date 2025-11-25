@@ -12,22 +12,47 @@ jobs:
     env:
       NX_DAEMON: 'false'
       NX_NO_CLOUD: 'true'
+
     steps:
+      # -----------------------------
+      # 1. Checkout
+      # -----------------------------
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # -----------------------------
+      # 2. Setup Node + PNPM
+      # -----------------------------
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
+      - name: Install PNPM
+        run: npm install -g pnpm@9
+
+      # -----------------------------
+      # 3. PNPM Cache
+      # -----------------------------
+      - name: Setup PNPM Store Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # -----------------------------
+      # 4. Install dependencies
+      # -----------------------------
       - name: Install deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      # Opcional pero útil para depurar
+      # -----------------------------
+      # 5. Debug info (opcional)
+      # -----------------------------
       - name: Where am I?
         run: |
           pwd
@@ -37,21 +62,38 @@ jobs:
           echo "---- web/project.json ----"
           sed -n '1,200p' web/project.json || true
 
+      # -----------------------------
+      # 6. Nx version
+      # -----------------------------
       - name: Nx version
-        run: npx nx --version
+        run: pnpm exec nx --version
 
-      - name: Nx reset (clean cache)
-        run: npx nx reset
+      # -----------------------------
+      # 7. Reset Nx cache
+      # -----------------------------
+      - name: Nx reset
+        run: pnpm exec nx reset
 
+      # -----------------------------
+      # 8. List Nx projects (debug)
+      # -----------------------------
       - name: List projects (debug)
-        run: npx nx show projects
+        run: pnpm exec nx show projects
 
+      # -----------------------------
+      # 9. Build web (prod)
+      # -----------------------------
       - name: Build web (prod)
-        run: npx nx build web --configuration=production --no-cloud --skip-nx-cache --verbose
+        run: pnpm exec nx build web --configuration=production --no-cloud --skip-nx-cache --verbose
 
-      # 🔹 Necesario para que el build de api compile los types de Prisma
+      # -----------------------------
+      # 10. Prisma generate
+      # -----------------------------
       - name: Prisma generate
-        run: npx prisma generate --schema=prisma/schema.prisma
+        run: pnpm exec prisma generate --schema=prisma/schema.prisma
 
+      # -----------------------------
+      # 11. Build API (prod)
+      # -----------------------------
       - name: Build api (prod)
-        run: npx nx build api --configuration=production --no-cloud --skip-nx-cache --verbose
+        run: pnpm exec nx build api --configuration=production --no-cloud --skip-nx-cache --verbose
