@@ -4,8 +4,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
-} 
-from '@nestjs/common';
+} from '@nestjs/common';
 import type { Express } from 'express';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -17,17 +16,11 @@ import * as path from 'path';
 const sharp = require('sharp');
 
 // ===== Helpers para URLs públicas (solo backend) =====
-const PUBLIC = (process.env['PUBLIC_BASE_URL'] || 'http://localhost:3000').replace(
-  /\/+$/,
-  '',
-);
+const PUBLIC = (process.env['PUBLIC_BASE_URL'] || 'http://localhost:3000').replace(/\/+$/, '');
 
 function toPublicUrl(p?: string | null): string {
   if (!p) return '';
-  // Absolutas o assets del front → se regresan igual
   if (/^https?:\/\//i.test(p) || p.startsWith('assets/')) return p;
-
-  // Normaliza y arma /public/...
   const clean = p.replace(/^\/+/, '');
   return clean.startsWith('public/')
     ? `${PUBLIC}/${clean}`
@@ -46,13 +39,12 @@ function mapAgentUrls<T extends AgentLike>(a: T): T {
   if (!a) return a;
   const out: T = { ...a };
 
-  out.avatar = toPublicUrl(out.avatar ?? '');
+  out.avatar    = toPublicUrl(out.avatar ?? '');
   out.mediaHero = toPublicUrl(out.mediaHero ?? '');
 
   if (Array.isArray(out.mediaThumbs)) {
     out.mediaThumbs = out.mediaThumbs.map((v) => toPublicUrl(v ?? '')) as T['mediaThumbs'];
   }
-
   if (Array.isArray(out.aseguradoras)) {
     out.aseguradoras = out.aseguradoras.map((x) => {
       const s = String(x ?? '');
@@ -67,25 +59,21 @@ function mapAgentUrls<T extends AgentLike>(a: T): T {
 
 @Injectable()
 export class AgentsService {
-
-  private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads', 'agents');
+  // ✅ carpeta física correcta para escribir archivos auxiliares
+  private readonly uploadDir = path.join(process.cwd(), 'api', 'uploads', 'agents');
 
   constructor(private prisma: PrismaService) {
     fs.mkdirSync(this.uploadDir, { recursive: true });
   }
 
   async findAll() {
-    const list = await this.prisma.agent.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    const list = await this.prisma.agent.findMany({ orderBy: { createdAt: 'desc' } });
     return list.map(mapAgentUrls);
   }
 
   async findOne(slug: string) {
     const agent = await this.prisma.agent.findUnique({ where: { slug } });
-    if (!agent) {
-      throw new NotFoundException(`Agente con slug "${slug}" no encontrado`);
-    }
+    if (!agent) throw new NotFoundException(`Agente con slug "${slug}" no encontrado`);
     return mapAgentUrls(agent);
   }
 
@@ -103,7 +91,7 @@ export class AgentsService {
     try {
       const saved = await this.prisma.agent.update({
         where: { slug },
-        data: dto as any, // si dto incluye slug NUEVO, Prisma lo actualizará
+        data: dto as any,
       });
       return mapAgentUrls(saved);
     } catch (e) {
@@ -122,29 +110,24 @@ export class AgentsService {
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, ''); // sin espacios/guiones
+      .replace(/[^a-z0-9]+/g, '');
   }
 
   private static ESPECIALIDAD_ALIASES: Record<
     string,
     'vehiculos' | 'hogar-negocio' | 'salud-asistencia'
   > = {
-    // vehículos
     vehiculos: 'vehiculos',
     vehiculo: 'vehiculos',
     auto: 'vehiculos',
     autos: 'vehiculos',
     carro: 'vehiculos',
     carros: 'vehiculos',
-
-    // hogar-negocio
     hogarnegocio: 'hogar-negocio',
     hogarynegocio: 'hogar-negocio',
     hogar: 'hogar-negocio',
     negocio: 'hogar-negocio',
     'hogar-negocio': 'hogar-negocio',
-
-    // salud-asistencia
     saludasistencia: 'salud-asistencia',
     salud: 'salud-asistencia',
     asistencia: 'salud-asistencia',
@@ -277,10 +260,7 @@ export class AgentsService {
         if (existed) updated.push(slug);
         else created.push(slug);
       } catch (e: any) {
-        failed.push({
-          slug: raw?.slug,
-          error: e?.message ?? 'Error desconocido',
-        });
+        failed.push({ slug: raw?.slug, error: e?.message ?? 'Error desconocido' });
       }
     }
 
@@ -317,23 +297,20 @@ export class AgentsService {
           select: { slug: true },
         });
 
-        const saved = await this.prisma.agent.upsert({
+        await this.prisma.agent.upsert({
           where: { slug: data.slug },
           create: data as any,
           update: data as any,
         });
 
-        if (existed) updated.push(saved.slug);
-        else created.push(saved.slug);
+        if (existed) updated.push(data.slug);
+        else created.push(data.slug);
       } catch (e: any) {
         if (e?.code === 'P2002') {
           failed.push({ slug: raw?.slug, error: 'Duplicado de clave única' });
           continue;
         }
-        failed.push({
-          slug: raw?.slug,
-          error: e?.message ?? 'Error desconocido',
-        });
+        failed.push({ slug: raw?.slug, error: e?.message ?? 'Error desconocido' });
       }
     }
 
@@ -347,7 +324,7 @@ export class AgentsService {
     };
   }
 
-  // ================== Upload de avatar ==================
+  // ================== Upload de avatar (utilitario opcional) ==================
   async saveAvatar(file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No se recibió archivo de imagen.');
@@ -355,38 +332,25 @@ export class AgentsService {
 
     // Validación básica de tipo / tamaño
     const okType = /^image\/(png|jpe?g|webp|gif|avif)$/i.test(file.mimetype);
-    if (!okType) {
-      throw new BadRequestException('Formato de imagen no permitido.');
-    }
+    if (!okType) throw new BadRequestException('Formato de imagen no permitido.');
     if (file.size > 10 * 1024 * 1024) {
       throw new BadRequestException('La imagen excede 10MB.');
     }
 
     try {
-      // Usamos timestamp para evitar colisiones
       const id = Date.now();
-
-      // Importante: usamos extensión .jpg y la carpeta "agents"
-      // El archivo físico quedará en: api/uploads/agents/<id>-perfil-de-usuario.jpg
       const fileName = `${id}-perfil-de-usuario.jpg`;
       const destPath = path.join(this.uploadDir, fileName);
 
-      // Procesamos con sharp (opcional, pero recomendado)
       await sharp(file.buffer)
         .resize(800, 800, { fit: 'cover', position: 'centre' })
         .jpeg({ quality: 80 })
         .toFile(destPath);
 
-      // Ruta relativa que se guarda en BD (coherente con toPublicUrl)
-      // toPublicUrl('agents/xxx.jpg') -> https://dominio/public/agents/xxx.jpg
       const storagePath = `agents/${fileName}`;
       const url = toPublicUrl(storagePath);
 
-      return {
-        ok: true,
-        path: storagePath, // para guardar en BD
-        url,               // URL completa por si la queremos usar directa
-      };
+      return { ok: true, path: storagePath, url };
     } catch (err) {
       console.error('Error guardando avatar:', err);
       throw new InternalServerErrorException('No se pudo guardar la imagen del agente.');
@@ -397,15 +361,12 @@ export class AgentsService {
   private handlePrismaError(e: unknown): never {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === 'P2002') {
-        throw new BadRequestException(
-          'Ya existe un registro con un valor único duplicado (por ejemplo, "slug").',
-        );
+        throw new BadRequestException('Valor único duplicado (por ejemplo, "slug").');
       }
     }
     throw e;
   }
 
-  /** Parser CSV simple (comillas dobles soportadas) */
   private parseCsv(text: string): any[] {
     const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     if (!lines.length) return [];
@@ -454,27 +415,15 @@ export class AgentsService {
     return out;
   }
 
-  /** Normaliza una fila CSV a la forma esperada por Prisma */
   private normalizeCsvRow(r: any): CreateAgentDto & { slug: string } {
-    const toBool = (v: any) =>
-      String(v ?? '')
-        .trim()
-        .toLowerCase() === 'true';
-    const toList = (v: any) =>
-      String(v ?? '')
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
+    const toBool = (v: any) => String(v ?? '').trim().toLowerCase() === 'true';
+    const toList = (v: any) => String(v ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 
     const redes: Array<{ icon: string; url: string }> = [];
     const pushRed = (icon: string, usernameOrUrl: string, base?: string) => {
       if (!usernameOrUrl) return;
       const isUrl = /^https?:\/\//i.test(usernameOrUrl);
-      const url = isUrl
-        ? usernameOrUrl
-        : base
-        ? `${base.replace(/\/+$/, '')}/${usernameOrUrl.replace(/^\/+/, '')}`
-        : usernameOrUrl;
+      const url = isUrl ? usernameOrUrl : base ? `${base.replace(/\/+$/, '')}/${usernameOrUrl.replace(/^\/+/, '')}` : usernameOrUrl;
       redes.push({ icon, url });
     };
     pushRed('assets/icons/facebook.svg', r.facebook, 'https://facebook.com');
@@ -490,23 +439,17 @@ export class AgentsService {
           if (o && typeof o.icon === 'string' && typeof o.url === 'string') {
             redes.push({ icon: o.icon, url: o.url });
           }
-        } catch {
-          /** ignore */
-        }
+        } catch { /* ignore */ }
       }
     }
 
-    const mediaThumbs = toList(r.mediaThumbs);
-    const mediaHero = (r.mediaHero ?? '').trim();
-    const aseguradoras = toList(r.aseguradoras).map(
-      AgentsService.carrierToLogo,
-    );
+    const mediaThumbs   = toList(r.mediaThumbs);
+    const mediaHero     = (r.mediaHero ?? '').trim();
+    const aseguradoras  = toList(r.aseguradoras).map(AgentsService.carrierToLogo);
 
     const espCsv = toList(r.especialidades)
       .map(AgentsService.toEspecialidadSlug)
-      .filter(
-        (x): x is 'vehiculos' | 'hogar-negocio' | 'salud-asistencia' => !!x,
-      );
+      .filter((x): x is 'vehiculos' | 'hogar-negocio' | 'salud-asistencia' => !!x);
     const especialidades = Array.from(new Set(espCsv));
 
     const dto: any = {
@@ -531,9 +474,7 @@ export class AgentsService {
       throw new BadRequestException('El campo "nombre" es requerido en CSV.');
     }
     if (!dto.slug) {
-      throw new BadRequestException(
-        'No se pudo generar "slug" (falta nombre o slug).',
-      );
+      throw new BadRequestException('No se pudo generar "slug" (falta nombre o slug).');
     }
 
     return dto;

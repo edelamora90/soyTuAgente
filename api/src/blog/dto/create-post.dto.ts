@@ -1,29 +1,71 @@
 // api/src/blog/dto/create-post.dto.ts
-import { IsBoolean, IsInt, IsOptional, IsString, IsUrl, Min } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Min,
+  MaxLength,
+} from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
+  @MaxLength(200)
   title!: string;
 
-  // lo generas en el backend si no viene
   @IsOptional()
   @IsString()
   slug?: string;
 
-  @IsOptional() @IsString() excerpt?: string;
-  @IsOptional() @IsString() contentMd?: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(400)
+  excerpt?: string;
 
-  @IsOptional() @IsUrl() img?: string;
+  @IsOptional()
+  @IsString()
+  contentMd?: string;
+
+  @IsOptional()
+  @IsUrl()
+  img?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  assets?: string[];
 
   @IsString()
   topic!: string;
 
-  @IsOptional() @IsString() tag?: string;
+  @IsOptional()
+  @IsString()
+  tag?: string;
 
-  @IsOptional() @IsInt() @Min(1) readMinutes?: number;
+  @IsString()
+  author!: string;
 
-  @IsOptional() @IsUrl() externalUrl?: string;
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  readMinutes?: number;
 
-  @IsOptional() @IsBoolean() published?: boolean;
-  // publishedAt lo fija el servicio cuando published=true
+  @IsOptional()
+  @IsUrl()
+  externalUrl?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isFeatured?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  published?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  publishedAt?: string; // lo convertimos a Date en el servicio
 }

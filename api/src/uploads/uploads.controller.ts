@@ -6,8 +6,9 @@ import { diskStorage } from 'multer';
 import { join, extname, relative } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
-const ROOT = join(process.cwd(), 'api', 'uploads');
-const AGENTS_DIR = join(ROOT, 'agents');
+// RUTAS CORRECTAS
+const UPLOADS_ROOT = join(process.cwd(), 'api', 'uploads');
+const AGENTS_DIR   = join(UPLOADS_ROOT, 'agents');
 
 function ensureDir(dir: string) {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -50,7 +51,7 @@ export class UploadsController {
         },
         filename: (_req, file, cb) => {
           const base = sanitizeBase(file.originalname || 'file');
-          const ext = pickExt(file);
+          const ext  = pickExt(file);
           cb(null, `${Date.now()}-${base}${ext}`);
         },
       }),
@@ -66,9 +67,9 @@ export class UploadsController {
   uploadAgent(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No file uploaded');
 
-    const base = process.env['PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
-    const sub = relative(ROOT, file.destination).replace(/\\/g, '/');
-    const url = `${base}/public/${sub}/${file.filename}`;
+    const base = (process.env['PUBLIC_BASE_URL'] ?? 'http://localhost:3000').replace(/\/+$/, '');
+    const sub  = relative(UPLOADS_ROOT, file.destination).replace(/\\/g, '/'); // 'agents'
+    const url  = `${base}/public/${sub}/${file.filename}`;
 
     return {
       url,

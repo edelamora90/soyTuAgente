@@ -1,22 +1,50 @@
+// web/src/app/core/uploads/uploads-blog.api.ts
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-const BASE = 'http://localhost:3000/api/uploads/agents';
-
-export type UploadResp = { url: string; filename: string };
+export type UploadResult = {
+  url: string;
+  filename: string;
+};
 
 @Injectable({ providedIn: 'root' })
-export class UploadsApi {
+export class UploadsBlogApi {
   private http = inject(HttpClient);
 
-  upload(file: File, folder?: 'hero' | 'avatar' | 'gallery'): Observable<UploadResp> {
+  private BASE = 'http://localhost:3000/api/uploads/blog';
+
+  // ▬▬▬▬▬▬▬ COVER (1 archivo) ▬▬▬▬▬▬▬
+  uploadCover(file: File): Observable<string> {
     const fd = new FormData();
     fd.append('file', file);
 
-    let params = new HttpParams();
-    if (folder) params = params.set('folder', folder);
+    return new Observable((observer) => {
+      this.http.post<UploadResult>(`${this.BASE}/cover`, fd).subscribe({
+        next: (r) => {
+          observer.next(r.url);
+          observer.complete();
+        },
+        error: (err) => observer.error(err),
+      });
+    });
+  }
 
-    return this.http.post<UploadResp>(BASE, fd, { params });
+  // ▬▬▬▬▬▬▬ ASSETS (múltiples archivos) ▬▬▬▬▬▬▬
+  uploadAssets(files: FileList | File[]): Observable<string[]> {
+    const fd = new FormData();
+
+    Array.from(files).forEach((file) => fd.append('files', file));
+
+    return new Observable((observer) => {
+      this.http.post<UploadResult[]>(`${this.BASE}/assets`, fd).subscribe({
+        next: (list) => {
+          const urls = list.map((x) => x.url);
+          observer.next(urls);
+          observer.complete();
+        },
+        error: (err) => observer.error(err),
+      });
+    });
   }
 }

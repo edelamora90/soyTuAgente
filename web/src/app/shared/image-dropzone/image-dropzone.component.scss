@@ -1,102 +1,23 @@
-//web/src/app/shared/image-dropzone/image-dropzone.component.scss
-.dz {
-  border: 2px dashed #cfd4dc;
-  background: #fafbfc;
-  border-radius: 12px;
-  padding: 16px;
-  position: relative;
-  transition: background 0.15s ease, border-color 0.15s ease;
-
-  &.dz--over {
-    border-color: #16a34a;
-    background: #f1fff7;
-  }
-
-  &.dz--disabled {
-    opacity: .7;
-    pointer-events: none;
-  }
-}
-
-.dz__content {
-  display: grid;
-  gap: 12px;
-  align-items: start;
-  justify-items: center;
-}
-
-.dz__button {
-  min-width: 180px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid #d0d5dd;
-  background: #fff;
-  cursor: pointer;
+.dropzone {
+  border: 2px dashed #b8c4cc;
+  padding: 32px;
   text-align: center;
-  font-weight: 700;
-}
-
-.dz__progress {
-  font-size: 12px;
-  color: #475467;
-}
-
-.single {
-  position: relative;
-}
-
-.dz__preview {
-  width: 240px;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid #eaecf0;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-}
-
-.dz__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-  width: 100%;
-}
-
-.dz__item {
-  position: relative;
-}
-
-.remove-btn,
-.dz__remove--item {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 28px;
-  height: 28px;
-  line-height: 1;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-  border: 1px solid #e4e7ec;
-  background: #fff;
+  border-radius: 14px;
+  background: #f8fafc;
   cursor: pointer;
-  font-weight: 900;
-  padding: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,.12);
 }
 
-.dz__text {
-  text-align: center;
-  color: #475467;
+.btn-upload {
+  background: #1a9c6d;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+}
+
+.hint {
+  margin-top: 10px;
   font-size: 14px;
-}
-
-.dz__note {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #6a7f79;
-}
-
-.dz__file {
-  display: none;
+  color: #64748b;
 }

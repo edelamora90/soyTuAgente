@@ -1,10 +1,14 @@
+<!-- web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.html -->
 <section class="ap container profile" *ngIf="!loading && agent as a; else skeleton">
-
-  <!-- Tarjeta principal con todas las secciones -->
   <section class="ap-card">
     <!-- Col 1: Avatar -->
     <div class="ap-avatar">
-      <img [src]="a.avatar" [alt]="a.nombre" />
+      <img
+      [src]="toPublicUrl(a?.avatar || a?.mediaHero) || AVATAR_FALLBACK"
+      (error)="onImgError($event)"
+      alt="Agente"
+    />
+
     </div>
 
     <!-- Col 2: Información general -->
@@ -38,16 +42,18 @@
     <!-- Redes Sociales -->
     <div class="ap-social" *ngIf="a.redes?.length">
       <a *ngFor="let r of a.redes" [href]="r.url" target="_blank" rel="noopener">
-        <img [src]="r.icon" alt="" />
+        <img [src]="toPublicUrl(r.icon)" alt="" />
       </a>
     </div>
 
     <!-- Botones CTA superiores -->
     <div class="ap-cta ap-cta--top">
-      <a class="ap-btn ap-btn--call"
-         [attr.href]="phoneHref"
-         [class.is-disabled]="!phoneHref"
-         (click)="$event.stopPropagation()">
+      <a
+        class="ap-btn ap-btn--call"
+        [attr.href]="phoneHref"
+        [class.is-disabled]="!phoneHref"
+        (click)="$event.stopPropagation()"
+      >
         <span class="label">Llamar al agente</span>
       </a>
 
@@ -62,11 +68,12 @@
     <div class="ap-gallery" *ngIf="thumbs.length">
       <h2>Conóceme</h2>
       <div class="ap-gallery-grid">
-        <img *ngFor="let t of thumbs; trackBy: trackByIndex"
-             [src]="t"
-             alt="Miniatura"
-             loading="lazy"
-             (click)="openGallery(t)" />
+        <img
+          *ngFor="let img of thumbs; trackBy: trackByIndex"
+          [src]="toPublicUrl(img)"
+          (click)="openGallery(img)"
+          alt="Fotos del agente"
+        />
       </div>
     </div>
 
@@ -103,7 +110,7 @@
       <h2>Aseguradoras asociadas</h2>
       <div class="brands-grid">
         <div class="brand" *ngFor="let b of a.aseguradoras; trackBy: trackByIndex">
-          <img [src]="b" alt="Aseguradora" loading="lazy" />
+          <img [src]="toPublicUrl(b)" alt="Aseguradora" loading="lazy" />
         </div>
       </div>
     </div>
@@ -111,10 +118,12 @@
     <!-- CTA final centrado -->
     <div class="ap-divider"></div>
     <div class="ap-cta ap-cta--footer">
-      <a class="ap-btn ap-btn--call"
-         [attr.href]="phoneHref"
-         [class.is-disabled]="!phoneHref"
-         (click)="$event.stopPropagation()">
+      <a
+        class="ap-btn ap-btn--call"
+        [attr.href]="phoneHref"
+        [class.is-disabled]="!phoneHref"
+        (click)="$event.stopPropagation()"
+      >
         <span class="label">Llamar al agente</span>
       </a>
 
@@ -126,10 +135,9 @@
 
     <!-- Modal Lightbox -->
     <div *ngIf="showLightbox" class="ap-lightbox" (click)="closeGallery()">
-      <img [src]="currentImg" class="ap-lightbox-img" alt="Imagen ampliada" />
+      <img [src]="toPublicUrl(currentImg || '')" class="ap-lightbox-img" alt="Imagen ampliada" />
     </div>
   </section>
-
 </section>
 
 <ng-template #skeleton>

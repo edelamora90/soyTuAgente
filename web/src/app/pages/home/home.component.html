@@ -4,263 +4,274 @@
     <!-- ===== BLOQUE ÚNICO ===== -->
     <section class="home-stack">
 
-          <!-- ===== Sección 1: HERO (dentro del bloque) ===== -->
-          <section class="home-hero" (mouseenter)="pause()" (mouseleave)="play()">
-            <div class="hero-banner" role="region" aria-label="Destacados">
+      <!-- ===== Sección 1: HERO (dentro del bloque) ===== -->
+      <section class="home-hero" (mouseenter)="pause()" (mouseleave)="play()">
+        <div class="hero-banner" role="region" aria-label="Destacados">
 
-              <!-- Slides -->
-              <div class="slides">
-                <div class="slide"
-                    *ngFor="let s of slides; let i = index"
+          <!-- Slides -->
+          <div class="slides">
+            <div class="slide"
+                 *ngFor="let s of slides; let i = index"
+                 [class.active]="i === idx"
+                 [style.backgroundImage]="'url(' + s.img + ')'"
+                 [style.backgroundPosition]="s.pos"
+                 aria-hidden="true"></div>
+          </div>
+
+          <!-- Texto -->
+          <div class="hero-copy" *ngIf="slides.length">
+            <h1 [innerHTML]="slides[idx]?.h1Html"></h1>
+            <h2 class="emph"><em>{{ slides[idx]?.h2 }}</em></h2>
+          </div>
+
+          <!-- Dots -->
+          <nav class="hero-dots" aria-label="Cambiar slide">
+            <button *ngFor="let s of slides; let i = index"
+                    type="button" class="dot"
                     [class.active]="i === idx"
-                    [style.backgroundImage]="'url(' + s.img + ')'"
-                    [style.backgroundPosition]="s.pos"
-                    aria-hidden="true"></div>
-              </div>
+                    (click)="go(i)"></button>
+          </nav>
 
-              <!-- Texto -->
-              <div class="hero-copy" *ngIf="slides.length">
-                <h1 [innerHTML]="slides[idx]?.h1Html"></h1>
-                <h2 class="emph"><em>{{ slides[idx]?.h2 }}</em></h2>
-              </div>
-
-              <!-- Dots -->
-              <nav class="hero-dots" aria-label="Cambiar slide">
-                <button *ngFor="let s of slides; let i = index"
-                        type="button" class="dot"
-                        [class.active]="i === idx"
-                        (click)="go(i)"></button>
-              </nav>
-
-              <!-- Barra de búsqueda ANCLADA al banner -->
-              <form class="hero-search"
-                    (submit)="goToSearch(sel.value); $event.preventDefault()"
-                    novalidate>
-                <select #sel class="select" aria-label="Selecciona un tipo de seguro">
-                  <option value="">Selecciona un tipo de seguro</option>
-                  <option value="vehiculos">Vehículos</option>
-                  <option value="hogar-negocio">Hogar y Negocio</option>
-                  <option value="salud-asistencia">Salud y Asistencia</option>
-                </select>
-                <button type="submit" class="btn-cta">Buscar a mi agente</button>
-              </form>
-            </div>
-          </section>
+          <!-- Barra de búsqueda ANCLADA al banner -->
+          <form class="hero-search"
+                (submit)="goToSearch(sel.value); $event.preventDefault()"
+                novalidate>
+            <select #sel class="select" aria-label="Selecciona un tipo de seguro">
+              <option value="">Selecciona un tipo de seguro</option>
+              <option value="vehiculos">Vehículos</option>
+              <option value="hogar-negocio">Hogar y Negocio</option>
+              <option value="salud-asistencia">Salud y Asistencia</option>
+            </select>
+            <button type="submit" class="btn-cta">Buscar a mi agente</button>
+          </form>
+        </div>
+      </section>
 
       <div class="stack-body">
 
-          <!-- ===== Sección 2: CATEGORÍAS ===== -->
-          <section class="home-categorias">
-            <div class="categorias-header">
-              <h2>
-                ¿Qué <span class="highlight">tipo de seguro</span> estás buscando hoy?
-              </h2>
-              <p>
-                Explora las principales categorías y accede a agentes especializados
-                en el tipo de seguro que necesitas.
-              </p>
-            </div>
+        <!-- ===== Sección 2: CATEGORÍAS ===== -->
+        <section class="home-categorias">
+          <div class="categorias-header">
+            <h2>
+              ¿Qué <span class="highlight">tipo de seguro</span> estás buscando hoy?
+            </h2>
+            <p>
+              Explora las principales categorías y accede a agentes especializados
+              en el tipo de seguro que necesitas.
+            </p>
+          </div>
 
-            <div class="categorias-grid">
-              <a class="cat-card"
-                  *ngFor="let c of categorias; trackBy: trackByTitulo"
-                  [routerLink]="c.slug ? ['/agente', c.slug] : ['/agentes']"
-                  [queryParams]="c.slug ? null : { tipo: c.tipo }"
-                  [attr.aria-label]="'Ver agentes para ' + c.titulo">
-                <img class="cat-img" [src]="c.img" [alt]="c.titulo" />
-                <div class="overlay"></div>
+          <div class="categorias-grid">
+            <a class="cat-card"
+               *ngFor="let c of categorias; trackBy: trackByTitulo"
+               [routerLink]="c.slug ? ['/agente', c.slug] : ['/agentes']"
+               [queryParams]="c.slug ? null : { tipo: c.tipo }"
+               [attr.aria-label]="'Ver agentes para ' + c.titulo">
+              <img class="cat-img" [src]="c.img" [alt]="c.titulo" />
+              <div class="overlay"></div>
 
-                <div class="cat-copy">
-                  <div class="sub">{{ c.sub }}</div>
-                  <div class="title">{{ c.titulo }}</div>
-                  <span class="btn-dark">Ver agentes →</span>
+              <div class="cat-copy">
+                <div class="sub">{{ c.sub }}</div>
+                <div class="title">{{ c.titulo }}</div>
+                <span class="btn-dark">Ver agentes →</span>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <!-- ============ Sección 3: CTA Agentes ============ -->
+        <section class="cta3" aria-labelledby="cta3-title">
+          <div class="cta3__grid container">
+            <!-- Izquierda: imagen -->
+            <figure class="cta3__media">
+              <img class="cta3__img" src="assets/home/cta-agente.jpg"
+                   alt="Agente con carpeta, ambiente corporativo" />
+            </figure>
+
+            <!-- Derecha: panel -->
+            <div class="cta3__panel">
+              <div class="cta3__inner">
+                <h2 id="cta3-title" class="cta3__title">
+                  Comienza o haz crecer tu carrera como
+                  <span class="cta3__accent">agente de seguros</span>
+                </h2>
+
+                <p class="cta3__lead">
+                  Accede a valiosas herramientas y a una comunidad activa de agentes experimentados
+                </p>
+
+                <!-- Cajas -->
+                <ul class="cta3__features" role="list" aria-label="Pasos">
+                  <li class="cta3__feature" role="listitem">
+                    <div>
+                      <h3 class="cta3__feature-title">1. Únete</h3>
+                      <p class="cta3__feature-desc">Únete hoy, crea tu perfil y comienza a formar parte de la comunidad.</p>
+                    </div>
+                  </li>
+                  <li class="cta3__feature" role="listitem">
+                    <div>
+                      <h3 class="cta3__feature-title">2. Capacítate</h3>
+                      <p class="cta3__feature-desc">Aprende con formación práctica y mentores expertos.</p>
+                    </div>
+                  </li>
+                  <li class="cta3__feature" role="listitem">
+                    <div>
+                      <h3 class="cta3__feature-title">3. Certifícate</h3>
+                      <p class="cta3__feature-desc">Obtén tu acreditación oficial como agente.</p>
+                    </div>
+                  </li>
+                </ul>
+
+                <!-- Botones -->
+                <div class="cta3__actions">
+                  <a class="cta3__btn cta3__btn--ghost" routerLink="/nosotros">Más información</a>
+                  <a class="cta3__btn cta3__btn--primary" routerLink="/unirme">Unirme a Soy tu Agente</a>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Sección 4: Testimonios ===== -->
+        <section class="s4">
+          <div class="container">
+            <header class="s4-head">
+              <h2>Conoce lo que opinan otros <span class="hl">agentes de seguros</span> como tú</h2>
+              <p>Descubre cómo Soy tu Agente ha impulsado la carrera de nuevos agentes y ha ayudado a expertos a actualizarse para ofrecer más a sus clientes.</p>
+            </header>
+
+            <div class="tst-grid">
+              <!-- T1 -->
+              <article class="tcard tcard--t1">
+                <h3 class="t-title">Mi mejor decisión profesional</h3>
+                <p class="t-body">
+                  Llegué sin experiencia y en solo 4 meses ya tenía mi certificación y mis primeras pólizas vendidas.
+                </p>
+                <div class="t-author">
+                  <img src="assets/people/paulo.jpg" alt="Paulo Ochoa Ibarra" />
+                  <div>
+                    <strong>Paulo Ochoa Ibarra</strong>
+                    <span>Agente certificado</span>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Beneficios -->
+              <article class="tcard tcard--benefits center">
+                <p class="sub">Al unirte tienes todos los beneficios de</p>
+                <img class="logo" src="assets/logo.svg" alt="Soy tu Agente" />
+                <div class="ring">
+                  <button class="btn-strong">SIN COSTO</button>
+                </div>
+              </article>
+
+              <!-- Video -->
+              <a class="tcard tcard--video" href="#" aria-label="Reproducir testimonio en video">
+                <img src="assets/home/testimonio-video.jpg" alt="Video de agente" />
+                <span class="play" aria-hidden="true"></span>
               </a>
-            </div>
-          </section>
 
-          <!-- ============ Sección 3: CTA Agentes ============ -->
-          <section class="cta3" aria-labelledby="cta3-title">
-            <div class="cta3__grid container">
-              <!-- Izquierda: imagen -->
-              <figure class="cta3__media">
-                <img class="cta3__img" src="assets/home/cta-agente.jpg"
-                    alt="Agente con carpeta, ambiente corporativo" />
-              </figure>
-
-              <!-- Derecha: panel -->
-              <div class="cta3__panel">
-                <div class="cta3__inner">
-                  <h2 id="cta3-title" class="cta3__title">
-                    Comienza o haz crecer tu carrera como
-                    <span class="cta3__accent">agente de seguros</span>
-                  </h2>
-
-                  <p class="cta3__lead">
-                    Accede a valiosas herramientas y a una comunidad activa de agentes experimentados
-                  </p>
-
-                  <!-- Cajas -->
-                  <ul class="cta3__features" role="list" aria-label="Pasos">
-                    <li class="cta3__feature" role="listitem">
-                      <div>
-                        <h3 class="cta3__feature-title">1. Únete</h3>
-                        <p class="cta3__feature-desc">Únete hoy, crea tu perfil y comienza a formar parte de la comunidad.</p>
-                      </div>
-                    </li>
-                    <li class="cta3__feature" role="listitem">
-                      <div>
-                        <h3 class="cta3__feature-title">2. Capacítate</h3>
-                        <p class="cta3__feature-desc">Aprende con formación práctica y mentores expertos.</p>
-                      </div>
-                    </li>
-                    <li class="cta3__feature" role="listitem">
-                      <div>
-                        <h3 class="cta3__feature-title">3. Certifícate</h3>
-                        <p class="cta3__feature-desc">Obtén tu acreditación oficial como agente.</p>
-                      </div>
-                    </li>
-                  </ul>
-
-                  <!-- Botones -->
-                  <div class="cta3__actions">
-                    <a class="cta3__btn cta3__btn--ghost" routerLink="/nosotros">Más información</a>
-                    <a class="cta3__btn cta3__btn--primary" routerLink="/unirme">Unirme a Soy tu Agente</a>
+              <!-- T2 -->
+              <article class="tcard tcard--t2">
+                <h3 class="t-title">La mejor comunidad de agentes</h3>
+                <p class="t-body">
+                  La comunidad de agentes siempre está dispuesta a ayudar. Aquí nunca te sientes solo en el proceso.
+                </p>
+                <div class="t-author">
+                  <img src="assets/people/marisela.jpg" alt="Marisela Álvarez" />
+                  <div>
+                    <strong>Marisela Álvarez</strong>
+                    <span>Agente certificado</span>
                   </div>
                 </div>
-              </div>
+              </article>
+
+              <!-- T3 (más alto) -->
+              <article class="tcard tcard--t3">
+                <h3 class="t-title">10 años en el mercado y sigo aprendiendo</h3>
+                <p class="t-body">
+                  Actualicé mis conocimientos y ahora puedo ofrecer más productos y un mejor servicio a mis clientes.
+                </p>
+                <div class="t-author">
+                  <img src="assets/people/ricardo.jpg" alt="Ricardo Martínez" />
+                  <div>
+                    <strong>Ricardo Martínez</strong>
+                    <span>Agente certificado</span>
+                  </div>
+                </div>
+              </article>
+
+              <!-- T4 -->
+              <article class="tcard tcard--t4">
+                <h3 class="t-title">Mucho más que una capacitación</h3>
+                <p class="t-body">Me ha ayudado a formarme desde cero. ¡Gracias!</p>
+                <div class="t-author">
+                  <img src="assets/people/victor.jpg" alt="Víctor Andrade" />
+                  <div>
+                    <strong>Víctor Andrade</strong>
+                    <span>Agente certificado</span>
+                  </div>
+                </div>
+              </article>
             </div>
-          </section>
+          </div>
+        </section>
 
-          
-          <!-- ===== Sección 4: Testimonios ===== -->
-          <section class="s4">
-            <div class="container">
-              <header class="s4-head">
-                <h2>Conoce lo que opinan otros <span class="hl">agentes de seguros</span> como tú</h2>
-                <p>Descubre cómo Soy tu Agente ha impulsado la carrera de nuevos agentes y ha ayudado a expertos a actualizarse para ofrecer más a sus clientes.</p>
-              </header>
-
-              <div class="tst-grid">
-                <!-- T1 -->
-                <article class="tcard tcard--t1">
-                  <h3 class="t-title">Mi mejor decisión profesional</h3>
-                  <p class="t-body">
-                    Llegué sin experiencia y en solo 4 meses ya tenía mi certificación y mis primeras pólizas vendidas.
-                  </p>
-                  <div class="t-author">
-                    <img src="assets/people/paulo.jpg" alt="Paulo Ochoa Ibarra" />
-                    <div>
-                      <strong>Paulo Ochoa Ibarra</strong>
-                      <span>Agente certificado</span>
-                    </div>
-                  </div>
-                </article>
-
-                <!-- Beneficios -->
-                <article class="tcard tcard--benefits center">
-                  <p class="sub">Al unirte tienes todos los beneficios de</p>
-                  <img class="logo" src="assets/logo.svg" alt="Soy tu Agente" />
-                  <div class="ring">
-                    <button class="btn-strong">SIN COSTO</button>
-                  </div>
-                </article>
-
-                <!-- Video -->
-                <a class="tcard tcard--video" href="#" aria-label="Reproducir testimonio en video">
-                  <img src="assets/home/testimonio-video.jpg" alt="Video de agente" />
-                  <span class="play" aria-hidden="true"></span>
-                </a>
-
-                <!-- T2 -->
-                <article class="tcard tcard--t2">
-                  <h3 class="t-title">La mejor comunidad de agentes</h3>
-                  <p class="t-body">
-                    La comunidad de agentes siempre está dispuesta a ayudar. Aquí nunca te sientes solo en el proceso.
-                  </p>
-                  <div class="t-author">
-                    <img src="assets/people/marisela.jpg" alt="Marisela Álvarez" />
-                    <div>
-                      <strong>Marisela Álvarez</strong>
-                      <span>Agente certificado</span>
-                    </div>
-                  </div>
-                </article>
-
-                <!-- T3 (más alto) -->
-                <article class="tcard tcard--t3">
-                  <h3 class="t-title">10 años en el mercado y sigo aprendiendo</h3>
-                  <p class="t-body">
-                    Actualicé mis conocimientos y ahora puedo ofrecer más productos y un mejor servicio a mis clientes.
-                  </p>
-                  <div class="t-author">
-                    <img src="assets/people/ricardo.jpg" alt="Ricardo Martínez" />
-                    <div>
-                      <strong>Ricardo Martínez</strong>
-                      <span>Agente certificado</span>
-                    </div>
-                  </div>
-                </article>
-
-                <!-- T4 -->
-                <article class="tcard tcard--t4">
-                  <h3 class="t-title">Mucho más que una capacitación</h3>
-                  <p class="t-body">Me ha ayudado a formarme desde cero. ¡Gracias!</p>
-                  <div class="t-author">
-                    <img src="assets/people/victor.jpg" alt="Víctor Andrade" />
-                    <div>
-                      <strong>Víctor Andrade</strong>
-                      <span>Agente certificado</span>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            </div>
-          </section>
-
-
-       <section class="s6">
+      
+<!-- =================== Sección 6: BLOG / RECURSOS =================== -->
+<section class="s6">
   <div class="container">
     <header class="s6-head">
       <h2>Artículos y <span class="grad">recursos</span> para agentes</h2>
       <a class="s6-more" routerLink="/blog">Ver todos →</a>
     </header>
 
-    <div class="s6-grid" *ngIf="posts$ | async as posts">
-      <article class="s6-card"
-               *ngFor="let p of posts; trackBy: trackById"
-               itemscope itemtype="https://schema.org/BlogPosting">
-        <div class="media">
-         <img [src]="p.img"
-          [alt]="p.title"
-          itemprop="image"
-          (error)="onImgError($event)">
-        </div>
-        <div class="shade"></div> 
-        <span class="pill" itemprop="articleSection">{{ p.tag }}</span>
-        
-        <div class="copy">
+    <ng-container *ngIf="posts$ | async as posts; else s6Empty">
+      <div class="s6-grid" *ngIf="posts.length; else s6Empty">
+        <article
+          class="s6-card"
+          *ngFor="let p of posts; trackBy: trackById"
+          itemscope
+          itemtype="https://schema.org/BlogPosting">
 
-          <h3 class="title" itemprop="headline">
-            <a *ngIf="!p.externalUrl" [routerLink]="['/blog', p.slug]">{{ p.title }}</a>
-            <a *ngIf="p.externalUrl" [href]="p.externalUrl" rel="noopener" target="_blank">{{ p.title }}</a>
-          </h3>
+          <div class="media">
+            <img
+              [src]="getCoverUrl(p)"
+              [alt]="p.title"
+              itemprop="image"
+              (error)="onImgError($event)" />
+          </div>
 
-          <p class="meta">
-            {{ p.readMinutes }} min • {{ p.topic }}
-            <time class="sr-only" itemprop="datePublished" [attr.datetime]="p.date">{{ p.date }}</time>
-          </p>
-        </div>
-      </article>
-    </div>
+          <div class="shade"></div>
+
+          <div class="copy">
+            <span class="pill" itemprop="articleSection">{{ p.tag || 'Blog' }}</span>
+
+            <h3 class="title" itemprop="headline">
+              <a *ngIf="!p.externalUrl" [routerLink]="['/blog', p.slug]">{{ p.title }}</a>
+              <a *ngIf="p.externalUrl" [href]="p.externalUrl" rel="noopener" target="_blank">{{ p.title }}</a>
+            </h3>
+
+            <p class="meta">
+              {{ p.readMinutes || 3 }} min • {{ p.topic || 'Artículo' }}
+              <time class="sr-only" itemprop="datePublished" [attr.datetime]="p.publishedAt || ''">
+                {{ p.publishedAt || '' }}
+              </time>
+            </p>
+          </div>
+        </article>
+      </div>
+    </ng-container>
+
+    <ng-template #s6Empty>
+      <p class="s6-empty">Aún no hay publicaciones para mostrar.</p>
+    </ng-template>
   </div>
 </section>
 
+<!-- =================== /Sección 6 =================== -->  
 
-
-
-
-          <!-- aquí podrás seguir con Sección 3, 4, 5… dentro del mismo bloque -->
+        <!-- aquí podrás seguir con Sección 3, 4, 5… dentro del mismo bloque -->
 
       </div><!-- /.stack-body -->
     </section><!-- /.home-stack -->

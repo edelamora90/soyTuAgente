@@ -1,0 +1,32 @@
+<!-- web/src/app/pages/admin/blog/posts-admin-list.component.html -->
+<div class="wrap">
+  <h1>Entradas del Blog</h1>
+
+  <a routerLink="/admin/blog/new" class="btn-primary">Nueva entrada</a>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Portada</th>
+        <th>Título</th>
+        <th>Estado</th>
+        <th>Publicado</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let post of posts">
+        <td><img *ngIf="post.img" [src]="post.img" class="thumb" /></td>
+        <td>{{ post.title }}</td>
+        <td>{{ post.published ? 'Publicado' : 'Borrador' }}</td>
+        <td>{{ post.publishedAt || '—' }}</td>
+
+        <td>
+          <a [routerLink]="['/admin/blog', post.id, 'edit']">Editar</a>
+          <button (click)="delete(post.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -24,9 +24,10 @@ import { AgentsService } from './agents.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
 
-// ====== util upload ======
-const ROOT = join(__dirname, '..', '..', 'uploads');
-const AGENTS_DIR = join(ROOT, 'agents');
+// ====== util upload (RUTA CORRECTA) ======
+const UPLOADS_ROOT = join(process.cwd(), 'api', 'uploads'); // ✅ raíz real del monorepo
+const AGENTS_DIR   = join(UPLOADS_ROOT, 'agents');
+
 function ensureDir(dir: string) {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
@@ -57,7 +58,7 @@ function pickExt(file: Express.Multer.File) {
 /** Construye la URL pública para un archivo subido a /api/uploads/... */
 function publicUrlFor(file: Express.Multer.File) {
   const base = (process.env['PUBLIC_BASE_URL'] || 'http://localhost:3000').replace(/\/+$/, '');
-  const sub  = relative(ROOT, file.destination).replace(/\\/g, '/'); // 'agents'
+  const sub  = relative(UPLOADS_ROOT, file.destination).replace(/\\/g, '/'); // 'agents'
   return `${base}/public/${sub}/${file.filename}`;
 }
 
@@ -99,49 +100,19 @@ export class AgentsController {
   @Header('Content-Disposition', 'attachment; filename="agents-sample.csv"')
   sampleCsv() {
     const headers = [
-      'slug',
-      'nombre',
-      'cedula',
-      'verificado',
-      'avatar',
-      'ubicacion',
-      'whatsapp',
-      'especialidades',
-      'experiencia',
-      'servicios',
-      'certificaciones',
-      'aseguradoras',
-      'mediaThumbs',
-      'mediaHero',
-      'facebook',
-      'instagram',
-      'linkedin',
-      'tiktok',
+      'slug','nombre','cedula','verificado','avatar','ubicacion','whatsapp',
+      'especialidades','experiencia','servicios','certificaciones','aseguradoras',
+      'mediaThumbs','mediaHero','facebook','instagram','linkedin','tiktok'
     ].join(',');
-
-    const rows = [
-      [
-        'paulo-ochoa',
-        'Paulo Ochoa Ibarra',
-        'Cédula: 3246754 19873640',
-        'true',
-        'assets/agents/paulo.jpg',
-        'Colima, Colima',
-        '5213121234567',
-        '"vehiculos, salud-asistencia, hogar-negocio"',
-        '"+8 años de experiencia"',
-        '"Contratación de pólizas, Renovación de pólizas"',
-        'Diamantes Qualitas',
-        '"assets/qualitas.png;assets/metlife.png"',
-        '"assets/profile/mini1.jpg,assets/profile/mini2.jpg,assets/profile/mini3.jpg"',
-        'assets/agents/profile-hero.jpg',
-        'pauloochoa',
-        'paulo.ig',
-        'paulo-ln',
-        'paulo_tt',
-      ].join(','),
-    ];
-
+    const rows = [[
+      'paulo-ochoa','Paulo Ochoa Ibarra','Cédula: 3246754 19873640','true',
+      'assets/agents/paulo.jpg','Colima, Colima','5213121234567',
+      '"vehiculos, salud-asistencia, hogar-negocio"',
+      '"+8 años de experiencia"','"Contratación de pólizas, Renovación de pólizas"',
+      'Diamantes Qualitas','"assets/qualitas.png;assets/metlife.png"',
+      '"assets/profile/mini1.jpg,assets/profile/mini2.jpg,assets/profile/mini3.jpg"',
+      'assets/agents/profile-hero.jpg','pauloochoa','paulo.ig','paulo-ln','paulo_tt'
+    ].join(',')];
     return [headers, ...rows].join('\n') + '\n';
   }
 
@@ -171,16 +142,15 @@ export class AgentsController {
   )
   upload(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No file uploaded');
-
     return {
-      url: publicUrlFor(file), // ← úsalo en el front
+      url: publicUrlFor(file),
       filename: file.filename,
       mimetype: file.mimetype,
       size: file.size,
     };
   }
 
-  // ---------- Crear agente + subir múltiples archivos en una sola petición ----------
+  // ---------- Crear agente + subir múltiples archivos ----------
   @Post('with-files')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -212,9 +182,8 @@ export class AgentsController {
     ),
   )
   async createWithFiles(
-    @Body() body: any, // multipart → strings
-    @UploadedFiles()
-    files: {
+    @Body() body: any,
+    @UploadedFiles() files: {
       avatar?: Express.Multer.File[];
       mediaHero?: Express.Multer.File[];
       mediaThumbs?: Express.Multer.File[];
@@ -241,7 +210,6 @@ export class AgentsController {
       certificaciones: toList(body.certificaciones),
       aseguradoras:    toList(body.aseguradoras),
 
-      // Si viene archivo → URL pública; si te mandan URL, se respeta tal cual.
       avatar:    files?.avatar?.[0]    ? publicUrlFor(files.avatar[0])    : (body.avatar || null),
       mediaHero: files?.mediaHero?.[0] ? publicUrlFor(files.mediaHero[0]) : String(body.mediaHero || '').trim(),
       mediaThumbs: files?.mediaThumbs?.length
@@ -251,7 +219,6 @@ export class AgentsController {
       redes: parseJsonSafe<{ icon: string; url: string }[]>(body.redes) ?? null,
     };
 
-    // Fallback: si no hay mediaHero, usa la primera miniatura (evita 400)
     if ((!dto.mediaHero || !dto.mediaHero.trim()) && dto.mediaThumbs?.length) {
       dto.mediaHero = dto.mediaThumbs[0];
     }
@@ -259,7 +226,7 @@ export class AgentsController {
     return this.service.create(dto);
   }
 
-  // ---------- Editar agente + subir archivos en la misma petición ----------
+  // ---------- Editar agente + subir archivos ----------
   @Patch(':slug/with-files')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -305,7 +272,7 @@ export class AgentsController {
         ? v.split(',').map((s) => s.trim()).filter(Boolean)
         : Array.isArray(v)
           ? v
-          : undefined; // para PATCH usamos undefined (no tocar)
+          : undefined; // para PATCH usamos undefined
 
     const patch: Partial<CreateAgentDto> = {
       nombre:      body.nombre?.trim(),
@@ -329,11 +296,10 @@ export class AgentsController {
       redes: parseJsonSafe<{ icon: string; url: string }[]>(body.redes),
     };
 
-    // Elimina claves undefined para no sobreescribir con nulos accidentales
     Object.keys(patch).forEach((k) => (patch as any)[k] === undefined && delete (patch as any)[k]);
 
-    // Fallback de mediaHero si quedó vacío pero sí llegaron minis nuevas
-    if ((!patch.mediaHero || !String(patch.mediaHero).trim()) && Array.isArray(patch.mediaThumbs) && patch.mediaThumbs.length) {
+    if ((!patch.mediaHero || !String(patch.mediaHero).trim())
+      && Array.isArray(patch.mediaThumbs) && patch.mediaThumbs.length) {
       patch.mediaHero = patch.mediaThumbs[0]!;
     }
 

@@ -2,7 +2,13 @@
 import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
+
+
 import { AgentProfileVM } from '../../pages/agentes/profile/agent-profile.vm';
+import { toPublicUrl } from '../../core/utils/img.util';
+import { AVATAR_FALLBACK } from '../../pages/agentes/profile/agent-profile.vm';
+
 
 type Estado = { name: string; slug: string };
 
@@ -61,13 +67,23 @@ export class AgentProfilePresenterComponent implements OnChanges {
   @Input() loading = false;
 
   private http = inject(HttpClient);
+  private sanitizer = inject(DomSanitizer);
+
+  // exposé para el template
+  toPublicUrl = toPublicUrl;
+
+  readonly AVATAR_FALLBACK = AVATAR_FALLBACK;
 
   /** Lista final a mostrar (una línea por “Municipio, Estado”) */
   locations: string[] = [];
 
-  // ===== Redes (sin cambios) =====
   get socials() {
     return Array.isArray(this.agent?.redes) ? this.agent!.redes : [];
+  }
+
+  onImgError(ev: Event) {
+    const img = ev.target as HTMLImageElement | null;
+    if (img) img.src = AVATAR_FALLBACK;
   }
 
   resolveIcon(icon: string): string {
@@ -75,15 +91,15 @@ export class AgentProfilePresenterComponent implements OnChanges {
     if (!v) return 'assets/icons/link.svg';
     if (/^https?:\/\//i.test(v)) return v;
     const lower = v.toLowerCase();
-    const known: Record<string,string> = {
-      facebook:  'assets/icons/facebook.svg',
+    const known: Record<string, string> = {
+      facebook: 'assets/icons/facebook.svg',
       instagram: 'assets/icons/instagram.svg',
-      linkedin:  'assets/icons/linkedin.svg',
-      tiktok:    'assets/icons/tiktok.svg',
-      x:         'assets/icons/x.svg',
-      twitter:   'assets/icons/x.svg',
-      youtube:   'assets/icons/youtube.svg',
-      link:      'assets/icons/link.svg',
+      linkedin: 'assets/icons/linkedin.svg',
+      tiktok: 'assets/icons/tiktok.svg',
+      x: 'assets/icons/x.svg',
+      twitter: 'assets/icons/x.svg',
+      youtube: 'assets/icons/youtube.svg',
+      link: 'assets/icons/link.svg',
     };
     if (known[lower]) return known[lower];
     if (lower.startsWith('assets/')) return v;
@@ -93,7 +109,7 @@ export class AgentProfilePresenterComponent implements OnChanges {
   ngOnChanges(ch: SimpleChanges) {
     if (ch['agent']) {
       this.resolveLocations();
-      try { console.log('[Presenter] redes:', this.agent?.redes); } catch {/**/ }
+      try { console.log('[Presenter] redes:', this.agent?.redes); } catch { /* noop */ }
     }
   }
 
@@ -114,7 +130,7 @@ export class AgentProfilePresenterComponent implements OnChanges {
     if (estados.length && municipiosSel.length) {
       // Un solo estado → todos sus municipios van con ese estado.
       if (estados.length === 1) {
-        this.locations = municipiosSel.map(m => `${m}, ${estados[0]}`);
+        this.locations = municipiosSel.map((m) => `${m}, ${estados[0]}`);
         return;
       }
 
@@ -122,11 +138,11 @@ export class AgentProfilePresenterComponent implements OnChanges {
       const stateMunicipiosMap = new Map<string, Set<string>>();
       await Promise.all(
         estados.map(async (edo) => {
-          const slug = ESTADOS_CAT.find(e => e.name === edo)?.slug ?? slugify(edo);
+          const slug = ESTADOS_CAT.find((e) => e.name === edo)?.slug ?? slugify(edo);
           const url = `assets/locations/municipios/${slug}.json`;
           try {
             const list = await this.http.get<string[]>(url).toPromise();
-            stateMunicipiosMap.set(edo, new Set((list || []).map(s => s.trim())));
+            stateMunicipiosMap.set(edo, new Set((list || []).map((s) => s.trim())));
           } catch {
             stateMunicipiosMap.set(edo, new Set());
           }
@@ -143,13 +159,9 @@ export class AgentProfilePresenterComponent implements OnChanges {
             break;
           }
         }
-        if (!paired) {
-          // si no encontramos el estado para ese municipio, lo emparejamos con el primero seleccionado
-          out.push(`${m}, ${estados[0]}`);
-        }
+        if (!paired) out.push(`${m}, ${estados[0]}`);
       }
-      // evita duplicados y ordena alfabéticamente
-      this.locations = Array.from(new Set(out)).sort((a, b) => a.localeCompare(b, 'es'));
+      this.locations = Array.from(new Set(out)).sort((x, y) => x.localeCompare(y, 'es'));
       return;
     }
 
@@ -198,7 +210,9 @@ export class AgentProfilePresenterComponent implements OnChanges {
   showLightbox = false;
   currentIndex = 0;
   currentImg: string | null = null;
-  get thumbs(): string[] { return this.agent?.mediaThumbs ?? []; }
+  get thumbs(): string[] {
+    return this.agent?.mediaThumbs ?? [];
+  }
 
   openGallery(src: string) {
     const i = this.thumbs.indexOf(src);
@@ -206,9 +220,20 @@ export class AgentProfilePresenterComponent implements OnChanges {
     this.currentImg = this.thumbs[this.currentIndex] ?? null;
     this.showLightbox = !!this.currentImg;
   }
-  closeGallery() { this.showLightbox = false; this.currentImg = null; }
-  prev() { if (!this.thumbs.length) return; this.currentIndex = (this.currentIndex - 1 + this.thumbs.length) % this.thumbs.length; this.currentImg = this.thumbs[this.currentIndex]; }
-  next() { if (!this.thumbs.length) return; this.currentIndex = (this.currentIndex + 1) % this.thumbs.length; this.currentImg = this.thumbs[this.currentIndex]; }
+  closeGallery() {
+    this.showLightbox = false;
+    this.currentImg = null;
+  }
+  prev() {
+    if (!this.thumbs.length) return;
+    this.currentIndex = (this.currentIndex - 1 + this.thumbs.length) % this.thumbs.length;
+    this.currentImg = this.thumbs[this.currentIndex];
+  }
+  next() {
+    if (!this.thumbs.length) return;
+    this.currentIndex = (this.currentIndex + 1) % this.thumbs.length;
+    this.currentImg = this.thumbs[this.currentIndex];
+  }
 
   trackByIndex = (i: number) => i;
 }

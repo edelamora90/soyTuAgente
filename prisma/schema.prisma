@@ -3,16 +3,16 @@ generator client {
 }
 
 model AdminUser {
-  id           String    @id
-  email        String    @unique
-  username     String?   @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String?  @unique
   passwordHash String
-  roles        String[]  @default(["admin"])
-  isActive     Boolean   @default(true)
-  tokenVersion Int       @default(0)
+  roles        String[] @default(["admin"])
+  isActive     Boolean  @default(true)
+  tokenVersion Int      @default(0)
   lastLoginAt  DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Agent {
@@ -71,26 +71,27 @@ enum SubmissionStatus {
   REJECTED
 }
 
-model Post {
-  id          String    @id @default(uuid())
-  title       String
-  slug        String    @unique
-  img         String? // URL o path a imagen
-  tag         String? // etiqueta corta (p.e. "Tendencias" )
-  topic       String? // tema o categoría
-  readMinutes Int       @default(5)
-  contentMd    String?   @db.Text
-  content      String?   @db.Text
-  date        DateTime  @default(now()) // fecha del artículo (puede ser de publicación o editorial)
-  externalUrl String?   @map("external_url")
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  isFeatured   Boolean  @default(false)
 
-  @@index([published, publishedAt])
+model BlogPost {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  contentMd   String?
+  img         String?      // portada
+  assets      String[]     // galerías (urls)
+  topic       String       // tema / topic
+  tag         String?
+  author      String
+  readMinutes Int?
+  externalUrl String?
+  isFeatured  Boolean  @default(false)
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
 
 datasource db {
   provider          = "postgresql"

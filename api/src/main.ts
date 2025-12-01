@@ -11,21 +11,21 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors();
 
-  // prefijo /api -> todas las rutas quedan /api/...
+  // Todas las rutas API → /api/**
   app.setGlobalPrefix('api');
 
-  // Monorepo Nx:
-  // process.cwd() -> raíz del repo (soytuagente/)
-  // PUBLIC_ROOT   -> soytuagente/api/public
-  const PUBLIC_ROOT = join(process.cwd(), 'api', 'public');
+  // Monorepo Nx → process.cwd() es la raíz del repo
+  const PUBLIC_ROOT  = join(process.cwd(), 'api', 'public');   // p.ej. api/public/blog/...
+  const UPLOADS_ROOT = join(process.cwd(), 'api', 'uploads');  // p.ej. api/uploads/agents/...
 
-  app.useStaticAssets(PUBLIC_ROOT, {
-    prefix: '/public/',
-  });
+  // Servimos AMBAS carpetas bajo el MISMO prefijo /public/
+  app.useStaticAssets(PUBLIC_ROOT,  { prefix: '/public/' });
+  app.useStaticAssets(UPLOADS_ROOT, { prefix: '/public/' });
 
   await app.listen(3000);
 
-  console.log('PUBLIC_ROOT =', PUBLIC_ROOT);
-  console.log('API disponible en http://localhost:3000/api/health');
+  console.log('[BOOT] PUBLIC_ROOT =', PUBLIC_ROOT);
+  console.log('[BOOT] UPLOADS_ROOT =', UPLOADS_ROOT);
+  console.log('[BOOT] API http://localhost:3000/api/health');
 }
 bootstrap();

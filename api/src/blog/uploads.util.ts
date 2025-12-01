@@ -13,31 +13,59 @@ export async function ensureDir(dir: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
 }
 
+/**
+ * Optimiza una imagen:
+ *  - Reescala a máximo 1024×1024 (fit: inside)
+ *  - Convierte a WebP
+ *  - Reduce calidad hasta alcanzar `targetKB`
+ *  - Guarda y devuelve { bytes, path }
+ */
 export async function saveOptimizedWebp(
   buffer: Buffer,
   outPath: string,
   opts: { maxWidth: number; targetKB: number },
 ): Promise<{ bytes: number; path: string }> {
-  const { maxWidth } = opts;
 
-  const pipeline = sharp(buffer)
-    .resize({ width: maxWidth, withoutEnlargement: true })
-    .webp({ quality: 80 });
+  const { maxWidth, targetKB } = opts;
 
+  // Garantiza carpeta final
   await fs.mkdir(dirname(outPath), { recursive: true });
 
-  const data = await pipeline.toBuffer();
-  await fs.writeFile(outPath, data);
+  let quality = 80;
+  let optimized: Buffer;
+
+  while (quality >= 40) {
+    optimized = await sharp(buffer)
+      .resize({
+        width: maxWidth,
+        height: maxWidth,
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .webp({ quality })
+      .toBuffer();
+
+    // Convert bytes → KB
+    const sizeKB = optimized.length / 1024;
+
+    if (sizeKB <= targetKB) break;
+
+    // Reduce calidad e intenta nuevamente
+    quality -= 10;
+  }
+
+  // Guarda buffer final
+  await fs.writeFile(outPath, optimized!);
 
   return {
-    bytes: data.length,
+    bytes: optimized!.length,
     path: outPath,
   };
 }
 
 /**
  * Convierte una ruta absoluta dentro de PUBLIC_ROOT en
- * /blog/slug/cover/cover.webp
+ * ruta servible pública:  /blog/slug/cover/archivo.webp
  */
 export function toPublicRelative(savedPath: string): string {
   const rel = relative(PUBLIC_ROOT, savedPath).replace(/\\/g, '/');
