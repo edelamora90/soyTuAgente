@@ -219,55 +219,7 @@
 
       
 <!-- =================== Sección 6: BLOG / RECURSOS =================== -->
-<section class="s6">
-  <div class="container">
-    <header class="s6-head">
-      <h2>Artículos y <span class="grad">recursos</span> para agentes</h2>
-      <a class="s6-more" routerLink="/blog">Ver todos →</a>
-    </header>
 
-    <ng-container *ngIf="posts$ | async as posts; else s6Empty">
-      <div class="s6-grid" *ngIf="posts.length; else s6Empty">
-        <article
-          class="s6-card"
-          *ngFor="let p of posts; trackBy: trackById"
-          itemscope
-          itemtype="https://schema.org/BlogPosting">
-
-          <div class="media">
-            <img
-              [src]="getCoverUrl(p)"
-              [alt]="p.title"
-              itemprop="image"
-              (error)="onImgError($event)" />
-          </div>
-
-          <div class="shade"></div>
-
-          <div class="copy">
-            <span class="pill" itemprop="articleSection">{{ p.tag || 'Blog' }}</span>
-
-            <h3 class="title" itemprop="headline">
-              <a *ngIf="!p.externalUrl" [routerLink]="['/blog', p.slug]">{{ p.title }}</a>
-              <a *ngIf="p.externalUrl" [href]="p.externalUrl" rel="noopener" target="_blank">{{ p.title }}</a>
-            </h3>
-
-            <p class="meta">
-              {{ p.readMinutes || 3 }} min • {{ p.topic || 'Artículo' }}
-              <time class="sr-only" itemprop="datePublished" [attr.datetime]="p.publishedAt || ''">
-                {{ p.publishedAt || '' }}
-              </time>
-            </p>
-          </div>
-        </article>
-      </div>
-    </ng-container>
-
-    <ng-template #s6Empty>
-      <p class="s6-empty">Aún no hay publicaciones para mostrar.</p>
-    </ng-template>
-  </div>
-</section>
 
 <!-- =================== /Sección 6 =================== -->  
 

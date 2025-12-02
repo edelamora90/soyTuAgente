@@ -60,19 +60,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private bindVisibilityAutoPause() { document.addEventListener('visibilitychange', this.onVis); }
 
   // ====== S6: Blog / Recursos ======
-  readonly FALLBACK = 'assets/blog/fallback.webp';
-  posts$: Observable<PostDto[]> = this.blog.getLatest(3);
-
-  trackById(_: number, p: PostDto) { return p.id; }
-
-  onImgError(ev: Event) {
-    (ev.target as HTMLImageElement).src = this.FALLBACK;
-  }
-
-  getCoverUrl(p: PostDto): string {
-    // Usa tu helper. Si no hay img, aplica fallback.
-    return p?.img ? buildCoverUrl(p.img) : this.FALLBACK;
-  }
+  
 
   // ====== Ciclo ======
   ngOnInit() {
