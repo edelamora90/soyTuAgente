@@ -1,0 +1,36 @@
+<section class="admin">
+  <div class="container">
+    <header class="head">
+      <h1>Agentes ({{ total() }})</h1>
+      <button class="btn" (click)="newAgent()">+ Nuevo</button>
+    </header>
+
+    <div *ngIf="loading()">Cargando…</div>
+
+    <table class="grid" *ngIf="!loading()">
+      <thead>
+        <tr>
+          <th>Avatar</th>
+          <th>Nombre</th>
+          <th>Slug</th>
+          <th>Ubicación</th>
+          <th>Especialidades</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of data(); trackBy: trackBy">
+          <td><img [src]="a.avatar" alt="" width="40" height="40" style="border-radius:50%" /></td>
+          <td>{{ a.nombre }}</td>
+          <td>{{ a.slug }}</td>
+          <td>{{ a.ubicacion }}</td>
+          <td>{{ (a.especialidades || []).join(', ') }}</td>
+          <td class="actions">
+            <button class="btn" (click)="edit(a)">Editar</button>
+            <button class="btn danger" (click)="delete(a)" [disabled]="!a.id">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,76 @@
+<!-- src/app/shared/image-dropzone/image-dropzone.component.html -->
+
+<div
+  class="dropzone"
+  [class.dragover]="isDragging"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="triggerInput()"
+>
+  <!-- Input oculto real -->
+  <input
+    #fileInput
+    type="file"
+    [multiple]="isMultiple"
+    hidden
+    (change)="onSelect($event)"
+  />
+
+  <!-- SIN IMÁGENES -->
+  <ng-container *ngIf="localPreviews.length === 0; else previewsBlock">
+    <div class="empty-content">
+      <img src="assets/icons/upload-cloud.png" alt="upload" />
+      <div class="empty-text">{{ titleText }}</div>
+      <small>o arrastra y suelta aquí</small>
+    </div>
+  </ng-container>
+
+  <!-- CON IMÁGENES -->
+  <ng-template #previewsBlock>
+    <!-- MODO SINGLE -->
+    <div *ngIf="!isMultiple" class="single-wrapper">
+      <div class="preview-item">
+        <img class="preview-img" [src]="localPreviews[0]" alt="preview" />
+        <button
+          type="button"
+          class="remove-btn"
+          (click)="remove(0); $event.stopPropagation()"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- MODO MULTIPLE -->
+    <div *ngIf="isMultiple" class="previews-grid">
+      <div
+        class="preview-item"
+        *ngFor="let url of localPreviews; let i = index"
+      >
+        <img class="preview-img" [src]="url" alt="preview" />
+        <button
+          type="button"
+          class="remove-btn"
+          (click)="remove(i); $event.stopPropagation()"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- BOTÓN AÑADIR MÁS (SOLO MULTIPLE) -->
+    <div class="add-more" *ngIf="isMultiple && localPreviews.length < maxImages">
+      <button
+        type="button"
+        class="add-button"
+        (click)="triggerInput(); $event.stopPropagation()"
+      >
+        + Añadir imagen
+      </button>
+      <div class="add-hint">
+        {{ localPreviews.length }} / {{ maxImages }} imágenes seleccionadas
+      </div>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,42 @@
+# docker-compose.yml
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sta_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: soyagente
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d soyagente || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: sta_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev.soytuagente2025@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      # Opcional: endurecer cookies/log
+      # PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+      # PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: "30"
+    ports:
+      - "5050:80"                    # pgAdmin expone 80 dentro del contenedor
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin # almacén persistente de pgAdmin
+    user: "5050:5050"                 # asegura permisos correctos
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  pgadmin_data:

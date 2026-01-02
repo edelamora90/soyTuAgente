@@ -1,0 +1,110 @@
+<h1 class="page-title">Blog</h1>
+
+<p class="page-subtitle">
+  Administra artículos, borradores y publicaciones programadas.
+</p>
+
+<!-- Loading -->
+<div *ngIf="loading" class="state loading">Cargando artículos...</div>
+
+<!-- Error -->
+<div *ngIf="error" class="state error">{{ error }}</div>
+
+<!-- Tabla -->
+<table *ngIf="!loading && !error" class="blog-table">
+
+  <thead>
+    <tr>
+      <th>Destacado</th>
+      <th>Título</th>
+      <th>Autor</th>
+      <th>Fecha</th>
+      <th>Publicación</th>
+      <th class="actions-col">Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let post of posts">
+
+      <!-- ⭐ DESTACADO -->
+      <td class="featured-col">
+        <button
+  type="button"
+  class="star-btn"
+  (click)="toggleFeatured(post)"
+  [attr.aria-pressed]="post.isFeatured"
+>
+  <svg
+    class="star"
+    [ngClass]="post.isFeatured ? 'star-on' : 'star-off'"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M12 2.5l3.09 6.26 6.91 1-5 4.87L18.18 22 12 18.56 5.82 22 7 14.63l-5-4.87 6.91-1z"
+    />
+  </svg>
+</button>
+
+
+      </td>
+
+      <!-- TÍTULO -->
+      <td><strong>{{ post.title }}</strong></td>
+
+      <!-- AUTOR -->
+      <td>{{ post.author }}</td>
+
+      <!-- FECHA -->
+      <td>
+        {{ post.publishedAt || post.createdAt | date:'mediumDate' }}
+      </td>
+
+      <!-- 📝 PUBLICACIÓN -->
+      <td class="publish-col">
+        <label class="switch">
+          <input
+            type="checkbox"
+            [checked]="!post.isDraft"
+            (change)="onChangePublishStatus(post, $event)"
+          />
+          <span class="slider"></span>
+        </label>
+      </td>
+
+      <!-- ACCIONES -->
+      <td class="actions-col">
+        <div class="actions">
+
+          <a
+            [routerLink]="['/blog', post.slug]"
+            class="btn small btn-ver"
+            target="_blank"
+            rel="noopener">
+            Ver
+          </a>
+
+          <a
+            [routerLink]="['/admin/dashboard/blog', post.id, 'editar']"
+            class="btn small btn-editar">
+            Editar
+          </a>
+
+          <button
+            type="button"
+            class="btn small btn-eliminar"
+            (click)="deletePost(post)">
+            Eliminar
+          </button>
+
+        </div>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+
+<!-- Estado vacío -->
+<div class="empty" *ngIf="!loading && posts.length === 0">
+  No hay artículos registrados.
+</div>

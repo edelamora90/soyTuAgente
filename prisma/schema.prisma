@@ -1,0 +1,255 @@
+// ============================================================================
+// 🧩 SOYTUAGENTE — Prisma Schema
+// ----------------------------------------------------------------------------
+// Este archivo define TODO el modelo de datos utilizado por el backend de
+// SoyTuAgente (NestJS + Prisma). Está organizado en secciones temáticas para
+// facilitar la lectura, mantenimiento y escalabilidad.
+//
+// NOTAS DE DISEÑO:
+//   • Todos los ID son UUID/cuid para compatibilidad FE/BE.
+//   • Campos DateTime se utilizan para fechas reales (ordenamiento, filtros).
+//   • Strings se reservan para textos, slugs, rutas y horas tipo "HH:mm".
+//   • Se evita la sobre-normalización: modelos planos, alta performance.
+//   • Se documenta cada bloque para permitir onboarding rápido.
+// ============================================================================
+
+
+
+// ============================================================================
+// 🔧 GENERATOR & DATASOURCE
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+// ============================================================================
+// 👤 ADMIN USERS — Acceso al dashboard
+// ============================================================================
+model AdminUser {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  username     String?   @unique
+  passwordHash String
+
+  roles        String[]  @default(["admin"])
+  isActive     Boolean   @default(true)
+  tokenVersion Int       @default(0)
+
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+
+
+// ============================================================================
+// 🧑‍💼 AGENTS — Agentes aprobados
+// ============================================================================
+model Agent {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+
+  nombre          String
+  cedula          String
+  verificado      Boolean   @default(false)
+
+  avatar          String?
+  ubicacion       String
+  whatsapp        String?
+
+  especialidades  String[]
+  experiencia     String[]
+  servicios       String[]
+  certificaciones String[]
+  aseguradoras    String[]
+
+  mediaThumbs     String[]
+  mediaHero       String
+
+  redes           Json?
+
+  order           Int       @default(0)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+
+
+// ============================================================================
+// 📩 AGENT SUBMISSIONS — Solicitudes de agentes
+// ============================================================================
+model AgentSubmission {
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  status         SubmissionStatus @default(PENDING)
+
+  reviewedAt     DateTime?
+  reviewedById   String?
+  reviewNotes    String?
+
+  // Datos capturados del formulario inicial
+  slug           String           @unique
+  nombre         String
+  cedula         String?
+  verificado     Boolean?         @default(false)
+
+  foto           String?
+  ubicacion      String?
+  whatsapp       String?
+
+  especialidades String[]         @default([])
+  experiencia    String?
+  servicios      String[]         @default([])
+
+  aseguradoras   String?
+  logroDestacado String?
+
+  logosAseg      String[]         @default([])
+  fotosMini      String[]         @default([])
+  fotoHero       String?
+
+  facebook       String?
+  instagram      String?
+  linkedin       String?
+  tiktok         String?
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+
+// ============================================================================
+// 🎫 EVENTS & CAPACITACIONES — Módulo profesional de eventos
+// ----------------------------------------------------------------------------
+// Este modelo está completamente alineado con el EventEditorComponent Angular,
+// con compatibilidad para:
+//
+//   • Creación y edición profesional
+//   • Fechas reales (DateTime) para filtros y ordenamientos
+//   • Imágenes procesadas vía UploadApiService
+//   • Slug SEO-friendly (opcional en esta etapa)
+//   • Publicación y programación
+//   • Destacados y portada
+//
+// NOTAS IMPORTANTES:
+//   - startDate / endDate SON DateTime reales (ya no strings).
+//   - startTime / endTime se mantienen como string "HH:mm".
+//   - coverImg / speakerAvatar se guardan como rutas S3/local.
+//   - isPublished controla visibilidad pública.
+//   - publishedAt se puede usar más adelante para programación del evento.
+// ============================================================================
+
+model Event {
+  id          String     @id @default(cuid())
+  slug        String?     @unique
+
+  // 📌 Información principal
+  title       String
+  subtitle    String?
+  description String
+
+  type        EventType
+  mode        EventMode
+
+  // 🗓️ Fechas principales
+  startDate   DateTime             // ← Siempre DateTime real
+  endDate     DateTime?            // ← Puede ser null
+  startTime   String?              // HH:mm (string)
+  endTime     String?              // HH:mm (string)
+
+  // 📍 Ubicación
+  address     String?              // Texto libre desde Geoapify Autocomplete
+
+  // 🖼️ Imágenes y presentador
+  coverImg      String?
+  speakerName   String?
+  speakerBio   String?
+  speakerRole   String?
+  speakerAvatar String?
+
+  // 👥 Capacidad (opcional)
+  capacity     Int?
+  whatsapp     String?
+
+  // 💰 Precio
+  price        Int         @default(0)
+  isFree       Boolean     @default(false)
+
+  // 🔗 Enlace externo
+  registrationUrl String?
+
+  // ⭐ Publicación
+  isFeatured     Boolean    @default(false)
+  isPublished    Boolean    @default(false)
+  publishedAt    DateTime?
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  //Ponente y responsable
+  ponente      String?
+  responsable  String?
+}
+
+enum EventType {
+  EVENT
+  CAPACITACION
+  WEBINAR
+  CURSO
+}
+
+enum EventMode {
+  ONLINE
+  PRESENCIAL
+  HIBRIDO
+}
+
+
+model Post {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  excerpt       String?     // resumen automático
+  contentHtml   String      // contenido final renderizado desde TipTap
+  coverImg      String?     // portada
+  readMinutes   Int?        // calculado
+  isDraft       Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  publishedAt   DateTime?   // si isDraft=false y hay fecha futura → programado
+  author        String       // nombre o referencia
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Opcional — galería de imágenes internas
+  assets        PostAsset[]
+}
+
+model PostAsset {
+  id        String @id @default(cuid())
+  postId    String
+  url       String
+  createdAt DateTime @default(now())
+
+  post      Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+
+
+// ============================================================================
+// 🗃️ Enums generales para módulos futuros (Blog, Cursos, etc.)
+// ============================================================================

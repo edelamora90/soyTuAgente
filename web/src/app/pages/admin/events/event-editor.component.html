@@ -1,0 +1,414 @@
+
+<div class="editor-container">
+
+  <!-- ============================================================
+       MIGAJA (volver a la lista)
+  ============================================================ -->
+  <div class="back-bar">
+    <button class="back-link" (click)="goBack()">← Volver a la lista</button>
+  </div>
+
+  <!-- ============================================================
+       ENCABEZADO
+  ============================================================ -->
+  <header class="editor-header">
+    <div class="header-text">
+      <h1 class="page-title">
+        {{ eventId ? 'Editar evento' : 'Nuevo evento / capacitación' }}
+      </h1>
+      <p class="page-subtitle">
+        Configura todos los datos generales, fechas, ponente, portada y opciones de publicación.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       FORMULARIO
+  ============================================================ -->
+  <form [formGroup]="form"  class="editor-form">
+
+
+    <!-- ============================================================
+         DATOS BÁSICOS
+    ============================================================ -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Datos básicos</h2>
+        <p class="card-subtitle">Define el nombre, tipo y objetivo general del evento.</p>
+      </div>
+
+      <div class="card-body">
+
+        <div class="form-grid two-columns">
+          <!-- Título -->
+          <div class="form-field">
+            <label class="form-label">Título <span class="required">*</span></label>
+            <input class="form-control" formControlName="title" placeholder="Ej. Taller para agentes de autos" />
+            <div class="error" *ngIf="hasError('title','required')">Campo obligatorio.</div>
+          </div>
+
+          <!-- Subtítulo -->
+          <div class="form-field">
+            <label class="form-label">Subtítulo</label>
+            <input class="form-control" formControlName="subtitle" placeholder="Ej. Estrategias de cierre y servicio" />
+          </div>
+        </div>
+
+        <div class="form-grid two-columns">
+          <!-- Tipo -->
+          <div class="form-field">
+            <label class="form-label">Tipo <span class="required">*</span></label>
+            <select class="form-control" formControlName="type">
+              <option value="EVENT">Evento</option>
+              <option value="CURSO">Curso</option>
+              <option value="CAPACITACION">Capacitación</option>
+              <option value="WEBINAR">Webinar</option>
+            </select>
+          </div>
+
+          <!-- Modalidad -->
+          <div class="form-field">
+            <label class="form-label">Modalidad <span class="required">*</span></label>
+            <select class="form-control" formControlName="mode">
+              <option value="ONLINE">Online</option>
+              <option value="PRESENCIAL">Presencial</option>
+              <option value="HIBRIDO">Híbrido</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-field">
+          <label class="form-label">Descripción <span class="required">*</span></label>
+          <textarea
+            class="form-control textarea"
+            rows="4"
+            formControlName="description"
+            placeholder="Describe el objetivo, contenidos y beneficios del evento."
+          ></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FECHAS Y UBICACIÓN
+    ============================================================ -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Fechas y ubicación</h2>
+        <p class="card-subtitle">Define duración, horario y dirección donde se realizará el evento.</p>
+      </div>
+
+      <div class="card-body">
+
+        <div class="form-grid two-columns">
+          <div class="form-field">
+            <label class="form-label">Fecha inicio <span class="required">*</span></label>
+            <input type="date" class="form-control" formControlName="startDate" />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Hora inicio <span class="required">*</span></label>
+            <input type="time" class="form-control" formControlName="startTime" />
+          </div>
+        </div>
+
+        <div class="form-grid two-columns">
+          <div class="form-field">
+            <label class="form-label">Fecha fin</label>
+            <input type="date" class="form-control" formControlName="endDate" />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Hora fin</label>
+            <input type="time" class="form-control" formControlName="endTime" />
+          </div>
+        </div>
+
+        <div class="form-grid three-columns">
+          <div class="form-field">
+            <label class="form-label">Ciudad</label>
+            <input class="form-control" formControlName="city" placeholder="Ej. Colima" />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Lugar</label>
+            <input class="form-control" formControlName="place" placeholder="Ej. Auditorio principal" />
+          </div>
+
+          <!-- Enlace / sala virtual: solo WEBINAR u ONLINE -->
+          <div class="form-field" *ngIf="showVirtualLinkField">
+            <label class="form-label">Enlace / sala virtual</label>
+            <input
+              class="form-control"
+              formControlName="locationUrl"
+              placeholder="Ej. https://zoom.us/..."
+            />
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         PONENTE (solo cuando aplica)
+    ============================================================ -->
+    <section class="card" *ngIf="isSpeakerRequired">
+      <div class="card-header">
+        <h2 class="card-title">Ponente *</h2>
+        <p class="card-subtitle">Información de la persona que impartirá el evento.</p>
+      </div>
+
+      <div class="card-body">
+
+        <!-- Nombre del ponente -->
+        <div class="form-field">
+          <label class="form-label">Nombre del ponente <span class="required">*</span></label>
+          <input
+            class="form-control"
+            formControlName="ponente"
+            placeholder="Ej. Efrén De la Mora"
+          />
+          <div class="error" *ngIf="hasError('ponente','required')">
+            Este campo es obligatorio para este tipo de evento.
+          </div>
+        </div>
+
+        <div class="form-grid two-columns">
+          <div class="form-field">
+            <label class="form-label">Rol / cargo</label>
+            <input
+              class="form-control"
+              formControlName="speakerRole"
+              placeholder="Ej. Director comercial"
+            />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Descripción breve</label>
+          <textarea
+            rows="3"
+            class="form-control textarea"
+            formControlName="speakerBio"
+            placeholder="Comparte una breve reseña del ponente."
+          ></textarea>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="image-field">
+          <label class="form-label">Foto del ponente (drag & drop)</label>
+
+          <p class="field-hint">
+            Recomendado: <strong>600 × 600 px</strong> (formato <strong>1:1</strong>),
+            foto cuadrada, centrada y con buena iluminación.
+          </p>
+
+          <app-image-dropzone
+            [cantImage]="1"
+            [initialUrls]="speakerPreview ? [speakerPreview] : []"
+            (fileUploaded)="onSpeakerFiles([$event])"
+            (previewsChanged)="onSpeakerPreviews($event)"
+            (fileRemoved)="onSpeakerRemoved($event)">
+          </app-image-dropzone>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         RESPONSABLE (solo EVENT)
+    ============================================================ -->
+    <section class="card" *ngIf="isEventType">
+      <div class="card-header">
+        <h2 class="card-title">Responsable</h2>
+        <p class="card-subtitle">Persona encargada del evento.</p>
+      </div>
+
+      <div class="card-body">
+        <div class="form-field">
+          <label class="form-label">Responsable del evento</label>
+          <input
+            class="form-control"
+            formControlName="responsable"
+            placeholder="Ej. Coordinador del auditorio"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         PORTADA DEL EVENTO
+    ============================================================ -->
+    <section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Portada del evento</h2>
+    <p class="card-subtitle">
+      Esta imagen se usará como portada principal en listados y detalle.
+    </p>
+  </div>
+
+  <div class="card-body">
+    <div class="image-field">
+      <label class="form-label">Portada del evento (drag & drop)</label>
+
+      <p class="field-hint">
+        Recomendado: <strong>1280 × 720 px</strong> (16:9),
+        mínimo <strong>1200 px</strong> de ancho.
+      </p>
+
+      <app-image-dropzone
+  [cantImage]="1"
+  [initialUrls]="coverPreview ? [coverPreview] : []"
+  (fileUploaded)="onCoverFiles([$event])"
+  (previewsChanged)="onCoverPreviews($event)"
+  (fileRemoved)="onCoverRemoved($event)">
+</app-image-dropzone>
+
+    </div>
+  </div>
+</section>
+
+    <!-- ============================================================
+         CTA REGISTRO
+    ============================================================ -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Registro</h2>
+        <p class="card-subtitle">Define la URL de registro o CTA para este evento.</p>
+      </div>
+
+      <div class="card-body">
+        <div class="form-field">
+          <label class="form-label">URL de registro / CTA</label>
+          <input
+            class="form-control"
+            formControlName="ctaUrl"
+            placeholder="Ej. https://soytuagente.com/formulario-registro"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         COSTOS Y CONTACTO
+    ============================================================ -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Costos y contacto</h2>
+        <p class="card-subtitle">
+          Define el precio del evento, si es gratuito, capacidad máxima y un número de WhatsApp para más información.
+        </p>
+      </div>
+
+      <div class="card-body">
+
+        <div class="form-grid three-columns">
+          <!-- Precio -->
+          <div class="form-field">
+            <label class="form-label">Precio (MXN)</label>
+            <input
+              type="text"
+              inputmode="decimal"
+              pattern="[0-9]*"
+              class="form-control"
+              formControlName="price"
+              placeholder="Ej. 499"
+              [disabled]="form.get('isFree')?.value"
+            />
+          </div>
+
+          <!-- Evento gratuito -->
+          <div class="form-field">
+            <label class="form-label">Evento gratuito</label>
+            <div class="toggle">
+              <input type="checkbox" formControlName="isFree" />
+              <span class="toggle-label">Marcar como gratuito</span>
+            </div>
+          </div>
+
+          <!-- Capacidad -->
+          <div class="form-field">
+            <label class="form-label">Capacidad</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="capacity"
+              placeholder="Ej. 50"
+            />
+          </div>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="form-field" style="margin-top: 1rem;">
+          <label class="form-label">WhatsApp de contacto</label>
+          <input
+            class="form-control"
+            formControlName="whatsapp"
+            placeholder="Ej. +52 312 123 4567"
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+     PUBLICACIÓN
+============================================================ -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Publicación</h2>
+    <p class="card-subtitle">
+      Define si el evento se destacará al momento de publicarse.
+    </p>
+  </div>
+
+  <div class="card-body">
+
+    <!-- Destacado -->
+    <label class="toggle">
+      <input type="checkbox" formControlName="isFeatured" />
+      <span class="toggle-label">
+        Destacado (aparece en secciones especiales)
+      </span>
+    </label>
+
+    <p class="hint">
+      • Un evento <strong>solo puede ser destacado cuando se publica</strong>.<br />
+      • Si lo guardas como borrador, esta opción se ignorará automáticamente.
+    </p>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     ACCIONES
+============================================================ -->
+<section class="form-actions">
+  <div class="actions-inner">
+
+    <button
+  type="submit"
+  class="btn btn-secondary"
+  [disabled]="isSaving"
+  (click)="setModeDraft()">
+  Guardar borrador
+</button>
+
+<button
+  type="submit"
+  class="btn btn-primary"
+  [disabled]="isSaving"
+  (click)="setModePublish()">
+  Publicar ahora
+</button>
+
+
+  </div>
+</section>
+
+
+  </form>
+
+</div>

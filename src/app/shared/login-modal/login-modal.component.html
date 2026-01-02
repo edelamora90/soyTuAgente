@@ -1,0 +1,15 @@
+<div class="modal-backdrop" (click)="close.emit()"></div>
+
+<div class="modal">
+  <h2>Iniciar sesión</h2>
+  <form (ngSubmit)="login()" (click)="$event.stopPropagation()">
+    <label>Email</label>
+    <input type="email" [(ngModel)]="email" name="email" required />
+
+    <label>Contraseña</label>
+    <input type="password" [(ngModel)]="password" name="password" required />
+
+    <button type="submit">Acceder</button>
+    <button type="button" (click)="close.emit()">Cancelar</button>
+  </form>
+</div>

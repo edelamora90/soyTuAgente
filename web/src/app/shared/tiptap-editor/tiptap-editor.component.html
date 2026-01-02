@@ -1,0 +1,25 @@
+<!-- web/src/app/shared/tiptap-editor/tiptap-editor.component.html -->
+<div class="tiptap-wrapper">
+
+  <div class="tiptap-toolbar">
+    <button type="button" (click)="toggleBold()" [class.active]="isActive('bold')">B</button>
+    <button type="button" (click)="toggleItalic()" [class.active]="isActive('italic')">I</button>
+    <button type="button" (click)="toggleStrike()" [class.active]="isActive('strike')">S</button>
+
+    <button type="button" (click)="toggleBulletList()">• Lista</button>
+    <button type="button" (click)="setParagraph()">¶</button>
+    <button type="button" (click)="setHeading(2)">H2</button>
+    <button type="button" (click)="setHeading(3)">H3</button>
+  </div>
+
+  <!-- 🔴 ESTE ES EL HOST REAL -->
+  <div #editorHost class="tiptap-content"></div>
+
+  <input
+    #imageInput
+    type="file"
+    accept="image/*"
+    hidden
+    (change)="onImageSelected($event)"
+  />
+</div>

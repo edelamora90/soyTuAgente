@@ -1,0 +1,198 @@
+/* ============================================================================
+   TipTap Editor (Admin) — Estilos finales
+   Archivo: web/src/app/shared/tiptap-editor/tiptap-editor.component.scss
+============================================================================ */
+
+/* Contenedor general (borde, card) */
+.tiptap-wrapper {
+  border: 1px solid #e2e2e2;
+  border-radius: 16px;
+  background: #ffffff;
+  overflow: visible; 
+}
+
+/* Barra de herramientas */
+.tiptap-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+
+  button {
+    appearance: none;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #374151;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+
+    &.active {
+      background: #e7f9ed;
+      border-color: #0ca36c;
+      color: #0a8c5b;
+    }
+  }
+}
+
+/* Host del editor (IMPORTANTE: este sí da altura visible al wrapper)
+   En tu HTML asegúrate de tener:
+   <div #editorHost class="tiptap-content"></div>
+*/
+.tiptap-content {
+  min-height: 260px;
+}
+
+/* Focus accesible: el “ring” se lo damos al contenedor visual */
+.tiptap-wrapper:focus-within {
+  box-shadow: 0 0 0 3px rgba(12, 163, 108, 0.15);
+}
+
+/* ============================================================================
+   ProseMirror / TipTap Core
+============================================================================ */
+
+/* TipTap crea internamente .ProseMirror y además tu clase 'tiptap-editor' */
+.ProseMirror {
+  overflow: visible;
+}
+.ProseMirror,
+.tiptap-editor {
+  width: 100%;
+  min-height: 260px;
+  box-sizing: border-box;
+
+  padding: 18px 20px;
+  background: #ffffff;
+
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #1f2937;
+
+  /* Recomendación oficial de ProseMirror */
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  /* Quita el borde azul del contenteditable */
+  outline: none;
+  border: none;
+
+  /* Un caret más “pro” */
+  caret-color: #0ca36c;
+}
+
+/* Evita outlines internos (Chrome/Safari a veces los aplican) */
+.ProseMirror:focus,
+.ProseMirror:focus-visible,
+.ProseMirror *:focus,
+.ProseMirror *:focus-visible {
+  outline: none !important;
+}
+
+/* Algunos builds aplican esta clase al enfocarse */
+.ProseMirror-focused {
+  outline: none !important;
+}
+
+/* Altura mínima de línea para evitar “línea rara” y mejorar click-area */
+.ProseMirror p {
+  margin: 0 0 0.8rem;
+  min-height: 1.4em;
+}
+
+/* Títulos */
+.ProseMirror h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 1.2rem 0 0.6rem;
+}
+
+.ProseMirror h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+}
+
+/* Listas */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.4rem;
+  margin: 0.6rem 0;
+}
+
+/* Imágenes embebidas: nunca se salen */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 14px auto;
+  border-radius: 12px;
+}
+
+/* Selección bonita */
+.ProseMirror ::selection {
+  background: rgba(12, 163, 108, 0.18);
+}
+
+.ProseMirror ::-moz-selection {
+  background: rgba(12, 163, 108, 0.18);
+}
+
+/* Placeholder (TipTap Placeholder extension) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  float: left;
+  pointer-events: none;
+  height: 0;
+}
+
+
+/* ============================================================================
+   IMAGE RESIZE — UX LIMPIO (como WordPress)
+============================================================================ */
+
+/* Contenedor de imagen */
+.ProseMirror figure {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Imagen durante resize */
+.ProseMirror img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  pointer-events: none; /* 🔑 evita “arrastrar todo” */
+}
+
+/* Habilita solo los handles */
+.ProseMirror .resize-handle {
+  pointer-events: all;
+}
+
+/* Overlay temporal durante drag */
+.ProseMirror .image-resizing {
+  opacity: 0.85;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Evita que el editor completo se “pegue” al drag */
+.ProseMirror * {
+  user-select: none;
+}
+
+.ProseMirror img {
+  user-select: none;
+}

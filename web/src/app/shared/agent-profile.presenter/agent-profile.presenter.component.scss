@@ -1,0 +1,287 @@
+/* =========================================================
+   PERFIL DE AGENTE — ESTILOS COMPLETOS
+   ========================================================= */
+
+:host{
+  display:block; width:100%;
+  background:#fff; color:#0b2f34;
+  font-family:"Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ===== Contenedor de la página ===== */
+.ap.container.profile{
+  max-width:1100px;
+  margin:0 auto;
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+/* ===== Tarjeta principal (Sección 1 + resto) ===== */
+.ap-card{
+  background:#fff;
+  border-radius:22px;
+  box-shadow:0 8px 24px rgba(16,24,40,.08);
+  padding: clamp(1.5rem, 3vw, 2rem);
+
+  display:grid;
+  grid-template-columns: clamp(140px, 20vw, 200px) 1fr;
+  grid-template-areas:
+    "avatar info"
+    "social cta";
+  column-gap: clamp(1.25rem, 3vw, 2rem);
+  row-gap: clamp(.35rem, 1vw, .75rem); /* acerca redes a la foto */
+  align-items:start;
+}
+
+/* ===== Avatar ===== */
+.ap-avatar{
+  grid-area:avatar;
+  display:flex; justify-content:flex-start;
+  justify-self:center; /* centra el bloque en su columna */
+}
+.ap-avatar img{
+  width: clamp(130px, 18vw, 180px);
+  height: clamp(130px, 18vw, 180px);
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid #fff;
+  box-shadow:0 6px 16px rgba(16,24,40,.15);
+}
+
+/* ===== Redes bajo la foto (mismo ancho visual que el avatar) ===== */
+.ap-social{
+  grid-area:social;
+  display:flex; align-items:center; gap:.75rem;
+  justify-self:center;
+  max-width: clamp(130px, 18vw, 180px);
+  width:100%;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:-.2rem; /* cierra un poco el hueco con la foto */
+}
+.ap-social a{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border-radius:12px;
+  background:#fff; border:1px solid #e2e8f0;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.ap-social a:hover{ transform: translateY(-2px); border-color:#00b97b; }
+.ap-social img{ width:20px; height:20px; }
+
+/* ===== Información (lado derecho) ===== */
+.ap-info{
+  grid-area:info;
+  display:flex; flex-direction:column; gap:.55rem;
+  text-align:left;
+}
+
+.ap-name{
+  margin:0;
+  font-size: clamp(1.8rem, 2.6vw, 2.25rem);
+  line-height:1.15;
+  font-weight:800; letter-spacing:-.01em;
+  color:#072e36; display:flex; align-items:center; gap:.5rem;
+}
+.ap-verified{
+  width:24px; height:24px; border-radius:50%;
+  display:inline-grid; place-items:center;
+  background:#e6fbf3; color:#00b97b; font-size:1rem;
+  box-shadow: inset 0 0 0 1.5px #00b97b33;
+}
+
+/* Metadatos: Cédula / Ubicaciones */
+.ap-id, .ap-meta{
+  font-size:.98rem; color:#475569; display:flex; gap:.5rem; flex-wrap:wrap;
+}
+.ap-id strong, .ap-meta strong{ color:#0b2f34; font-weight:700; }
+
+/* Especialidades */
+.ap-spec{ margin-top:.25rem; display:flex; flex-direction:column; gap:.5rem; }
+.ap-spec .label{
+  font-size:.95rem; font-weight:700; color:#0b2f34; /* negritas como cédula/ubicaciones */
+}
+.ap-spec .cols{
+  display:flex; flex-wrap:wrap; gap: clamp(.6rem, 1.2vw, .9rem);
+}
+.ap-spec .cols li{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.35rem .6rem;
+  border:1px solid #e6eef3; border-radius:999px;
+  font-weight:600; color:#072e36; background:#fff;
+}
+.ap-spec .cols li img{ width:20px; height:20px; }
+
+/* ===== CTAs (comparten estilos) ===== */
+.ap-cta{
+  display:flex; flex-wrap:wrap; gap:.75rem;
+}
+
+/* El CTA superior sí ocupa la celda 'cta' */
+.ap-cta--top{
+  grid-area: cta;
+  justify-content:flex-start;
+}
+
+/* El CTA final NO usa grid-area; está al final, centrado */
+.ap-cta--footer{
+  grid-area:auto;
+  grid-column:1 / -1;             /* a lo ancho */
+  justify-content:center;         /* centrado, como pediste */
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+}
+
+.ap-btn{
+  --ring: 0 0 0 0 rgba(0,0,0,0);
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.78rem 1.25rem; border-radius:999px;
+  font-weight:800; font-size:.96rem; line-height:1;
+  text-decoration:none; border:2px solid transparent;
+  box-shadow: var(--ring), 0 2px 5px rgba(16,24,40,.05);
+  transition: background .2s ease, color .2s ease, transform .05s ease, border-color .2s ease;
+}
+.ap-btn .ico{ width:20px; height:20px; }
+
+.ap-btn--call{
+  background:#fff; color:#0b2f34; border-color:#0b2f34;
+}
+.ap-btn--call:hover{ background:#0b2f34; color:#fff; }
+
+.ap-btn--wa{
+  background:#25d366; color:#fff;
+  box-shadow:0 6px 14px rgba(37,211,102,.25);
+}
+.ap-btn--wa:hover{ background:#20c65a; }
+.ap-btn.is-disabled{ opacity:.55; pointer-events:none; }
+
+/* ===== Separador fino ===== */
+.ap-divider{
+  grid-column:1 / -1;
+  height:1px; background:#eef2f6;
+  margin: clamp(1rem, 2vw, 1.25rem) 0;
+}
+
+/* =========================================================
+   SECCIONES SIGUIENTES — ALINEADAS A LA IZQUIERDA
+   ========================================================= */
+
+.ap-gallery, .ap-section{
+  grid-column:1 / -1;
+  text-align:left;
+}
+
+.ap-gallery h2, .ap-section h2{
+  margin:0 0 .6rem;
+  font-weight:800;
+  font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+  color:#072e36; letter-spacing:-.01em;
+}
+
+/* ----- Galería: 3 miniaturas pequeñas centradas ----- */
+.ap-gallery-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(.5rem, 1.4vw, .9rem);
+  max-width: 720px;          /* controla tamaño total del bloque de 3 */
+  margin-inline: auto;       /* centra el grid dentro de la tarjeta */
+  align-items:start;
+  justify-items:center;      /* centra cada celda */
+}
+.ap-gallery-grid img{
+  width: 100%;
+  max-width: 220px;          /* tamaño objetivo de cada miniatura */
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display:block;
+  border-radius:14px;
+  box-shadow:0 4px 14px rgba(16,24,40,.08);
+  cursor:pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.ap-gallery-grid img:hover{
+  transform: translateY(-2px);
+  box-shadow:0 6px 18px rgba(16,24,40,.12);
+}
+
+/* Párrafos/listas */
+.ap-section p{ margin:.2rem 0; color:#334155; }
+.ap-section .list{ margin:0; padding-left:1.25rem; }
+.ap-section .checks{ list-style:none; margin:0; padding:0; }
+.ap-section .checks .check{ color:#00b97b; margin-right:.35rem; }
+
+/* ----- Aseguradoras (tu bloque actual estaba bien) ----- */
+.brands-grid{
+  display:grid; grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: clamp(.75rem, 2vw, 1rem);
+  align-items:center;
+}
+.brand{
+  background:#fff; border:1px solid #eef2f6;
+  border-radius:12px; padding:.75rem;
+  display:flex; align-items:center; justify-content:center;
+}
+.brand img{ max-width:100%; max-height:64px; object-fit:contain; }
+
+/* ----- Lightbox ----- */
+.ap-lightbox{
+  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  display:grid; place-items:center; z-index:60;
+}
+.ap-lightbox-img{ max-width:92vw; max-height:92vh; border-radius:12px; }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px){
+  .ap-card{ grid-template-columns: 120px 1fr; }
+  .ap-avatar img{ width:120px; height:120px; }
+}
+
+@media (max-width: 700px){
+  .ap-card{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "avatar"
+      "info"
+      "social"
+      "cta";
+    padding: clamp(1rem, 4vw, 1.25rem);
+    text-align:center;
+  }
+  .ap-avatar{ justify-content:center; }
+  .ap-info{ align-items:center; text-align:center; }
+  .ap-id, .ap-meta{ justify-content:center; }
+  .ap-spec .cols{ justify-content:center; }
+  .ap-social{ justify-content:center; margin-top:-.1rem; }
+  .ap-cta{ justify-content:center; }
+  .ap-gallery, .ap-section{ text-align:left; }
+  .ap-gallery-grid{ grid-template-columns: repeat(2, 1fr); max-width:520px; }
+}
+
+@media (max-width: 540px){
+  .ap-gallery-grid{ grid-template-columns: 1fr; max-width:320px; }
+}
+
+/* Pulido tipográfico (evita “texto gordo”) */
+.ap, .ap-card, .ap-info, .ap-btn{
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.ap-verified {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+
+  border-radius: 50%;
+  background: #6fcf97; /* verde suave */
+
+  img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+  }
+}

@@ -1,0 +1,223 @@
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.state {
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+
+  &.loading { background: #eff6ff; color: #1d4ed8; }
+  &.error { background: #fef2f2; color: #b91c1c; }
+}
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+
+  th, td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  th {
+    background: #f8fafc;
+    font-size: 0.9rem;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  .actions-col {
+    width: 180px;
+  }
+}
+
+/* ⭐ COLUMNA DESTACADO */
+.featured-col {
+  width: 70px;
+  text-align: center;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+
+  transition: transform 0.15s ease;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.star {
+  width: 28px;
+  height: 28px;
+  transition: fill 0.2s ease, transform 0.2s ease;
+
+  &.star-on {
+    fill: #facc15; /* Amarillo */
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+  }
+
+  &.star-off {
+    fill: #d1d5db; /* Gris suave */
+  }
+
+  &:hover {
+    transform: scale(1.08);
+  }
+}
+
+/* STATUS PILL */
+.status-pill {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #fff;
+
+  &.LIVE { background: #16a34a; }
+  &.UPCOMING { background: #4338ca; }
+  &.FINISHED { background: #94a3b8; }
+}
+
+/* BOTONES */
+.btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+
+  &.small { font-size: 0.75rem; }
+  &.ghost { background: #f1f5f9; color: #111; }
+  &.danger { background: #ef4444; color: #fff; }
+}
+/* ============================================================
+   Columna de acciones
+============================================================ */
+.actions-col {
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem; // separación entre botones
+  }
+}
+
+/* Base de botón pequeño (reutiliza tu .btn.small, esto solo refuerza) */
+.btn.small {
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease,
+    box-shadow 0.1s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Ver → verde */
+.btn-ver {
+  background: #22c55e;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.25);
+
+  &:hover {
+    background: #16a34a;
+  }
+}
+
+/* Editar → gris */
+.btn-editar {
+  background: #f3f4f6;
+  color: #111827;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+/* Eliminar → rojo sin borde negro */
+.btn-eliminar {
+  background: #ef4444;
+  color: #ffffff;
+  border: none; // asegura que no haya contorno negro
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+
+  &:hover {
+    background: #dc2626;
+  }
+}
+
+
+.publish-col {
+  text-align: center;
+}
+
+/* Switch moderno */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #d1d5db;
+  border-radius: 999px;
+  transition: 0.2s;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+input:checked + .slider {
+  background-color: #10b981; // verde publicar
+}
+
+input:checked + .slider::before {
+  transform: translateX(20px);
+}

@@ -1,0 +1,820 @@
+/* web/src/app/pages/events/events-public-list.component.scss
+   ============================================================================
+   EventsPublicListComponent — Estilos con DESTACADO + plantillas A/B
+   ----------------------------------------------------------------------------
+   • Layout centrado y responsive
+   • Hero destacado (EVENT vs CURSO/CAPACITACIÓN/WEBINAR)
+   • Tarjetas con sombra suave y hover ligero
+   • Badges de estado
+   • Estados: cargando, error, vacío
+   ============================================================================ */
+
+/* ===========================
+   Layout general
+   =========================== */
+.events-page {
+  padding: 40px 24px 56px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+
+  h1 {
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .subtitle {
+    margin-top: 8px;
+    font-size: 1rem;
+    color: #6b7280;
+  }
+}
+
+/* ===========================
+   Estados
+   =========================== */
+.state {
+  text-align: center;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+
+  &.state-loading {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  &.state-error {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+}
+
+/* ===========================
+   HERO DESTACADO
+   =========================== */
+.featured-wrapper {
+  margin-bottom: 32px;
+}
+
+/* Hero base */
+.featured {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+  background: #0b1120;
+  color: #fff;
+}
+
+/* ---------------------------------
+   Plantilla A — EVENT (Keynote)
+   --------------------------------- */
+/* ===========================================
+   HERO DESTACADO — Apple News Style
+   =========================================== */
+
+.event-hero-card {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+  min-height: 340px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Imagen */
+.hero-image {
+  background-size: cover;
+  background-position: center;
+  min-height: 260px;
+
+  @media (max-width: 900px) {
+    border-radius: 28px 28px 0 0;
+  }
+}
+
+/* Info */
+.hero-info {
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+
+  @media (max-width: 640px) {
+    padding: 22px 20px;
+  }
+}
+
+/* Kicker (categoría) */
+.hero-kicker {
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  color: #2563eb; /* azul suave */
+  font-weight: 700;
+}
+
+/* Título */
+.hero-title {
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+  color: #111827; /* gris oscuro elegante */
+}
+
+/* Meta */
+.hero-meta {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+/* Descripción */
+.hero-description {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.5;
+  max-width: 60ch;
+}
+
+/* CTA */
+.hero-cta {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(34, 197, 94, 0.45);
+  }
+}
+
+
+
+
+
+/* ---------------------------------
+   Plantilla B — TRAINING (Cursos)
+   Paleta: blanco, verde, gris, azul suave
+   --------------------------------- */
+.featured-training {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.3fr);
+  gap: 0;
+  min-height: 260px;
+
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+
+  .training-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px 0 0 24px;
+    aspect-ratio: 16 / 9; 
+
+    @media (max-width: 860px) {
+      border-radius: 24px 24px 0 0;
+    }
+
+    .training-thumb {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.98);
+    }
+
+    /* quitamos el glow verde fuerte y dejamos uno muy suave */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 0 0,
+        rgba(34, 197, 94, 0.12),
+        transparent 55%
+      );
+      pointer-events: none;
+    }
+  }
+
+  .training-content {
+    position: relative;
+    padding: 26px 26px 26px 26px;
+    color: #111827; /* gris muy oscuro */
+
+    @media (min-width: 840px) {
+      padding: 30px 32px 30px 32px;
+    }
+  }
+}
+
+/* Tags comunes hero */
+.featured-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Destacado → verde suave sobre fondo claro */
+.pill-featured {
+  background: rgba(34, 197, 94, 0.08);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+/* Estado → base gris con acentos en verde/azul */
+.pill-status {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+
+  &.LIVE {
+    color: #15803d;
+    border-color: rgba(34, 197, 94, 0.6);
+  }
+  &.UPCOMING {
+    color: #2563eb;
+    border-color: rgba(37, 99, 235, 0.6);
+  }
+  &.FINISHED {
+    color: #92400e;
+    border-color: rgba(180, 83, 9, 0.45);
+  }
+}
+
+.featured-title {
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+  margin: 4px 0 6px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.featured-meta {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 10px;
+
+  .dot {
+    margin: 0 6px;
+  }
+}
+
+.featured-description {
+  font-size: 0.95rem;
+  color: #6b7280;
+  max-width: 52ch;
+  margin-bottom: 14px;
+}
+
+/* CTA hero A */
+.featured-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  &:hover {
+    background: #16a34a;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 35px rgba(34, 197, 94, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(34, 197, 94, 0.3);
+  }
+}
+
+/* Texto extra plantilla B */
+.training-label {
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2563eb; /* acento azul suave */
+}
+
+.training-meta {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #4b5563;
+
+  .dot {
+    margin: 0 6px;
+  }
+}
+
+.training-extra {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 14px 0 12px;
+}
+
+.training-item {
+  .label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+  }
+
+  .value {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.94rem;
+    color: #111827;
+
+    .role {
+      font-size: 0.86rem;
+      color: #6b7280;
+    }
+  }
+}
+
+.training-actions {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.training-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 35px rgba(34, 197, 94, 0.4);
+  }
+}
+
+.training-hint {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   LISTA DE EVENTOS
+   =========================== */
+.list-wrapper {
+  &.with-featured {
+    margin-top: 8px;
+  }
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+/* Grid */
+.events-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Tarjeta de evento */
+.event-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.16);
+  }
+}
+
+/* Cover → 16:9, se adapta bien a todas las portadas */
+.cover {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
+  .badge.status {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.65);
+
+    &.live   { color: #15803d; }
+    &.upcoming { color: #4338ca; }
+    &.finished { color: #b45309; }
+  }
+}
+
+
+/* Contenido tarjeta */
+.content {
+  padding: 16px;
+
+  .date {
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+
+  h2 {
+    margin: 6px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    display: inline-block;
+    background: #22c55e;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    &:hover {
+      background: #16a34a;
+    }
+  }
+}
+
+/* Estados vacíos */
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  padding: 20px 0;
+}
+
+.global-empty {
+  margin-top: 24px;
+}
+
+/* Responsivo general */
+@media (max-width: 640px) {
+  .featured-event .featured-content,
+  .featured-training .training-content {
+    padding: 22px 18px 20px;
+  }
+
+  .events-page {
+    padding-inline: 16px;
+  }
+}
+
+/* ==========================================
+   SEARCH + FILTERS
+   ========================================== */
+
+.events-filters {
+  margin: 20px 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Buscador */
+.search-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+
+  input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-size: 0.95rem;
+    transition: 0.18s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    opacity: 0.6;
+  }
+}
+
+/* Filtros */
+.filters-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  select {
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    color: #374151;
+    transition: 0.18s ease;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .search-box {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================
+   SEARCH + FILTERS — alineados uno con otro
+   ========================================== */
+
+/* Contenedor general (solo controla margen) */
+.events-filters {
+  width: 100%;
+  margin: 32px 0 24px;
+}
+
+/* 🔴 BUSCADOR y 🟣 FILTROS comparten ancho */
+.search-box,
+.filters-row {
+  width: 100%;
+  max-width: 680px;   /* ← AJUSTA este valor a tu gusto */
+  margin: 0 auto;     /* centrados dentro de la página */
+}
+
+/* ===========================
+   BUSCADOR TIPO iOS
+   =========================== */
+.search-box {
+  position: relative;
+
+  input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    font-size: 0.95rem;
+    transition: 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+
+    &:hover {
+      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.20);
+      background: #fff;
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+}
+
+/* ===========================
+   FILTROS TIPO "CHIP"
+   =========================== */
+.filters-row {
+  display: flex;
+  justify-content: center;  /* los chips quedan centrados dentro del bloque */
+  gap: 12px;
+  padding-top: 8px;
+
+  select {
+    appearance: none;
+    padding: 10px 34px 10px 14px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb url('/assets/icons/chevron-down.svg') no-repeat right 10px center;
+    background-size: 14px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+      background-color: #fff;
+    }
+  }
+}
+
+
+/* ============================================================
+   RESPONSIVE ALIGNMENT — Search + Chips
+   Se adaptan en móvil y tablet para mantener proporciones
+   ============================================================ */
+
+/* MÓVIL — 640px */
+@media (max-width: 640px) {
+
+  /* Contenedor principal centrado */
+  .events-filters {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 14px;
+  }
+
+  /* Buscador */
+  .search-box {
+    width: 100%;
+    max-width: 100%;
+
+    input {
+      width: 100%;
+      font-size: 0.9rem;
+      padding-left: 40px;
+      padding-right: 16px;
+    }
+
+    .search-icon {
+      left: 12px;
+      width: 17px;
+      opacity: 0.55;
+    }
+  }
+
+  /* Chips de filtros */
+  .filters-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 4px;
+
+    select {
+      flex: 1 1 calc(50% - 12px);  /* Ambos ocupan mitad del ancho */
+      max-width: 240px;            /* Evita que se estiren demasiado en tablets */
+      text-align: center;
+    }
+  }
+}
+
+/* TABLET — 900px */
+@media (max-width: 900px) {
+  .events-filters {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .filters-row {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+}
+
+
+/* Contenedor global */
+.events-filters {
+  width: 100%;
+  max-width: 900px;   /* <-- Alineado al ancho real del contenido */
+  margin: 0 auto 24px auto;
+  padding: 0 16px;    /* <-- Evita que el input toque los bordes */
+  box-sizing: border-box;
+}
+
+/* Buscador */
+.search-box {
+  width: 100%;
+  max-width: 100%;     /* <-- clave para que no crezca más */
+  box-sizing: border-box;
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Chips */
+.filters-row {
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+
+  select {
+    flex: 1 1 calc(50% - 12px);
+    max-width: 230px;
+  }
+}
+
+/* Móvil */
+@media (max-width: 640px) {
+  .events-filters {
+    padding: 0 12px;
+    max-width: 100%;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+}

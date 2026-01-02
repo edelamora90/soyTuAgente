@@ -1,0 +1,186 @@
+/* web/src/app/layout/footer/footer.component.scss */
+
+:host { display:block; } /* asegura bloque raíz del componente */
+
+.site-footer {
+  /* <<— variables locales al footer —>> */
+  --footer-bg: #003c4f;
+  --footer-muted: #c7e4dc;
+  --footer-text: #eaf6f2;
+  --brand: #0fb366;
+
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  padding-top: clamp(28px, 4vw, 44px);
+  padding-bottom: clamp(18px, 3vw, 28px);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1.6fr;
+  gap: clamp(20px, 4vw, 48px);
+  align-items: start;
+}
+
+/* Marca + texto */
+.ft-brand .logo img { height: 48px; display: block; }
+.ft-brand .lead {
+  margin-top: 14px;
+  color: var(--footer-muted);
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.5;
+  max-width: 640px;
+}
+
+/* Columnas de links */
+.ft-col h4 {
+  font-weight: 800;
+  font-size: clamp(16px, 1.4vw, 22px);
+  margin: 0 0 10px;
+}
+.ft-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ft-col a {
+  color: var(--footer-text);
+  text-decoration: none;
+  font-size: clamp(15px, 1.2vw, 20px);
+  opacity: .9;
+}
+.ft-col a:hover { opacity: 1; text-decoration: underline; text-underline-offset: .25em; }
+
+/* portal agentes */
+.portal-link { font-weight: 800; font-size: 1.1rem; }
+
+/* CTA + redes */
+.ft-actions { display: grid; gap: 18px; justify-items: end; }
+
+.btn-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 44px; padding: 0 18px; border-radius: 999px; font-weight: 800;
+  background: var(--brand); color: #e8f3ff; text-decoration: none; font-size: 18px; border: 0;
+  transition: background .2s ease, transform .2s ease;
+}
+@supports (background: color-mix(in srgb, #000 0%, #000 0%)) {
+  .btn-cta:hover { background: color-mix(in srgb, var(--brand) 85%, black); transform: translateY(-1px); }
+}
+
+.social { display: flex; gap: 18px; }
+.social .ico { width: 28px; height: 28px; color: var(--footer-text); opacity: .9; display: inline-grid; place-items: center; }
+.social .ico:hover { opacity: 1; }
+
+/* Divider + bottom */
+.ft-div { border: 0; height: 1px; margin: clamp(22px, 3vw, 32px) 0; background: rgba(234, 246, 242, .18); }
+.footer-bottom small { color: var(--footer-muted); font-size: 18px; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .ft-actions { justify-items: start; }
+}
+@media (max-width: 640px) {
+  .footer-top { grid-template-columns: 1fr; }
+  .ft-brand .lead { max-width: none; }
+  .ft-actions { justify-items: stretch; }
+  .btn-join, .btn-cta { width: 100%; }
+}
+
+
+/* === Alinear footer al ancho del header (min 85vw, tope 1200px) === */
+.site-footer > .container,
+.site-footer .container.footer-bottom {
+  width: min(85vw, 1200px);
+  margin-inline: auto;
+  padding-inline: 0; /* sin sangría en desktop */
+}
+
+/* La línea divisoria también alineada al contenedor */
+.site-footer .ft-div {
+  width: min(85vw, 1200px);
+  margin-inline: auto;           /* centra y alinea con los bordes del contenedor */
+}
+
+/* Móviles: misma “respiración” lateral que usamos en el resto del sitio */
+@media (max-width: 640px){
+  .site-footer > .container,
+  .site-footer .container.footer-bottom {
+    padding-inline: clamp(12px, 4vw, 20px);
+  }
+}
+/* === Footer: CTA compacto como el del menú móvil === */
+.site-footer .ft-actions .btn-cta{
+  /* base (desktop/tablet) — mismo look del header */
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 1rem;
+  background: #39B56A;
+  color: #fff;
+  border: 1px solid #2E9F5B;
+  box-shadow:
+    inset 0 -2px 0 rgba(0,0,0,.10),
+    0 1px 0 rgba(16,24,40,.06);
+  text-decoration: none;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.site-footer .ft-actions .btn-cta:hover{ background:#33A861; }
+.site-footer .ft-actions .btn-cta:active{ transform: translateY(1px); }
+.site-footer .ft-actions .btn-cta:focus-visible{
+  outline: 2px solid #C8F0D8; outline-offset: 3px;
+}
+
+/* === Móvil: compacto, sin desbordes y centrado === */
+@media (max-width: 640px){
+  /* quitar el width:100% que tenías antes */
+  .site-footer .ft-actions .btn-cta{
+    width: auto;                       /* << importante */
+    max-width: min(90%, 340px);
+    height: clamp(42px, 6.5vw, 48px);
+    padding: 0 16px;
+    margin: 12px auto 6px;             /* centrado */
+    display: inline-flex;
+    font-size: .95rem;
+  }
+
+  /* centrar el bloque de acciones (CTA + redes) */
+  .site-footer .ft-actions{
+    justify-items: center !important;  /* en móvil centrado */
+    text-align: center;
+  }
+
+  
+}
+
+.social-center {
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Estilos de los círculos, aislados también */
+.social-center .ico {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: #dde5ec;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transition: 0.2s ease;
+}
+
+.social-center .ico img {
+  width: 60%;
+  height: 60%;
+}
+
+.social-center .ico:hover {
+  transform: translateY(-1px) scale(1.03);
+  background-color: #18b368;
+  box-shadow: 0 6px 14px rgba(0,0,0,.25);
+}

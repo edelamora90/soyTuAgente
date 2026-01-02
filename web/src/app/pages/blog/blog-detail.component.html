@@ -1,0 +1,91 @@
+<section class="blog-article">
+
+  <!-- Volver -->
+  <a routerLink="/blog" class="back-link">
+    ← Volver al blog
+  </a>
+
+  <!-- HERO -->
+  <header class="article-hero" *ngIf="post.coverImg">
+    <img
+      [src]="post.coverImg"
+      [alt]="post.title"
+      class="hero-image"
+    />
+  </header>
+
+  <!-- HEADER -->
+  <header class="article-header">
+    <h1 class="article-title">{{ post.title }}</h1>
+
+    <div class="article-meta">
+      <span>{{ post.author }}</span>
+      <span>•</span>
+      <span>{{ post.publishedAt || post.createdAt | date:'longDate' }}</span>
+      <span>•</span>
+      <span>{{ post.readMinutes || 1 }} min lectura</span>
+    </div>
+
+    <p *ngIf="post.excerpt" class="article-excerpt">
+      {{ post.excerpt }}
+    </p>
+  </header>
+
+  <!-- CUERPO -->
+  <div class="article-body" [innerHTML]="post.contentHtml"></div>
+
+  <!-- =========================
+       GALERÍA (AL FINAL)
+       ========================= -->
+  <section *ngIf="galleryLength" class="gallery-section">
+
+    <h2 class="gallery-title">Galería</h2>
+
+    <div class="carousel">
+
+      <button class="nav prev" (click)="prev()">‹</button>
+
+      <img
+        *ngIf="currentImage"
+        [src]="currentImage"
+        class="carousel-image"
+        (click)="openLightbox(currentIndex)"
+      />
+
+      <button class="nav next" (click)="next()">›</button>
+    </div>
+
+    <div class="dots">
+      <button
+        *ngFor="let img of gallery; let i = index"
+        (click)="goTo(i)"
+        [class.active]="i === currentIndex">
+      </button>
+    </div>
+
+  </section>
+
+</section>
+
+<!-- =========================
+     LIGHTBOX
+     ========================= -->
+<div *ngIf="lightboxOpen" class="lightbox" (click)="closeLightbox()">
+
+  <div class="lightbox-content" (click)="$event.stopPropagation()">
+
+    <button class="lb-close" (click)="closeLightbox()">✕</button>
+
+    <button class="lb-nav prev" (click)="prev()">‹</button>
+
+    <img
+      *ngIf="currentImage"
+      [src]="currentImage"
+      class="lightbox-img"
+    />
+
+    <button class="lb-nav next" (click)="next()">›</button>
+
+  </div>
+
+</div>

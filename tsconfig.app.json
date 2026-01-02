@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc/app",
+    "types": []
+  },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts",
+    "src/polyfills.ngtypecheck.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "api/**",
+    "prisma/**",
+    "node_modules/.prisma/**"
+  ]
+}

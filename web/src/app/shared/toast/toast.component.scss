@@ -1,0 +1,39 @@
+.toast-wrapper {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+  z-index: 9999;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.toast-card {
+  padding: 0.9rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  color: white;
+  opacity: 0.95;
+  animation: slideIn 0.3s ease-out;
+
+  &.success {
+    background: #0ca36c;
+  }
+
+  &.error {
+    background: #d32f2f;
+  }
+
+  &.info {
+    background: #0b74de;
+  }
+}
+
+@keyframes slideIn {
+  0% { transform: translateY(-15px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}

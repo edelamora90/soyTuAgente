@@ -1,0 +1,222 @@
+<!--web/src/app/pages/nosotros/nosotros.page.html-->
+<!-- SECCIÓN SPACE -->
+<div class="space"> </div>
+
+<section class="about-hero">
+  <div class="wrap">
+    <!-- Bloque de texto -->
+    <div class="copy">
+      <h1 class="title">
+        Tu carrera como <span class="accent">agentes de seguros</span>,<br> impulsada al máximo
+      </h1>
+
+      <!-- Lede + prueba social en la misma línea -->
+      <div class="lede-row">
+        <p class="lead">
+          Un espacio gratuito de formación y acompañamiento que te prepara para
+          certificarte, crecer y como el mejor agente de seguros
+        </p>
+
+        <div class="proof">
+          <img class="avatars" src="assets/nosotros/avatars.png" alt="Agentes" />
+          <div class="caption">
+            <strong>+50 Agentes capacitados</strong>
+            <span>confían en <b>Soy tu Agente</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Imagen grande debajo, ocupando el ancho del contenedor -->
+    <figure class="hero-image">
+      <img src="assets/nosotros/hero.jpg" alt="Formación para agentes" />
+    </figure>
+  </div>
+</section>
+
+<!-- SECCIÓN SPACE -->
+<div class="space"> </div>
+
+<section class="about-benefits">
+  <div class="wrap">
+    <h2 class="title">
+      Mucho más que formación y actualizaciones,
+      <span class="accent">creamos un espacio diseñado para tu crecimiento profesional</span>
+    </h2>
+
+    <p class="lede">
+      Cada agente enfrenta retos distintos, pero todos comparten el deseo de superarse. En Soy Tu Agente encuentras el
+      acompañamiento gratuito y especializado que transforma esos retos en aprendizajes y tus metas en logros profesionales.
+    </p>
+
+    <div class="features-row">
+      <figure class="thumb">
+        <!-- Ajusta el archivo a tu imagen real -->
+        <img src="assets/nosotros/agentesaprendiendo.png" alt="Agentes en formación" />
+      </figure>
+
+      <ul class="checks">
+        <li>Formación gratuita</li>
+        <li>Preparación para tu certificación</li>
+        <li>Actualización continua</li>
+      </ul>
+
+      <ul class="checks">
+        <li>Mentores expertos</li>
+        <li>Aprendizaje presencial y online</li>
+        <li>Comunidad de agentes expertos</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN SPACE -->
+<div class="space"> </div>
+
+<!-- SECCIÓN 3: Cards de acción -->
+<section class="about-actions">
+  <div class="wrap">
+
+    <!-- Cabecera de sección -->
+    <div class="section-head">
+      <h2 class="h2">
+        Una sola acción que puede cambiar
+        <span class="accent">tu futuro</span>
+      </h2>
+
+      <a class="pill-cta" routerLink="/unirme">
+        Unirme a Soy tu Agente
+      </a>
+    </div>
+
+    <!-- Tarjetas -->
+    <div class="cards">
+      <!-- Card izquierda -->
+      <article class="card">
+        <div class="media" style="background-image:url('/assets/nosotros/card-formacion.jpg');"></div>
+        <!-- Degradado: abajo -> arriba (detrás de los textos) -->
+        <div class="shade"></div>
+
+        <div class="content">
+          <h3 class="title">
+            Formación<br />
+            para nuevos agentes
+          </h3>
+
+          <a class="btn-ghost" routerLink="/formacion" aria-label="Comenzar mi formación">
+            <span>Comenzar mi formación</span>
+            <svg class="arr" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" fill="currentColor"/>
+            </svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- Card derecha -->
+      <article class="card">
+        <div class="media" style="background-image:url('/assets/nosotros/card-actualizaciones.jpg');"></div>
+        <!-- Degradado: abajo -> arriba (detrás de los textos) -->
+        <div class="shade"></div>
+
+        <div class="content">
+          <h3 class="title">
+            Actualizaciones<br />
+            para agentes certificados
+          </h3>
+
+          <a class="btn-ghost" routerLink="/solicitar-agente" aria-label="Actualizarme con certificaciones">
+            <span>Actualizarme con certificaciones</span>
+            <svg class="arr" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" fill="currentColor"/>
+            </svg>
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <!-- Bloque de textos debajo de las imágenes -->
+    <div class="below">
+      <h3 class="below-title">
+        Desarrollo de la mano<br />
+        <span class="accent">de los mejores expertos</span>
+      </h3>
+
+      <p class="below-text">
+        Sabemos que la calidad de la formación depende de quienes la imparten.
+        Por eso, contamos con un equipo rotativo de expertos y especialistas.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECCIÓN SPACE -->
+<div class="space"> </div>
+
+
+<!-- SECCIÓN 4: Preguntas frecuentes -->
+<section class="about-faq">
+  <div class="wrap">
+    <h2 class="h2">
+      Lo que más preguntan
+      <span class="accent">los agentes que se unen</span>
+      a nosotros
+    </h2>
+
+    <div class="faqs" role="list">
+      <!-- FAQ 1 -->
+      <details class="qa" role="listitem">
+        <summary>
+          <span>¿Por qué el servicio de formación de Soy tu Agente es gratuito?</span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" fill="currentColor"/>
+          </svg>
+        </summary>
+        <div class="answer">
+          <p>
+            Ofrecemos formación gratuita porque creemos que elevar el nivel de los agentes
+            beneficia a todo el ecosistema. Los costos se cubren con alianzas estratégicas
+            y programas internos de apoyo. Así, puedes enfocarte en aprender sin preocuparte
+            por cuotas iniciales.
+          </p>
+        </div>
+      </details>
+
+      <!-- FAQ 2 -->
+      <details class="qa" role="listitem">
+        <summary>
+          <span>¿Puedo iniciar aunque no tenga experiencia previa en seguros?</span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" fill="currentColor"/>
+          </svg>
+        </summary>
+        <div class="answer">
+          <p>
+            ¡Claro! La ruta de inicio está pensada para principiantes. Empezarás con fundamentos,
+            buenas prácticas y ejercicios guiados para que aprendas paso a paso hasta sentirte
+            cómodo atendiendo a tus clientes.
+          </p>
+        </div>
+      </details>
+
+      <!-- FAQ 3 -->
+      <details class="qa" role="listitem">
+        <summary>
+          <span>¿Qué beneficios tengo al formar parte de Soy tu Agente?</span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" fill="currentColor"/>
+          </svg>
+        </summary>
+        <div class="answer">
+          <p>
+            Acceso a mentores, materiales actualizados, certificaciones, comunidad de agentes
+            y herramientas de apoyo comercial. Además, contenido exclusivo y sesiones de
+            actualización para mantenerte competitivo.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+<!-- SECCIÓN SPACE -->
+<div class="space"> </div>

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "types": ["node", "reflect-metadata"],
+
+   
+    "composite": false,
+    "declaration": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "jest.config.ts",
+    "src/test-setup.ts",
+    "src/**/*.spec.ts"
+  ]
+}

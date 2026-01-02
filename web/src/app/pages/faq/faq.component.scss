@@ -1,0 +1,83 @@
+:host {
+  display: block;
+  padding: 3rem 1.5rem;
+  background: #fff;
+}
+
+.faq-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* HERO */
+.faq-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #5f6978;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+}
+
+/* SECCIONES */
+.faq-section {
+  margin-bottom: 3rem;
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ACORDEONES */
+details {
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+details:hover {
+  border-color: #18b368;
+}
+
+details[open] {
+  background: #ffffff;
+  border-color: #18b368;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+summary {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111;
+  outline: none;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+details p {
+  margin-top: 0.6rem;
+  color: #5f6978;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}

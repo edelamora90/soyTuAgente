@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "types": ["node"],
+    "lib": ["ES2021"]
+  },
+  "include": ["src/**/*.ts", "../src/app/app.module.ts"],
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
+}

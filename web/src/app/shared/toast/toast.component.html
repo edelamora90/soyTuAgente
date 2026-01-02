@@ -1,0 +1,7 @@
+<div class="toast-wrapper" *ngIf="toast">
+  <div class="toast-card" [class.success]="toast.type === 'success'"
+                          [class.error]="toast.type === 'error'"
+                          [class.info]="toast.type === 'info'">
+    {{ toast.message }}
+  </div>
+</div>

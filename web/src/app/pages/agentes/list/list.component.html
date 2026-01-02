@@ -1,0 +1,156 @@
+<section class="ag-list">
+  <div class="container">
+
+    <!-- Cabecera -->
+    <header class="list-head">
+      <h1>
+        Estos agentes son perfectos
+        <br />
+        <span class="muted">para el </span>
+        <span class="grad">tipo de seguro que estás buscando</span>
+      </h1>
+
+      <p class="lead">
+        Tu seguro ideal empieza con la persona adecuada. Explora los perfiles de agentes de seguros
+        verificados según tu tipo de cobertura y contacta directamente con el que más te guste.
+      </p>
+    </header>
+
+    <!-- Filtros -->
+<div class="filters">
+
+  <div class="field">
+    <span>Tipo de seguro</span>
+
+    <select
+      [value]="tipo() ?? ''"
+      (change)="tipo.set($any($event.target).value || null); applyFilters()"
+    >
+      <option value="">Todos</option>
+
+      <option
+        *ngFor="let esp of ESPECIALIDADES"
+        [value]="esp.key"
+      >
+        {{ esp.label }}
+      </option>
+    </select>
+  </div>
+
+  <div class="field grow">
+    <span>Buscar</span>
+
+    <div class="search">
+      <input
+        type="search"
+        placeholder="Nombre, ciudad, palabra clave…"
+        [value]="q()"
+        (input)="q.set($any($event.target).value)"
+      />
+      <button class="btn-primary" type="button" (click)="applyFilters()">
+        Buscar a mi agente
+      </button>
+    </div>
+  </div>
+
+</div>
+
+    <!-- Estado de carga -->
+    <div class="skeleton" *ngIf="loading()">
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+    </div>
+
+    <!-- Lista de agentes -->
+    <div class="cards" *ngIf="!loading() && items().length">
+      <article class="card" *ngFor="let a of items(); trackBy: trackBySlug">
+        <img class="avatar" [src]="a.avatar" [alt]="a.nombre" />
+
+        <div class="info">
+          <div class="title-row">
+            <h3 class="name">
+              {{ a.nombre }}
+                    
+  <span *ngIf="a.verificado" class="ap-verified" title="Verificado">
+  <img src="assets/icons/Verificado.svg" alt="Verificado" />
+</span>
+
+            </h3>
+          </div>
+
+          <div class="meta">
+            <span class="loc">{{ a.ubicacion }}</span>
+          </div>
+
+          
+<!-- Especialidades -->
+<div class="ap-spec" *ngIf="a.especialidades?.length">
+  <div class="label">Especialista en seguros:</div>
+
+  <ul class="chips">
+    <li class="chip" *ngFor="let s of a.especialidades">
+      <ng-container *ngIf="getEspecialidadMeta(s) as meta">
+        <img class="chip-icon" [src]="meta.icon" [alt]="meta.label" />
+        <span>{{ meta.label }}</span>
+      </ng-container>
+    </li>
+  </ul>
+</div>
+
+
+
+        </div>
+
+        <!-- Footer de la tarjeta -->
+        <div class="card-foot">
+          <!-- Redes (si hay) -->
+          <div class="social" *ngIf="a.redes?.length">
+            <a
+              class="soc"
+              *ngFor="let r of a.redes"
+              [href]="r.url"
+              target="_blank"
+              rel="noopener"
+              [attr.aria-label]="r.icon">
+              <img [src]="r.icon" alt="" />
+            </a>
+          </div>
+
+          <!-- Botones -->
+          <div class="actions">
+            <a class="btn-ghost" [routerLink]="['/agente', a.slug]">
+              Ver perfil de agente
+            </a>
+
+            <!-- Contenedor inline para Llamar + WhatsApp (alineados horizontalmente) -->
+            <div class="cta-inline">
+
+              <a
+                class="btn-contact"
+                [href]="a.whatsapp ? 'https://wa.me/' + a.whatsapp : null"
+                [attr.target]="a.whatsapp ? '_blank' : null"
+                [class.disabled]="!a.whatsapp">
+                <img src="assets/icons/whatsapp.svg" alt="" class="icon-whatsapp" />
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Sin resultados -->
+    <div class="empty" *ngIf="!loading() && !items().length">
+      <p>No encontramos agentes con esos filtros. Prueba cambiando el tipo o la búsqueda.</p>
+    </div>
+
+    <!-- Paginación -->
+    <nav class="pager" *ngIf="total() > pageSize()">
+      <button (click)="goPage(page()-1)" [disabled]="page() <= 1">Anterior</button>
+      <span>página <b>{{ page() }}</b> de <b>{{ totalPages() }}</b></span>
+      <button (click)="goPage(page()+1)" [disabled]="page() >= totalPages()">Siguiente</button>
+    </nav>
+
+  </div>
+</section>

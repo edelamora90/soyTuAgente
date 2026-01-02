@@ -1,0 +1,204 @@
+<section class="wrap admin">
+  <div class="container">
+    <h1>Solicitud para unirte como Agente</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="grid">
+
+        <!-- =================== FOTO DE PERFIL (idéntico admin) =================== -->
+        <div class="form-group full">
+          <span>Foto de perfil</span>
+
+          <div
+            class="dz dz--big"
+            [class.dragover]="dragOverAvatar()"
+            (dragover)="onDragOver('avatar', $event)"
+            (dragleave)="onDragLeave('avatar')"
+            (drop)="onAvatarDrop($event)"
+          >
+            <input type="file" accept="image/*" (change)="onAvatarSelect($event)" />
+            <ng-container *ngIf="avatarPreview(); else dzAvatarText">
+              <img [src]="avatarPreview()!" alt="Vista previa" />
+            </ng-container>
+            <ng-template #dzAvatarText>
+              <div class="placeholder">
+                <div class="dz-title">Arrastra tu foto aquí</div>
+                <div class="dz-sub">o haz click para seleccionarla</div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- =================== NOMBRE / CÉDULA / WHATSAPP =================== -->
+        <label class="form-group">
+          <span>Nombre</span>
+          <input type="text" formControlName="nombre" placeholder="Nombre del agente" />
+        </label>
+
+        <label class="form-group">
+          <span>Cédula</span>
+          <input type="text" formControlName="cedula" placeholder="Cédula del agente" />
+        </label>
+
+        <label class="form-group">
+          <span>WhatsApp</span>
+          <input type="text" formControlName="whatsapp" placeholder="5213121234567" inputmode="numeric" />
+        </label>
+
+        <!-- =================== ESTADOS / MUNICIPIOS (MULTI) =================== -->
+        <div class="form-group">
+          <span>Estados</span>
+          <app-multi-check
+            formControlName="estados"
+            [options]="estadosCat"
+            labelKey="name"
+            valueKey="name"
+            placeholder="Selecciona uno o varios estados">
+          </app-multi-check>
+          <small class="hint">Puedes seleccionar varios.</small>
+        </div>
+
+        <div class="form-group">
+          <span>Municipios</span>
+          <app-multi-check
+            formControlName="municipios"
+            [options]="allMunicipios"
+            [loading]="loadingMun()"
+            placeholder="Selecciona municipios">
+          </app-multi-check>
+
+          <small *ngIf="loadingMun()" class="hint">Cargando municipios…</small>
+          <small *ngIf="!loadingMun() && allMunicipios.length === 0" class="hint">
+            Selecciona estados primero.
+          </small>
+        </div>
+
+        <!-- =================== ESPECIALIDADES =================== -->
+<div class="form-group full">
+  <span>Especialidades</span>
+
+  <div class="chip-group">
+    <label
+      class="chip"
+      *ngFor="let esp of ESPECIALIDADES"
+    >
+      <input
+        type="checkbox"
+        [checked]="has('especialidades', esp.key)"
+        (change)="toggleFromEvent('especialidades', esp.key, $event)"
+      />
+
+      <img
+        *ngIf="esp.icon"
+        [src]="esp.icon"
+        class="chip-icon"
+        alt=""
+      />
+
+      {{ esp.label }}
+    </label>
+  </div>
+
+  <small class="hint">Puedes seleccionar varias.</small>
+</div>
+
+        <!-- =================== GALERÍA (máx. 3) =================== -->
+        <div class="form-group full">
+          <span>Galería</span>
+
+          <div
+            class="dz dz--big"
+            [class.dragover]="dragOverGallery()"
+            (dragover)="onDragOver('gallery', $event)"
+            (dragleave)="onDragLeave('gallery')"
+            (drop)="onGalleryDrop($event)"
+          >
+            <input type="file" accept="image/*" multiple (change)="onGallerySelect($event)" />
+            <div class="placeholder" *ngIf="!galleryPreviews().length">
+              <div class="dz-title">Arrastra tus imágenes aquí</div>
+              <div class="dz-sub">o haz click para seleccionarlas</div>
+              <div class="dz-note">(máximo 3)</div>
+            </div>
+            <div class="previews" *ngIf="galleryPreviews().length">
+              <div class="preview" *ngFor="let src of galleryPreviews(); let i = index">
+                <img [src]="src" alt="thumb" />
+                <button type="button" class="remove-btn" (click)="removeGalleryItem(i)" aria-label="Quitar imagen">×</button>
+              </div>
+            </div>
+          </div>
+
+          <small class="hint">Se guardarán hasta 3 URLs en <code>mediaThumbs</code>.</small>
+        </div>
+
+        <!-- =================== EXPERIENCIA =================== -->
+        <label class="form-group full">
+          <span>Experiencia (máx. 250 caracteres)</span>
+          <textarea rows="3" formControlName="experienciaText" maxlength="250" placeholder="Ej. +5 años ayudando a familias y empresas."></textarea>
+        </label>
+
+        <!-- =================== CERTIFICACIONES / ASEGURADORAS ===================
+        <div class="form-group full">
+          <span>Certificaciones</span>
+          <div class="chip-group">
+            <label class="chip" *ngFor="let c of CERTS">
+              <input type="checkbox" [checked]="has('certificaciones', c)" (change)="toggleFromEvent('certificaciones', c, $event)" />
+              {{ c }}
+            </label>
+          </div>
+        </div> -->
+
+        <div class="form-group full">
+          <span>Aseguradoras</span>
+          <div class="chip-group">
+            <label class="chip" *ngFor="let a of CARRIERS">
+              <input type="checkbox" [checked]="has('aseguradoras', a)" (change)="toggleFromEvent('aseguradoras', a, $event)" />
+              {{ a }}
+            </label>
+          </div>
+        </div>
+
+        <!-- =================== REDES SOCIALES (idéntico admin) =================== -->
+        <div class="form-group full">
+          <div class="field-title">Redes sociales</div>
+          <div class="socials">
+            <div class="social" *ngFor="let s of SOCIALS">
+              <label class="row chk">
+                <input
+                  type="checkbox"
+                  [checked]="isSocialEnabled(s.key)"
+                  (change)="setSocialEnabled(s.key, $any($event.target).checked)"
+                />
+                <img [src]="s.icon" alt="" />
+                <span>{{ s.label }}</span>
+              </label>
+
+              <div class="social-input" *ngIf="isSocialEnabled(s.key)">
+                <span class="base">{{ s.base }}</span>
+                <input
+                  type="text"
+                  [value]="getSocialUsername(s.key)"
+                  (input)="setSocialUsername(s.key, $any($event.target).value)"
+                  placeholder="usuario"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <div class="left">
+          <span class="error" *ngIf="errorMsg()">{{ errorMsg() }}</span>
+          <span class="ok" *ngIf="ok()">¡Solicitud enviada!</span>
+        </div>
+        <div class="right">
+          <button class="btn-primary" type="submit" [disabled]="form.invalid || sending()">
+            {{ sending() ? 'Enviando…' : 'Enviar solicitud' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

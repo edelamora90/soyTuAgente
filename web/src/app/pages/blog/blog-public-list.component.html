@@ -1,0 +1,146 @@
+<!-- ==========================================================================
+     BLOG PUBLIC LIST
+     ========================================================================== -->
+
+<section class="blog-page">
+
+  <!-- ===========================
+       ENCABEZADO
+       =========================== -->
+  <header class="page-header">
+    <h1>Blog</h1>
+    <p class="subtitle">
+      Artículos, guías y contenidos pensados para agentes que buscan crecer y profesionalizarse.
+    </p>
+  </header>
+
+  <!-- ===========================
+       ESTADOS GLOBALES
+       =========================== -->
+  <div *ngIf="loading" class="state state-loading">
+    Cargando artículos…
+  </div>
+
+  <div *ngIf="error" class="state state-error">
+    {{ error }}
+  </div>
+
+  <!-- ===========================
+       CONTENIDO
+       =========================== -->
+  <ng-container *ngIf="!loading && !error">
+
+    <!-- ============================================================
+         POST DESTACADO
+         ============================================================ -->
+    <section *ngIf="featured" class="featured-wrapper">
+
+      <article class="blog-hero-card">
+
+        <!-- Imagen -->
+        <div
+          class="hero-image"
+          [style.backgroundImage]="
+            featured.coverImg ? 'url(' + featured.coverImg + ')' : ''
+          "
+        ></div>
+
+        <!-- Contenido -->
+        <div class="hero-info">
+
+          <span class="hero-kicker">
+            Artículo destacado
+          </span>
+
+          <h2 class="hero-title">
+            {{ featured.title }}
+          </h2>
+
+          <p class="hero-meta">
+            {{ featured.publishedAt || featured.createdAt | date:'longDate' }}
+            • {{ featured.readMinutes || 1 }} min lectura
+          </p>
+
+          <p class="hero-description" *ngIf="featured.excerpt">
+            {{ featured.excerpt }}
+          </p>
+
+          <a
+            class="hero-cta"
+            [routerLink]="['/blog', featured.slug]"
+          >
+            Leer artículo
+          </a>
+
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ============================================================
+         LISTA DE POSTS
+         ============================================================ -->
+    <section class="list-wrapper" [class.with-featured]="featured">
+
+      <h2 class="section-title" *ngIf="otherPosts.length">
+        Más artículos
+      </h2>
+
+      <div class="posts-grid">
+
+        <!-- Tarjeta -->
+        <article *ngFor="let post of otherPosts" class="post-card">
+
+          <div
+            class="cover"
+            [style.backgroundImage]="
+              post.coverImg ? 'url(' + post.coverImg + ')' : 'none'
+            "
+          ></div>
+
+          <div class="content">
+
+            <p class="date">
+              {{ post.publishedAt || post.createdAt | date:'mediumDate' }}
+            </p>
+
+            <h3>
+              {{ post.title }}
+            </h3>
+
+            <p class="excerpt" *ngIf="post.excerpt">
+              {{ post.excerpt }}
+            </p>
+
+            <a
+              class="btn"
+              [routerLink]="['/blog', post.slug]"
+            >
+              Leer más
+            </a>
+
+          </div>
+        </article>
+
+        <!-- Estado vacío -->
+        <div
+          *ngIf="!featured && otherPosts.length === 0"
+          class="empty-state"
+        >
+          Aún no hay artículos publicados.
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Estado vacío global -->
+    <div
+      *ngIf="featured === null && otherPosts.length === 0"
+      class="empty-state global-empty"
+    >
+      El blog aún no tiene contenido publicado. Vuelve pronto.
+    </div>
+
+  </ng-container>
+
+</section>

@@ -1,0 +1,25 @@
+{
+  "name": "api",
+  "projectType": "application",
+  "sourceRoot": "api/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/api",
+        "main": "api/src/main.ts",
+        "tsConfig": "api/tsconfig.build.json",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api:build",
+        "watch": true
+      }
+    }
+  },
+  "tags": []
+}

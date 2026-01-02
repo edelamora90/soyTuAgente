@@ -1,0 +1,276 @@
+<!-- ===============================================================
+     LOADING
+================================================================ -->
+<div *ngIf="loading" class="loading-state">
+  Cargando evento...
+</div>
+
+<!-- ===============================================================
+     ERROR
+================================================================ -->
+<div *ngIf="error" class="error-state">
+  {{ error }}
+</div>
+
+<!-- ===============================================================
+     EVENTO – VISTA PRINCIPAL PREMIUM
+================================================================ -->
+<section *ngIf="event" class="event-wrapper">
+
+  <!-- ===============================================================
+       HERO PREMIUM
+  ================================================================== -->
+  <div class="hero">
+
+    <!-- Imagen de portada -->
+    <ng-container>
+      <img
+        *ngIf="event.coverImg; else noCover"
+        class="hero-img"
+        [src]="event.coverImg"
+        alt="Portada del evento"
+        (error)="event.coverImg = null"
+      />
+
+      <ng-template #noCover>
+        <div class="hero-fallback generic-banner">
+          <div class="generic-light"></div>
+          <div class="generic-light-2"></div>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <!-- Tarjeta flotante -->
+    <div class="hero-card glass">
+      <span class="status-pill" [ngClass]="event.status">
+        {{ getStatusLabel(event.status) }}
+      </span>
+
+      <h1 class="event-title">{{ event.title }}</h1>
+
+      <p class="event-meta">
+        {{ event.startDate | date:'longDate' }}
+        <span *ngIf="event.startTime"> • {{ event.startTime }}</span>
+        <br />
+        {{ event.type }} • {{ event.mode }}
+      </p>
+
+      <!-- CTA PRINCIPAL -->
+      <a
+        *ngIf="event.registrationUrl"
+        class="cta-primary"
+        [href]="event.registrationUrl"
+        target="_blank"
+      >
+        {{ (event.mode === 'ONLINE' || event.type === 'WEBINAR')
+            ? 'Unirme a la sala'
+            : 'Registrarme ahora'
+        }}
+      </a>
+    </div>
+  </div>
+
+  <!-- ===============================================================
+       BODY – SECCIONES
+  ================================================================== -->
+  <div class="page-content">
+
+    <!-- =============================================================
+         About
+    ============================================================= -->
+    <section class="block about">
+      <h2>Acerca del evento</h2>
+      <p class="description">{{ event.description }}</p>
+    </section>
+
+    <!-- =============================================================
+         INFO CARD (Tipo Airbnb)
+    ============================================================= -->
+    <aside class="info-card glass">
+      <h3>Información general</h3>
+
+      <ul class="info-list">
+        <li>
+          <span>📅 Fecha</span>
+          <strong>{{ event.startDate | date:'mediumDate' }}</strong>
+        </li>
+
+        <li>
+          <span>⏱ Horario</span>
+          <strong>
+            {{ event.startTime }}
+            <span *ngIf="event.endTime">– {{ event.endTime }}</span>
+          </strong>
+        </li>
+
+        <li *ngIf="event.address">
+          <span>📍 Ubicación</span>
+          <strong>{{ event.address }}</strong>
+        </li>
+
+        <!-- =========================================================
+             Sala virtual integrada
+        ========================================================== -->
+        <li *ngIf="event.registrationUrl && (event.mode === 'ONLINE' || event.type === 'WEBINAR')">
+          <span>💻 Sala virtual</span>
+          <a [href]="event.registrationUrl" target="_blank">
+            Abrir sala →
+          </a>
+        </li>
+
+        <li>
+          <span>🎟 Precio</span>
+          <strong *ngIf="event.isFree">Gratuito</strong>
+          <strong *ngIf="!event.isFree">${{ event.price }}</strong>
+        </li>
+
+        <li *ngIf="event.capacity">
+          <span>👥 Capacidad</span>
+          <strong>{{ event.capacity }} personas</strong>
+        </li>
+
+        <li *ngIf="event.whatsapp">
+          <span>💬 WhatsApp</span>
+          <a
+            class="wa"
+            [href]="'https://wa.me/' + event.whatsapp"
+            target="_blank"
+          >
+            {{ event.whatsapp }}
+          </a>
+        </li>
+      </ul>
+
+      <!-- CTA secundaria -->
+      <a
+        *ngIf="event.registrationUrl"
+        class="cta-secondary"
+        [href]="event.registrationUrl"
+        target="_blank"
+      >
+        {{ (event.mode === 'ONLINE' || event.type === 'WEBINAR')
+            ? 'Unirme a la sala'
+            : 'Ir al registro →'
+        }}
+      </a>
+    </aside>
+
+    <!-- =============================================================
+         Ponente
+    ============================================================= -->
+    <section *ngIf="event.speakerName" class="block speaker">
+      <h2>Ponente</h2>
+
+      <div class="speaker-box">
+        <ng-container>
+          <img
+            *ngIf="event.speakerAvatar; else noAvatar"
+            class="speaker-photo"
+            [src]="event.speakerAvatar"
+            alt="Foto del ponente"
+          />
+
+          <ng-template #noAvatar>
+            <div class="speaker-photo placeholder">
+              <img src="/assets/avatar.svg" alt="Avatar genérico" />
+            </div>
+          </ng-template>
+        </ng-container>
+
+        <div>
+          <h3 class="speaker-name">{{ event.speakerName }}</h3>
+          <p class="speaker-role">{{ event.speakerRole }}</p>
+        </div>
+      </div>
+
+      <p *ngIf="event.speakerBio" class="speaker-bio">
+        {{ event.speakerBio }}
+      </p>
+    </section>
+
+    <!-- =============================================================
+         CTA Final + Compartir + Soporte
+    ============================================================= -->
+    <div class="extra-info-grid">
+
+      <!-- BLOQUE: COMPARTIR -->
+      <div class="info-card">
+        <h3>Compartir este evento</h3>
+
+        <div class="share-buttons">
+
+          <!-- WhatsApp -->
+          <button class="share-btn" (click)="shareWhatsApp()">
+            <span class="share-icon whatsapp">
+              <img src="/assets/icons/whatsapp.svg" alt="WhatsApp" />
+            </span>
+            <span class="share-label">WhatsApp</span>
+          </button>
+
+          <!-- Copiar enlace -->
+          <button class="share-btn" (click)="copyLink()">
+            <span class="share-icon copy">
+              <img src="/assets/icons/copy.png" alt="Copiar enlace" />
+            </span>
+            <span class="share-label">Copiar enlace</span>
+          </button>
+
+          <!-- Facebook -->
+          <button class="share-btn" (click)="shareFacebook()">
+            <span class="share-icon facebook">
+              <img src="/assets/icons/fb-white.svg" alt="Facebook" />
+            </span>
+            <span class="share-label">Facebook</span>
+          </button>
+
+          <!-- LinkedIn -->
+          <button class="share-btn" (click)="shareLinkedIn()">
+            <span class="share-icon linkedin">
+              <img src="/assets/icons/linkedin.svg" alt="LinkedIn" />
+            </span>
+            <span class="share-label">LinkedIn</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- BLOQUE: CONTACTO -->
+      <div class="info-card help-card">
+
+        <h2 class="card-title">¿Necesitas ayuda?</h2>
+
+        <p class="help-text">
+          Si tienes dudas sobre este evento, nuestro equipo puede ayudarte:
+        </p>
+
+        <div class="help-item">
+          <span class="icon">
+            <img src="/assets/icons/enviar.svg" alt="Correo" />
+          </span>
+          <div class="help-content">
+            <span class="label">Correo:</span>
+            <a href="mailto:contacto@soytuagente.com">
+              contacto@soytuagente.com
+            </a>
+          </div>
+        </div>
+
+        <div class="help-item">
+          <span class="icon">
+            <img src="/assets/icons/clock.svg" alt="Horario" />
+          </span>
+          <div class="help-content">
+            <span class="label">Horario:</span>
+            <p>Lunes a Viernes, 9am – 6pm</p>
+          </div>
+        </div>
+
+        <a routerLink="/eventos" class="back-link">
+          ← Volver a eventos
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</section>

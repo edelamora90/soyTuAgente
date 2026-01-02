@@ -1,0 +1,198 @@
+<section class="blog-editor-page">
+
+  <!-- ===========================
+       ENCABEZADO
+       =========================== -->
+  <header class="editor-header">
+    <div>
+      <h1>{{ isEdit ? 'Editar artículo' : 'Nuevo artículo' }}</h1>
+      <p class="subtitle">Redacta y gestiona el contenido del blog.</p>
+    </div>
+  </header>
+
+  <!-- ===========================
+       ESTADOS
+       =========================== -->
+  <div *ngIf="loading" class="state state-loading">
+    Guardando artículo…
+  </div>
+
+  <div *ngIf="error" class="state state-error">
+    {{ error }}
+  </div>
+
+  <!-- ===========================
+       FORMULARIO
+       =========================== -->
+  <form *ngIf="!loading" [formGroup]="form" class="editor-form">
+
+    <!-- =======================
+         TÍTULO
+         ======================= -->
+    <div class="form-group">
+      <label>Título *</label>
+      <input
+        type="text"
+        formControlName="title"
+        placeholder="Título del artículo"
+      />
+    </div>
+
+    <!-- =======================
+         EXCERPT
+         ======================= -->
+    <div class="form-group">
+      <label>Resumen</label>
+      <textarea
+        rows="3"
+        formControlName="excerpt"
+        placeholder="Resumen corto del artículo (opcional)"
+      ></textarea>
+    </div>
+
+    <!-- =======================
+         CONTENIDO
+         ======================= -->
+    <div class="form-group">
+      <label>Contenido *</label>
+
+      <app-tiptap-editor
+        [content]="form.get('contentHtml')?.value"
+        (contentChange)="onEditorChange($event)">
+      </app-tiptap-editor>
+    </div>
+
+    <!-- ============================================================
+         PORTADA DEL BLOG (MISMO PATRÓN QUE EVENTOS)
+         ============================================================ -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Portada del artículo</h2>
+        <p class="card-subtitle">
+          Imagen principal del artículo (listados y detalle).
+        </p>
+      </div>
+
+      <div class="card-body">
+        <div class="image-field">
+
+          <p class="field-hint">
+            Recomendado: <strong>1280 × 720 px</strong> (16:9)
+          </p>
+
+          <app-image-dropzone
+            [cantImage]="1"
+            [initialUrls]="coverPreview ? [coverPreview] : []"
+            (fileUploaded)="onCoverFile($event)"
+            (fileRemoved)="onCoverRemoved($event)">
+          </app-image-dropzone>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         GALERÍA DEL BLOG (MISMO DROPZONE, MÚLTIPLES)
+         ============================================================ -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Galería del artículo</h2>
+        <p class="card-subtitle">
+          Imágenes que se mostrarán dentro del artículo.
+        </p>
+      </div>
+
+      <div class="card-body">
+        <div class="image-field">
+
+          <p class="field-hint">
+            Recomendado: <strong>1280 × 720 px</strong> (16:9)
+          </p>
+
+          <app-image-dropzone
+            [cantImage]="10"
+            [initialUrls]="galleryPreviews"
+            (filesUploaded)="onGalleryFiles($event)"
+            (fileRemoved)="onGalleryRemoved($event)">
+          </app-image-dropzone>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================
+         METADATA
+         ======================= -->
+    <div class="form-grid two">
+
+      <div class="form-group">
+        <label>Autor *</label>
+        <input
+          type="text"
+          formControlName="author"
+          placeholder="Nombre del autor"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Fecha de publicación</label>
+        <input
+          type="datetime-local"
+          formControlName="publishedAt"
+        />
+      </div>
+
+    </div>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Publicación</h2>
+        <p class="card-subtitle">
+          Define si el post se destacará al momento de publicarse.
+        </p>
+      </div>
+
+  <div class="card-body">
+
+    <!-- Destacado -->
+    <label class="toggle">
+      <input type="checkbox" formControlName="isFeatured" />
+      <span class="toggle-label">
+        Destacado (aparece en secciones especiales)
+      </span>
+    </label>
+
+    <p class="hint">
+      • Un post <strong>solo puede ser destacado cuando se publica</strong>.<br />
+      • Si lo guardas como borrador, esta opción se ignorará automáticamente.
+    </p>
+
+  </div>
+</section>
+
+    <!-- ===========================
+         ACCIONES
+         =========================== -->
+    <footer class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="saveDraft()"
+        [disabled]="loading">
+        Guardar borrador
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="publish()"
+        [disabled]="loading">
+        Publicar
+      </button>
+    </footer>
+
+  </form>
+</section>

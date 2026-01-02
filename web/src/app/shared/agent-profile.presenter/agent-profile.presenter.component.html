@@ -1,0 +1,153 @@
+<!-- web/src/app/shared/agent-profile.presenter/agent-profile.presenter.component.html -->
+<section class="ap container profile" *ngIf="!loading && agent as a; else skeleton">
+  <section class="ap-card">
+    <!-- Col 1: Avatar -->
+    <div class="ap-avatar">
+      <img
+      [src]="toPublicUrl(a?.avatar || a?.mediaHero) || AVATAR_FALLBACK"
+      (error)="onImgError($event)"
+      alt="Agente"
+    />
+
+    </div>
+
+    <!-- Col 2: Información general -->
+    <div class="ap-info">
+      <h1 class="ap-name">
+        {{ a.nombre }}
+         <span *ngIf="a.verificado" class="ap-verified" title="Verificado">
+  <img src="assets/icons/Verificado.svg" alt="Verificado" />
+</span>
+
+      </h1>
+
+      <div class="ap-id" *ngIf="a.cedula"><strong>Cédula:</strong> {{ a.cedula }}</div>
+
+      <div class="ap-meta" *ngIf="locations.length; else noLocs">
+        <div class="label"><strong>Ubicaciones:</strong></div>
+        <div class="loc" *ngFor="let l of locations; trackBy: trackByIndex">{{ l }}</div>
+      </div>
+      <ng-template #noLocs>
+        <div class="ap-meta"><div class="loc">Ubicación no especificada</div></div>
+      </ng-template>
+
+     <div class="ap-spec" *ngIf="a.especialidades?.length">
+  <div class="label">Especialista en seguros:</div>
+
+  <ul class="cols">
+    <li *ngFor="let s of a.especialidades">
+      <ng-container *ngIf="getEspecialidadMeta(s) as meta">
+        <img
+          class="spec-ico"
+          [src]="meta.icon"
+          [alt]="meta.label"
+        />
+        <span>{{ meta.label }}</span>
+      </ng-container>
+    </li>
+  </ul>
+</div>
+
+
+    </div>
+
+    <!-- Redes Sociales -->
+    <div class="ap-social" *ngIf="a.redes?.length">
+      <a *ngFor="let r of a.redes" [href]="r.url" target="_blank" rel="noopener">
+        <img [src]="toPublicUrl(r.icon)" alt="" />
+      </a>
+    </div>
+
+    <!-- Botones CTA superiores -->
+    <div class="ap-cta ap-cta--top">
+      <a
+        class="ap-btn ap-btn--call"
+        [attr.href]="phoneHref"
+        [class.is-disabled]="!phoneHref"
+        (click)="$event.stopPropagation()"
+      >
+        <span class="label">Llamar al agente</span>
+      </a>
+
+      <button type="button" class="ap-btn ap-btn--wa" (click)="openWhatsApp()">
+        <img src="assets/icons/whatsapp.svg" class="ico" alt="" aria-hidden="true" />
+        <span class="label">Contactar por WhatsApp</span>
+      </button>
+    </div>
+
+    <!-- Galería / Conóceme -->
+    <div class="ap-divider"></div>
+    <div class="ap-gallery" *ngIf="thumbs.length">
+      <h2>Conóceme</h2>
+      <div class="ap-gallery-grid">
+        <img
+          *ngFor="let img of thumbs; trackBy: trackByIndex"
+          [src]="toPublicUrl(img)"
+          (click)="openGallery(img)"
+          alt="Fotos del agente"
+        />
+      </div>
+    </div>
+
+    <!-- Experiencia -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.experiencia?.length">
+      <h2>Experiencia</h2>
+      <p *ngFor="let p of a.experiencia; trackBy: trackByIndex">{{ p }}</p>
+    </div>
+
+
+    <!-- Certificaciones -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.certificaciones?.length">
+      <h2>Certificaciones</h2>
+      <ul class="checks">
+        <li *ngFor="let c of a.certificaciones; trackBy: trackByIndex">
+          <span class="check">✔</span> {{ c }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Aseguradoras -->
+    <div class="ap-divider"></div>
+    <div class="ap-section" *ngIf="a.aseguradoras?.length">
+      <h2>Aseguradoras asociadas</h2>
+      <div class="brands-grid">
+        <div class="brand" *ngFor="let b of a.aseguradoras; trackBy: trackByIndex">
+          <img [src]="toPublicUrl(b)" alt="Aseguradora" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA final centrado -->
+    <div class="ap-divider"></div>
+    <div class="ap-cta ap-cta--footer">
+      <a
+        class="ap-btn ap-btn--call"
+        [attr.href]="phoneHref"
+        [class.is-disabled]="!phoneHref"
+        (click)="$event.stopPropagation()"
+      >
+        <span class="label">Llamar al agente</span>
+      </a>
+
+      <button type="button" class="ap-btn ap-btn--wa" (click)="openWhatsApp()">
+        <img src="assets/icons/whatsapp.svg" class="ico" alt="" aria-hidden="true" />
+        <span class="label">Contactar por WhatsApp</span>
+      </button>
+    </div>
+
+    <!-- Modal Lightbox -->
+    <div *ngIf="showLightbox" class="ap-lightbox" (click)="closeGallery()">
+      <img [src]="toPublicUrl(currentImg || '')" class="ap-lightbox-img" alt="Imagen ampliada" />
+    </div>
+  </section>
+</section>
+
+<ng-template #skeleton>
+  <div class="ap container profile skeleton">
+    <div class="shimmer head"></div>
+    <div class="shimmer row"></div>
+    <div class="shimmer row"></div>
+  </div>
+</ng-template>

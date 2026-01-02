@@ -1,0 +1,268 @@
+<!-- web/src/app/pages/events/events-public-list.component.html -->
+<!-- ==========================================================================
+     EVENTS PUBLIC LIST — DESTACADO + PLANTILLAS A/B
+     ========================================================================== -->
+
+<section class="events-page">
+
+  <!-- ENCABEZADO PRINCIPAL -->
+  <header class="page-header">
+    <h1>Eventos y Certificaciones</h1>
+    <p class="subtitle">
+      Encuentra talleres, webinars y sesiones presenciales diseñados para impulsar tu crecimiento como agente.
+    </p>
+  </header>
+
+  <!-- ESTADOS GLOBALES -->
+  <div *ngIf="loading" class="state state-loading">
+    Cargando eventos...
+  </div>
+
+  <div *ngIf="error" class="state state-error">
+    {{ error }}
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <ng-container *ngIf="!loading && !error">
+
+    <!-- ============================================================
+         HERO DESTACADO (si existe al menos un evento)
+         ============================================================ -->
+    <section *ngIf="featured" class="featured-wrapper">
+
+      <!-- Plantilla A: EVENT (keynote / lanzamiento) -->
+     <!-- ======================
+     HERO DESTACADO → EVENT (Apple News Style)
+     ====================== -->
+<article
+  *ngIf="featured.type === 'EVENT'; else trainingHero"
+  class="event-hero-card"
+>
+  <!-- Columna IZQUIERDA: Imagen -->
+  <div
+    class="hero-image"
+    [style.backgroundImage]="featured.coverImg ? 'url(' + featured.coverImg + ')' : ''"
+  ></div>
+
+  <!-- Columna DERECHA: Contenido -->
+  <div class="hero-info">
+
+    <span class="hero-kicker">
+      {{ getStatusLabel(featured.status) }}
+    </span>
+
+    <h2 class="hero-title">
+      {{ featured.title }}
+    </h2>
+
+    <p class="hero-meta">
+      {{ featured.startDate | date:'longDate' }}
+      <span *ngIf="featured.startTime"> • {{ featured.startTime }}</span>
+      • {{ featured.mode === 'ONLINE' ? 'Online' : 'Presencial' }}
+    </p>
+
+    <p class="hero-description" *ngIf="featured.description">
+      {{ featured.description }}
+    </p>
+
+    <a
+      class="hero-cta"
+      [routerLink]="['/eventos', featured.slug]"
+    >
+      Ver detalles del evento
+    </a>
+
+  </div>
+</article>
+
+
+
+      <!-- Plantilla B: CAPACITACIÓN / CURSO / WEBINAR -->
+      <ng-template #trainingHero>
+        <article class="featured featured-training">
+          <div class="training-media">
+            <div
+              class="training-thumb"
+              [style.backgroundImage]="featured.coverImg ? 'url(' + featured.coverImg + ')' : ''"
+            ></div>
+          </div>
+
+          <div class="training-content">
+           
+            <h2 class="featured-title">
+              {{ featured.title }}
+            </h2>
+            
+            <span class="training-label">
+              {{ featured.type === 'CURSO' ? 'Curso intensivo' :
+                 featured.type === 'WEBINAR' ? 'Webinar en línea' :
+                 'Capacitación para agentes' }}
+            </span>
+
+            <div class="featured-tags">
+              <span class="pill pill-featured">Destacado</span>
+              <span
+                class="pill pill-status"
+                [ngClass]="featured.status"
+              >
+                {{ getStatusLabel(featured.status) }}
+              </span>
+            </div>
+
+            <p class="training-meta">
+              {{ featured.startDate | date:'mediumDate' }}
+              <span *ngIf="featured.startTime"> · {{ featured.startTime }}</span>
+              <span class="dot">•</span>
+              {{ featured.mode === 'ONLINE' ? 'Online en vivo' : 'Sesión presencial' }}
+            </p>
+
+            <div class="training-extra">
+              <div class="training-item" *ngIf="featured.speakerName">
+                <span class="label">Ponente</span>
+                <span class="value">
+                  {{ featured.speakerName }}
+                  <br>
+                  <span *ngIf="featured.speakerRole" class="role">
+                  {{ featured.speakerRole }}
+                  </span>
+                </span>
+              </div>
+
+              <div class="training-item">
+                <span class="label">Formato</span>
+                <span class="value">
+                  {{ featured.type }} <br> {{ featured.mode }}
+                </span>
+              </div>
+
+              <div class="training-item">
+                <span class="label">Precio</span>
+                <span class="value">
+                  <ng-container *ngIf="featured.isFree; else paidPrice">
+                    Gratuito
+                  </ng-container>
+                  <ng-template #paidPrice>
+                    ${{ featured.price || 0 }} MXN
+                  </ng-template>
+                </span>
+              </div>
+            </div>
+
+            <div class="training-actions">
+              <a
+                class="training-cta"
+                [routerLink]="['/eventos', featured.slug]"
+              >
+                Ver detalles y registro
+              </a>
+
+              <span class="training-hint">
+                Cupo limitado · asegura tu lugar
+              </span>
+            </div>
+          </div>
+        </article>
+      </ng-template>
+    </section>
+
+    <!-- ============================================================
+     LISTA DE EVENTOS (resto)
+     ============================================================ -->
+<section class="list-wrapper" [class.with-featured]="featured">
+
+  <!-- 🔍 BARRA DE BÚSQUEDA + FILTROS -->
+<div class="events-filters">
+
+  
+
+  <!-- Buscador (derecha, ocupa el resto) -->
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="Buscar eventos..."
+      [(ngModel)]="searchQuery"
+      (input)="applyFilters()"
+    />
+    <img src="/assets/icons/search.png" alt="Buscar" class="search-icon" />
+  </div>
+
+  <!-- Filtros (izquierda) -->
+  <div class="filters-row">
+    <!-- Tipo: EVENT / CURSO / TALLER / WEBINAR -->
+    <select [(ngModel)]="filterType" (change)="applyFilters()">
+      <option value="">Tipo: Todos</option>
+      <option value="EVENT">Evento</option>
+      <option value="CURSO">Curso</option>
+      <option value="TALLER">Taller</option>
+      <option value="WEBINAR">Webinar</option>
+    </select>
+
+    <!-- Modalidad: ONLINE / PRESENCIAL / HIBRIDO -->
+    <select [(ngModel)]="filterMode" (change)="applyFilters()">
+      <option value="">Modalidad: Todas</option>
+      <option value="ONLINE">Online</option>
+      <option value="PRESENCIAL">Presencial</option>
+      <option value="HIBRIDO">Híbrido</option>
+    </select>
+  </div>
+
+</div>
+<!-- 🔍 /FIN FILTROS -->
+
+  <h2 class="section-title" *ngIf="otherEvents.length">
+    Otros eventos y sesiones
+  </h2>
+
+  <div class="events-grid">
+    <!-- Tarjetas de evento -->
+    <article *ngFor="let ev of otherEvents" class="event-card">
+      <div
+        class="cover"
+        [style.backgroundImage]="ev.coverImg ? 'url(' + ev.coverImg + ')' : 'none'"
+      >
+        <span
+          class="badge status"
+          [class.live]="ev.status === 'LIVE'"
+          [class.upcoming]="ev.status === 'UPCOMING'"
+          [class.finished]="ev.status === 'FINISHED'"
+        >
+          {{ getStatusLabel(ev.status) }}
+        </span>
+
+        <span *ngIf="ev.isFeatured" class="badge featured-badge">
+          ★ Destacado
+        </span>
+      </div>
+
+      <div class="content">
+        <p class="date">
+          {{ ev.startDate | date:'longDate' }}
+        </p>
+
+        <h2>{{ ev.title }}</h2>
+
+        <p class="meta">
+          <span>{{ getTypeLabel(ev.type) }}</span> ·
+          <span>{{ getModeLabel(ev.mode) }}</span>
+        </p>
+
+        <a
+          class="btn"
+          [routerLink]="['/eventos', ev.slug]"
+        >
+          Ver evento
+        </a>
+      </div>
+    </article>
+
+    <!-- Estado vacío -->
+    <div *ngIf="!featured && otherEvents.length === 0" class="empty-state">
+      No hay eventos publicados por el momento.
+    </div>
+  </div>
+</section>
+
+<!-- Si no hay ningún evento en absoluto (ni featured ni otros) -->
+<div *ngIf="featured === null && otherEvents.length === 0" class="empty-state global-empty">
+  Por ahora no hay eventos ni capacitaciones disponibles. Vuelve pronto.
+</div>

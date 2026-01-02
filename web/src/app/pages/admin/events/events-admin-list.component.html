@@ -1,0 +1,107 @@
+<!-- Título -->
+<h1 class="page-title">Administrar eventos</h1>
+
+<!-- Loading -->
+<div *ngIf="loading" class="state loading">Cargando eventos...</div>
+
+<!-- Error -->
+<div *ngIf="error" class="state error">{{ error }}</div>
+
+<!-- Tabla -->
+<table *ngIf="!loading && !error" class="events-table">
+
+  <thead>
+    <tr>
+      <th>Destacado</th>
+      <th>Título</th>
+      <th>Fecha</th>
+      <th>Tipo</th>
+      <th>Estado</th>
+      <th>Publicación</th>
+      <th class="actions-col">Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let ev of events">
+
+      <!-- ⭐ DESTACADO -->
+      <td class="featured-col">
+        <button class="star-btn" (click)="toggleFeatured(ev)">
+          <svg *ngIf="ev.isFeatured" class="star star-on" viewBox="0 0 24 24">
+            <path d="M12 2.5l3.09 6.26 6.91 1-5 4.87L18.18 22 12 18.56 5.82 22 7 14.63l-5-4.87 6.91-1z"/>
+          </svg>
+
+          <svg *ngIf="!ev.isFeatured" class="star star-off" viewBox="0 0 24 24">
+            <path d="M12 2.5l3.09 6.26 6.91 1-5 4.87L18.18 22 12 18.56 5.82 22 7 14.63l-5-4.87 6.91-1z"/>
+          </svg>
+        </button>
+      </td>
+
+      <!-- Título -->
+      <td><strong>{{ ev.title }}</strong></td>
+
+      <!-- Fecha -->
+      <td>{{ ev.startDate | date:'mediumDate' }}</td>
+
+      <!-- Tipo -->
+      <td>{{ getTypeLabel(ev.type) }}</td>
+
+      <!-- Estado (LIVE / UPCOMING / FINISHED) -->
+      <td>
+        <span class="status-pill" [ngClass]="ev.status">
+          {{ getStatusLabel(ev.status) }}
+        </span>
+      </td>
+
+      <!-- 📝 PUBLICACIÓN -->
+      <!-- Estado -->
+<td>
+  <label class="switch">
+    <input
+      type="checkbox"
+      [checked]="ev.isPublished"
+      (change)="onChangePublishStatus(ev, $event)"
+    />
+    <span class="slider"></span>
+  </label>
+</td>
+
+
+
+      <!-- Acciones -->
+      <td class="actions-col">
+        <div class="actions">
+
+          <a
+            [routerLink]="['/eventos', ev.slug]"
+            class="btn small btn-ver"
+            target="_blank"
+            rel="noopener">
+            Ver
+          </a>
+
+          <a
+            [routerLink]="[ev.id, 'editar']"
+            class="btn small btn-editar">
+            Editar
+          </a>
+
+          <button
+            type="button"
+            class="btn small btn-eliminar"
+            (click)="deleteEvent(ev)">
+            Eliminar
+          </button>
+
+        </div>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+
+<!-- Estado vacío -->
+<div class="empty" *ngIf="!loading && events.length === 0">
+  No hay eventos registrados.
+</div>
